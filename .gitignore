@@ -1,0 +1,12 @@
+local.properties
+.gradle/
+.idea/.name
+.idea/compiler.xml
+.idea/copyright/
+.idea/encodings.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/runConfigurations.xml
+.idea/workspace.xml
+android/build/
+build/
