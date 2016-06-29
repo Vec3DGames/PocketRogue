@@ -2,6 +2,8 @@ package xyz.vec3d.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -9,12 +11,15 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
@@ -63,8 +68,8 @@ public class LoadingScreen implements Screen {
         loadingBarHidden = new Image(atlas.findRegion("loading-bar-hidden"));
         screenBg = new Image(atlas.findRegion("screen-bg"));
         loadingBg = new Image(atlas.findRegion("loading-frame-bg"));
-        Animation anim = new Animation(0.05f, atlas.findRegion("loading-bar-anim"));
-        anim.setPlayMode(Animation.PlayMode.REVERSED);
+        Animation anim = new Animation(0.05f, atlas.findRegions("loading-bar-anim"));
+        anim.setPlayMode(Animation.PlayMode.LOOP);
         loadingBar = new LoadingBar(anim);
 
         uiStage.addActor(screenBg);
@@ -75,8 +80,14 @@ public class LoadingScreen implements Screen {
         uiStage.addActor(logo);
         uiStage.addActor(text);
 
+        //Load normal assets here
         this.pocketRogue.getAssetManager().load("uiskin.atlas", TextureAtlas.class);
         this.pocketRogue.getAssetManager().load("badlogic.jpg", Texture.class);
+        this.pocketRogue.getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        this.pocketRogue.getAssetManager().load("map.tmx", TiledMap.class);
+        this.pocketRogue.getAssetManager().load("tilesheet_1.png", Texture.class);
+        this.pocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
+        this.pocketRogue.getAssetManager().load("uiskin.json", Skin.class);
     }
 
     /**
@@ -100,7 +111,7 @@ public class LoadingScreen implements Screen {
         if (pocketRogue.getAssetManager().update() && percent >= 0.99f) {
             text.setVisible(true);
             if (Gdx.input.isTouched()) {
-                pocketRogue.setScreen(new MenuScreen());
+                pocketRogue.setScreen(new MenuScreen(pocketRogue));
             }
         }
 
@@ -193,7 +204,7 @@ public class LoadingScreen implements Screen {
 
         Animation animation;
         TextureRegion reg;
-        float stateTime;
+        float stateTime = 0;
 
         public LoadingBar(Animation animation) {
             this.animation = animation;

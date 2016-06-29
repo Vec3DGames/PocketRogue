@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
@@ -20,12 +23,28 @@ public class MenuScreen implements Screen {
      */
     private Stage uiStage;
 
+    private Skin skin;
+    private Image background;
+
+    /**
+     * The {@link PocketRogue} game instance.
+     */
+    private PocketRogue pocketRogue;
+
     /**
      * Creates a new {@link MenuScreen} instance and sets up the UI components.
      */
-    public MenuScreen() {
+    public MenuScreen(PocketRogue pocketRogue) {
+        this.pocketRogue = pocketRogue;
         uiStage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(uiStage);
+        skin = this.pocketRogue.getAssetManager().get("uiskin.json");
+
+        //Set up UI components here.
+        Label label = new Label("Menu", skin, "default");
+        background = new Image(skin.getAtlas().findRegion("default-pane"));
+        uiStage.addActor(label);
+        uiStage.addActor(background);
     }
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
@@ -59,6 +78,7 @@ public class MenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         uiStage.getViewport().update(width, height, true);
+        background.setSize(width, height);
     }
 
     /**
