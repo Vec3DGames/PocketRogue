@@ -24,12 +24,17 @@ public class MenuScreen implements Screen {
     private Stage uiStage;
 
     private Skin skin;
-    private Image background;
 
     /**
      * The {@link PocketRogue} game instance.
      */
     private PocketRogue pocketRogue;
+
+    /**
+     * The background color constant for the menu screen. Ignore this for when
+     * there is a proper background image to draw.
+     */
+    private final float BACK_COLOR = 63f/255f;
 
     /**
      * Creates a new {@link MenuScreen} instance and sets up the UI components.
@@ -42,9 +47,9 @@ public class MenuScreen implements Screen {
 
         //Set up UI components here.
         Label label = new Label("Menu", skin, "default");
-        background = new Image(skin.getAtlas().findRegion("default-pane"));
+
+        //Add UI components to stage.
         uiStage.addActor(label);
-        uiStage.addActor(background);
     }
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
@@ -61,6 +66,7 @@ public class MenuScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(BACK_COLOR, BACK_COLOR, BACK_COLOR, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         uiStage.draw();
         update(delta);
@@ -78,7 +84,6 @@ public class MenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         uiStage.getViewport().update(width, height, true);
-        background.setSize(width, height);
     }
 
     /**
