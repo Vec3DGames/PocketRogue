@@ -8,5 +8,6 @@ local.properties
 .idea/misc.xml
 .idea/runConfigurations.xml
 .idea/workspace.xml
+.idea/codeStyleSettings.xml
 android/build/
 build/
