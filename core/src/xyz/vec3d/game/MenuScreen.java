@@ -4,10 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 /**
  * Created by darakelian on 6/28/2016.
@@ -41,7 +40,7 @@ public class MenuScreen implements Screen {
      */
     public MenuScreen(PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
-        uiStage = new Stage(new ScreenViewport());
+        uiStage = new Stage(new StretchViewport(800, 600));
         Gdx.input.setInputProcessor(uiStage);
         skin = this.pocketRogue.getAssetManager().get("uiskin.json");
 
@@ -77,13 +76,13 @@ public class MenuScreen implements Screen {
     }
 
     /**
-     * @param width
-     * @param height
+     * @param width Width of the new target screen size.
+     * @param height Height of the new target screen size.
      * @see com.badlogic.gdx.ApplicationListener#resize(int, int)
      */
     @Override
     public void resize(int width, int height) {
-        uiStage.getViewport().update(width, height, true);
+        //uiStage.getViewport().update(width, height, true);
     }
 
     /**

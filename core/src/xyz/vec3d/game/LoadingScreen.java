@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.vec3d.game.utils.Utils;
 
@@ -51,7 +51,7 @@ public class LoadingScreen implements Screen {
         this.pocketRogue.getAssetManager().load("default.fnt", BitmapFont.class);
         this.pocketRogue.getAssetManager().finishLoading();
 
-        uiStage = new Stage(new ScreenViewport());
+        uiStage = new Stage(new StretchViewport(800, 600));
 
         TextureAtlas atlas = this.pocketRogue.getAssetManager().get("loading.pack", TextureAtlas.class);
         BitmapFont font = this.pocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
@@ -129,19 +129,19 @@ public class LoadingScreen implements Screen {
     }
 
     /**
-     * @param width
-     * @param height
+     * @param width Width of the new target screen size.
+     * @param height Height of the new target screen size.
      * @see com.badlogic.gdx.ApplicationListener#resize(int, int)
      */
     @Override
     public void resize(int width, int height) {
-        uiStage.getViewport().update(width, height, true);
+        //uiStage.getViewport().update(width, height, true);
 
         screenBg.setSize(width, height);
 
         //Place the logo in the middle of the screen and 100 px up
-        logo.setX(Utils.getPosCenterX(logo.getWidth(), width));
-        logo.setY(Utils.getPosCenterY(logo.getHeight(), height, 100));
+        logo.setX(Utils.getPosCenterX(logo.getWidth(), uiStage.getWidth()));
+        logo.setY(Utils.getPosCenterY(logo.getHeight(), uiStage.getHeight(), 100));
 
         //Place the loading frame in the middle of the screen
         loadingFrame.setX((uiStage.getWidth() - loadingFrame.getWidth()) / 2);
@@ -164,7 +164,7 @@ public class LoadingScreen implements Screen {
         loadingBg.setY(loadingBarHidden.getY() + 3);
 
         //Text Label
-        text.setX((width - text.getWidth()) / 2);
+        text.setX((uiStage.getWidth() - text.getWidth()) / 2);
         text.setY(loadingFrame.getY() - 50);
         text.setVisible(false);
 
