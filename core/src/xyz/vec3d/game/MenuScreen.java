@@ -3,9 +3,13 @@ package xyz.vec3d.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 /**
@@ -38,17 +42,32 @@ public class MenuScreen implements Screen {
     /**
      * Creates a new {@link MenuScreen} instance and sets up the UI components.
      */
-    public MenuScreen(PocketRogue pocketRogue) {
+    public MenuScreen(final PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
         uiStage = new Stage(new StretchViewport(800, 600));
         Gdx.input.setInputProcessor(uiStage);
         skin = this.pocketRogue.getAssetManager().get("uiskin.json");
 
         //Set up UI components here.
+        Table uiTable = new Table(skin);
         Label label = new Label("Menu", skin, "default");
+        TextButton playButton = new TextButton("Play", skin);
+        playButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                pocketRogue.setScreen(new GameScreen());
+            }
+        });
+        TextButton statsButton = new TextButton("Stats", skin);
+        TextButton optionsButton = new TextButton("Options", skin);
+        uiTable.add(label).padBottom(40).row();
+        uiTable.add(playButton).width(200).padBottom(40).row();
+        uiTable.add(statsButton).width(200).padBottom(40).row();
+        uiTable.add(optionsButton).width(200);
+        uiTable.setFillParent(true);
 
         //Add UI components to stage.
-        uiStage.addActor(label);
+        uiStage.addActor(uiTable);
     }
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.
