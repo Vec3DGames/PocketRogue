@@ -51,7 +51,7 @@ public class LoadingScreen implements Screen {
         this.pocketRogue.getAssetManager().load("default.fnt", BitmapFont.class);
         this.pocketRogue.getAssetManager().finishLoading();
 
-        uiStage = new Stage(new StretchViewport(800, 600));
+        uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
 
         TextureAtlas atlas = this.pocketRogue.getAssetManager().get("loading.pack", TextureAtlas.class);
         BitmapFont font = this.pocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);

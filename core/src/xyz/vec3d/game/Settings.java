@@ -17,5 +17,11 @@ public class Settings {
     /**
      * Represents the height of the game window for desktop.
      */
-    public static final int HEIGHT = 600;
+    public static final int HEIGHT = 450;
+
+    /**
+     * Represents the world scale the map and camera operate on. The scale is
+     * defined as X world units per Y pixels ex. 1/32f = 1 world unit -> 32 pixels.
+     */
+    public static final float WORLD_SCALE = 1/32f;
 }

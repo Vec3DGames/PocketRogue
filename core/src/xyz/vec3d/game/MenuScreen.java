@@ -44,7 +44,7 @@ public class MenuScreen implements Screen {
      */
     public MenuScreen(final PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
-        uiStage = new Stage(new StretchViewport(800, 600));
+        uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
         Gdx.input.setInputProcessor(uiStage);
         skin = this.pocketRogue.getAssetManager().get("uiskin.json");
 
@@ -55,7 +55,7 @@ public class MenuScreen implements Screen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                pocketRogue.setScreen(new GameScreen());
+                pocketRogue.setScreen(new GameScreen(pocketRogue));
             }
         });
         TextButton statsButton = new TextButton("Stats", skin);
@@ -101,11 +101,11 @@ public class MenuScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-        //uiStage.getViewport().update(width, height, true);
+        uiStage.getViewport().update(width, height, true);
     }
 
     /**
-     * @see com.badlogic.gdx.ApplicationListener#pause()
+     * @see com.badlogic.gdx.ApplicationListener#pause().
      */
     @Override
     public void pause() {
@@ -113,7 +113,7 @@ public class MenuScreen implements Screen {
     }
 
     /**
-     * @see com.badlogic.gdx.ApplicationListener#resume()
+     * @see com.badlogic.gdx.ApplicationListener#resume().
      */
     @Override
     public void resume() {
