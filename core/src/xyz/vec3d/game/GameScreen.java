@@ -2,14 +2,17 @@ package xyz.vec3d.game;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+
+import xyz.vec3d.game.messages.RogueInputProcessor;
 
 /**
  * Created by Daron on 7/5/2016.
@@ -65,7 +68,12 @@ public class GameScreen implements Screen {
      * for the components.
      */
     private void setUpGui() {
+        //Create the stage and viewport for the UI.
+        uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
 
+        //Set up input multiplexer
+        InputMultiplexer im = new InputMultiplexer(uiStage, new RogueInputProcessor(pocketRogue));
+        Gdx.input.setInputProcessor(im);
     }
 
     /**
