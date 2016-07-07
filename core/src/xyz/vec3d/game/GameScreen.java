@@ -6,13 +6,16 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.messages.RogueInputProcessor;
+import xyz.vec3d.game.systems.RenderingSystem;
 
 /**
  * Created by Daron on 7/5/2016.
@@ -50,6 +53,21 @@ public class GameScreen implements Screen {
     private OrthographicCamera worldCamera;
 
     /**
+     * The {@link Player} of the game loaded for the game state. This is an
+     * individual variable field so it can be readily accessed rather than having
+     * to find it each time from the array of entities in the engine.
+     */
+    private Player player;
+
+    /**
+     * The {@link SpriteBatch} used to draw the entities. Each update tick the
+     * projection matrix is set to that of the camera so that it is properly
+     * drawing entities based on world units. This is passed to the
+     * {@link RenderingSystem} to be used for drawing.
+     */
+    private SpriteBatch spriteBatch;
+
+    /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
      *
@@ -59,6 +77,7 @@ public class GameScreen implements Screen {
         this.pocketRogue = pocketRogue;
         this.engine = new Engine();
         this.uiStage = new Stage();
+        this.spriteBatch = new SpriteBatch();
         setUpGui();
         setUpEngine();
     }
@@ -72,7 +91,7 @@ public class GameScreen implements Screen {
         uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
 
         //Set up input multiplexer
-        InputMultiplexer im = new InputMultiplexer(uiStage, new RogueInputProcessor(pocketRogue));
+        InputMultiplexer im = new InputMultiplexer(uiStage, new RogueInputProcessor(this));
         Gdx.input.setInputProcessor(im);
     }
 
@@ -83,6 +102,9 @@ public class GameScreen implements Screen {
     private void setUpEngine() {
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
+        engine.addSystem(new RenderingSystem(spriteBatch));
+        player = new Player(10, 10);
+        engine.addEntity(player);
 
         //Create camera and load map and bind them together.
         tiledMapRenderer = new OrthogonalTiledMapRenderer(
@@ -117,7 +139,11 @@ public class GameScreen implements Screen {
         tiledMapRenderer.render();
         uiStage.act(delta);
         uiStage.draw();
+
+        spriteBatch.setProjectionMatrix(worldCamera.combined);
+        spriteBatch.begin();
         engine.update(delta);
+        spriteBatch.end();
     }
 
     /**
