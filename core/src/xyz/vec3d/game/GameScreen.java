@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.messages.RogueInputProcessor;
 import xyz.vec3d.game.systems.RenderingSystem;
 
@@ -103,6 +104,7 @@ public class GameScreen implements Screen {
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
         engine.addSystem(new RenderingSystem(spriteBatch));
+        engine.addEntityListener(new EntityTextureListener(this));
         player = new Player(10, 10);
         engine.addEntity(player);
 
@@ -113,6 +115,10 @@ public class GameScreen implements Screen {
         worldCamera = new OrthographicCamera();
         worldCamera.setToOrtho(false, 25, 14);
         worldCamera.update();
+    }
+
+    public PocketRogue getPocketRogue() {
+        return pocketRogue;
     }
 
     /**

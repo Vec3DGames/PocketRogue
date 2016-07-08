@@ -1,6 +1,7 @@
 package xyz.vec3d.game.entities.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
  * Created by darakelian on 7/7/2016.
@@ -11,4 +12,14 @@ import com.badlogic.ashley.core.Component;
  * texture being drawn.
  */
 public class TextureComponent implements Component {
+
+    private TextureRegion textureRegion;
+
+    public TextureComponent(TextureRegion textureRegion) {
+        this.textureRegion = textureRegion;
+    }
+
+    public TextureRegion getTextureRegion() {
+        return textureRegion;
+    }
 }
