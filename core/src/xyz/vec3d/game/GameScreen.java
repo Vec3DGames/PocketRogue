@@ -14,8 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.messages.RogueInputProcessor;
+import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 
 /**
@@ -68,6 +71,8 @@ public class GameScreen implements Screen {
      */
     private SpriteBatch spriteBatch;
 
+    private RogueInputProcessor rogueInputProcessor;
+
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
@@ -84,7 +89,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     * Initializes all the UI components and registers and listeners or handlers
+     * Initializes all the UI components and registers listeners or handlers
      * for the components.
      */
     private void setUpGui() {
@@ -92,7 +97,8 @@ public class GameScreen implements Screen {
         uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
 
         //Set up input multiplexer
-        InputMultiplexer im = new InputMultiplexer(uiStage, new RogueInputProcessor(this));
+        rogueInputProcessor = new RogueInputProcessor(this);
+        InputMultiplexer im = new InputMultiplexer(uiStage, rogueInputProcessor);
         Gdx.input.setInputProcessor(im);
     }
 
@@ -101,13 +107,6 @@ public class GameScreen implements Screen {
      * loads the map and camera.
      */
     private void setUpEngine() {
-        //Create engine instance, attach listeners and systems.
-        engine = new Engine();
-        engine.addSystem(new RenderingSystem(spriteBatch));
-        engine.addEntityListener(new EntityTextureListener(this));
-        player = new Player(10, 10);
-        engine.addEntity(player);
-
         //Create camera and load map and bind them together.
         tiledMapRenderer = new OrthogonalTiledMapRenderer(
                 pocketRogue.getAssetManager().get("map.tmx", TiledMap.class),
@@ -115,10 +114,37 @@ public class GameScreen implements Screen {
         worldCamera = new OrthographicCamera();
         worldCamera.setToOrtho(false, 25, 14);
         worldCamera.update();
+
+        //Create engine instance, attach listeners and systems.
+        engine = new Engine();
+        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch);
+        MovementSystem movementSystem = new MovementSystem();
+        engine.addSystem(renderingSystem);
+        engine.addSystem(movementSystem);
+        engine.addEntityListener(new EntityTextureListener(this));
+        player = new Player(10, 10);
+        engine.addEntity(player);
     }
 
+    /**
+     * Returns the instance of the {@link PocketRogue} that was passed to this
+     * screen when it was created.
+     *
+     * @return The PocketRogue class.
+     */
     public PocketRogue getPocketRogue() {
         return pocketRogue;
+    }
+
+    /**
+     * Returns the instance of the {@link Player} that was added to the engine.
+     * This is useful because rather than looking through the engine every time
+     * we need the player, it is its own field.
+     *
+     * @return The player.
+     */
+    public Player getPlayer() {
+        return player;
     }
 
     /**
@@ -141,6 +167,7 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         worldCamera.update();
+        worldCamera.position.set(player.getComponent(PositionComponent.class).getPosition(), 0);
         tiledMapRenderer.setView(worldCamera);
         tiledMapRenderer.render();
         uiStage.act(delta);
@@ -148,18 +175,22 @@ public class GameScreen implements Screen {
 
         spriteBatch.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
+        rogueInputProcessor.update();
         engine.update(delta);
         spriteBatch.end();
     }
 
     /**
-     * @param width
-     * @param height
+     * Resize the UI stage only so that the UI remains consistent. This does not
+     * touch the world camera.
+     *
+     * @param width The new width of the screen.
+     * @param height The new height of the screen.
      * @see com.badlogic.gdx.ApplicationListener#resize(int, int)
      */
     @Override
     public void resize(int width, int height) {
-
+        uiStage.getViewport().update(width, height);
     }
 
     /**

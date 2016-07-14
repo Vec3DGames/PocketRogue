@@ -1,7 +1,9 @@
 package xyz.vec3d.game.entities;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.math.Vector2;
 
+import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 
@@ -23,5 +25,13 @@ public class Player extends Entity {
     public Player(float startX, float startY) {
         add(new PositionComponent(startX, startY));
         add(new VelocityComponent());
+        add(new MovementSpeedComponent());
+    }
+
+    public void setVelocity(Vector2 velocity) {
+        MovementSpeedComponent movementSpeedComponent =
+                getComponent(MovementSpeedComponent.class);
+        getComponent(VelocityComponent.class).getVelocity()
+                .set(velocity.scl(movementSpeedComponent.getMoveSpeed()));
     }
 }

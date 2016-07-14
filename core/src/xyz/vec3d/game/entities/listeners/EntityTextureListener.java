@@ -2,9 +2,10 @@ package xyz.vec3d.game.entities.listeners;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Texture;
 
 import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.entities.components.TextureComponent;
 
 /**
  * Created by Daron on 7/7/2016.
@@ -16,6 +17,10 @@ import xyz.vec3d.game.GameScreen;
  */
 public class EntityTextureListener implements EntityListener {
 
+    /**
+     * The {@link GameScreen} instance that contains an instance of the AssetManager
+     * so that textures can be loaded.
+     */
     private GameScreen gameScreen;
 
     public EntityTextureListener(GameScreen gameScreen) {
@@ -24,8 +29,9 @@ public class EntityTextureListener implements EntityListener {
 
     @Override
     public void entityAdded(Entity entity) {
-        String entityName = entity.getClass().getSimpleName();
-        TextureRegion textureRegion = gameScreen.getPocketRogue().getAssetManager().get(entityName, TextureRegion.class);
+        String entityName = entity.getClass().getSimpleName().toLowerCase() + ".png";
+        Texture texture = gameScreen.getPocketRogue().getAssetManager().get(entityName, Texture.class);
+        entity.add(new TextureComponent(texture));
     }
 
     @Override

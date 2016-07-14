@@ -90,6 +90,7 @@ public class LoadingScreen implements Screen {
         this.pocketRogue.getAssetManager().load("tilesheet_1.png", Texture.class);
         this.pocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
         this.pocketRogue.getAssetManager().load("uiskin.json", Skin.class);
+        this.pocketRogue.getAssetManager().load("player.png", Texture.class);
     }
 
     /**
@@ -110,7 +111,7 @@ public class LoadingScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (pocketRogue.getAssetManager().update() && percent >= 0.99f) {
+        if (pocketRogue.getAssetManager().update() && percent >= 0.999999f) {
             text.setVisible(true);
             if (Gdx.input.isTouched()) {
                 pocketRogue.setScreen(new MenuScreen(pocketRogue));
