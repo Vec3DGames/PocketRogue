@@ -29,9 +29,18 @@ public class Player extends Entity {
     }
 
     public void setVelocity(Vector2 velocity) {
-        MovementSpeedComponent movementSpeedComponent =
-                getComponent(MovementSpeedComponent.class);
-        getComponent(VelocityComponent.class).getVelocity()
-                .set(velocity.scl(movementSpeedComponent.getMoveSpeed()));
+        getVelocity().set(velocity.scl(getMoveSpeed()));
+    }
+
+    public Vector2 getVelocity() {
+        return getComponent(VelocityComponent.class).getVelocity();
+    }
+
+    public Vector2 getPosition() {
+        return getComponent(PositionComponent.class).getPosition();
+    }
+
+    public float getMoveSpeed() {
+        return getComponent(MovementSpeedComponent.class).getMoveSpeed();
     }
 }

@@ -1,6 +1,7 @@
 package xyz.vec3d.game;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -10,12 +11,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.vec3d.game.entities.Player;
-import xyz.vec3d.game.entities.components.PositionComponent;
-import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.messages.RogueInputProcessor;
 import xyz.vec3d.game.systems.MovementSystem;
@@ -71,7 +71,30 @@ public class GameScreen implements Screen {
      */
     private SpriteBatch spriteBatch;
 
+    /**
+     * InputProcessor that handles key/mouse input.
+     */
     private RogueInputProcessor rogueInputProcessor;
+
+    /**
+     * Width of the map in world units.
+     */
+    private float mapWidth;
+
+    /**
+     * Height of the map in world units.
+     */
+    private float mapHeight;
+
+    /**
+     * Half of the width of the camera viewport in world units.
+     */
+    private float camViewportHalfX;
+
+    /**
+     * Half of the height of the camera viewport in world units.
+     */
+    private float camViewportHalfY;
 
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
@@ -100,6 +123,23 @@ public class GameScreen implements Screen {
         rogueInputProcessor = new RogueInputProcessor(this);
         InputMultiplexer im = new InputMultiplexer(uiStage, rogueInputProcessor);
         Gdx.input.setInputProcessor(im);
+
+        switch (Gdx.app.getType()) {
+            case Android:
+                setUpAndroidUi();
+                break;
+            case Desktop:
+                setUpDesktopUi();
+                break;
+        }
+    }
+
+    private void setUpAndroidUi() {
+
+    }
+
+    private void setUpDesktopUi() {
+
     }
 
     /**
@@ -108,12 +148,17 @@ public class GameScreen implements Screen {
      */
     private void setUpEngine() {
         //Create camera and load map and bind them together.
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(
-                pocketRogue.getAssetManager().get("map.tmx", TiledMap.class),
-                Settings.WORLD_SCALE);
+        TiledMap map = pocketRogue.getAssetManager().get("map.tmx", TiledMap.class);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
         worldCamera = new OrthographicCamera();
         worldCamera.setToOrtho(false, 25, 14);
         worldCamera.update();
+
+        //Set up map and camera viewport properties.
+        mapWidth = map.getProperties().get("width", Integer.class);
+        mapHeight = map.getProperties().get("height", Integer.class);
+        camViewportHalfX = worldCamera.viewportWidth / 2;
+        camViewportHalfY = worldCamera.viewportHeight / 2;
 
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
@@ -167,7 +212,16 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         worldCamera.update();
-        worldCamera.position.set(player.getComponent(PositionComponent.class).getPosition(), 0);
+
+        //Move camera.
+        worldCamera.position.x = player.getPosition().x;
+        worldCamera.position.y = player.getPosition().y;
+        //Clamp camera first on x, then on y.
+        worldCamera.position.x = MathUtils.clamp(worldCamera.position.x,
+                camViewportHalfX, mapWidth - camViewportHalfX);
+        worldCamera.position.y = MathUtils.clamp(worldCamera.position.y,
+                camViewportHalfY, mapHeight - camViewportHalfY);
+
         tiledMapRenderer.setView(worldCamera);
         tiledMapRenderer.render();
         uiStage.act(delta);

@@ -15,7 +15,7 @@ import xyz.vec3d.game.GameScreen;
  * entity systems based on the input provided. There should only ever be one
  * instance of this class used in an {@link com.badlogic.gdx.InputMultiplexer}.
  */
-public class RogueInputProcessor implements InputProcessor, MessageSender {
+public class RogueInputProcessor implements InputProcessor {
 
     private GameScreen gameScreen;
 
@@ -116,20 +116,4 @@ public class RogueInputProcessor implements InputProcessor, MessageSender {
         return false;
     }
 
-    @Override
-    public void registerMessageReceiver(MessageReceiver messageReceiver) {
-        messageReceivers.add(messageReceiver);
-    }
-
-    @Override
-    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
-        messageReceivers.remove(messageReceiver);
-    }
-
-    @Override
-    public void notifyMessageReceivers(Message message) {
-        for(MessageReceiver messageReceiver : messageReceivers) {
-            messageReceiver.onMessageReceived(message);
-        }
-    }
 }

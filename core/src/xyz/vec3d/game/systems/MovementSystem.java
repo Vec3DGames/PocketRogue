@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 
@@ -33,6 +32,9 @@ public class MovementSystem extends IteratingSystem {
         PositionComponent positionComponent = pm.get(entity);
         VelocityComponent velocityComponent = vm.get(entity);
         positionComponent.getPosition().add(velocityComponent.getVelocity());
+        if (positionComponent.getPosition().x <= 0) {
+            positionComponent.getPosition().x = 0;
+        }
     }
 
 }
