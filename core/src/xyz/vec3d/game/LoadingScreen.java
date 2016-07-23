@@ -28,6 +28,7 @@ import xyz.vec3d.game.utils.Utils;
  * Created by Daron on 6/28/2016.
  * Copyright vec3d.xyz 2016
  * All rights reserved
+ * All niggers should die.
  */
 public class LoadingScreen implements Screen {
 
