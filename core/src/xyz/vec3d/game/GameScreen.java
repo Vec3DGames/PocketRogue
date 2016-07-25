@@ -1,7 +1,6 @@
 package xyz.vec3d.game;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -166,7 +165,7 @@ public class GameScreen implements Screen {
         MovementSystem movementSystem = new MovementSystem();
         engine.addSystem(renderingSystem);
         engine.addSystem(movementSystem);
-        engine.addEntityListener(new EntityTextureListener(this));
+        engine.addEntityListener(new EntityTextureListener());
         player = new Player(10, 10);
         engine.addEntity(player);
     }

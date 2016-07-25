@@ -24,6 +24,6 @@ public class Message {
     }
 
     public enum MessageType {
-        PLAYER_MOVEMENT
+        PLAYER_MOVEMENT, PLAYER_INFO_HEALTH_CHANGED, PLAYER_INFO_MANA_CHANGED
     }
 }

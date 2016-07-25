@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.graphics.Texture;
 
-import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.components.TextureComponent;
 
 /**
@@ -18,19 +18,16 @@ import xyz.vec3d.game.entities.components.TextureComponent;
 public class EntityTextureListener implements EntityListener {
 
     /**
-     * The {@link GameScreen} instance that contains an instance of the AssetManager
-     * so that textures can be loaded.
+     * Default constructor.
      */
-    private GameScreen gameScreen;
+    public EntityTextureListener() {
 
-    public EntityTextureListener(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
     }
 
     @Override
     public void entityAdded(Entity entity) {
         String entityName = entity.getClass().getSimpleName().toLowerCase() + ".png";
-        Texture texture = gameScreen.getPocketRogue().getAssetManager().get(entityName, Texture.class);
+        Texture texture = PocketRogue.getInstance().getAssetManager().get(entityName, Texture.class);
         entity.add(new TextureComponent(texture));
     }
 

@@ -112,7 +112,7 @@ public class LoadingScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (pocketRogue.getAssetManager().update() && percent >= 0.999999f) {
+        if (pocketRogue.getAssetManager().update()) {
             text.setVisible(true);
             if (Gdx.input.isTouched()) {
                 pocketRogue.setScreen(new MenuScreen(pocketRogue));

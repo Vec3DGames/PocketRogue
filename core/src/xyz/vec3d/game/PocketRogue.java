@@ -14,6 +14,12 @@ public class PocketRogue extends Game {
 
 	private AssetManager assetManager = new AssetManager();
 
+	private static PocketRogue _instance = new PocketRogue();
+
+	public PocketRogue() {
+		_instance = this;
+	}
+
 	public void create () {
 		setScreen(new LoadingScreen(this));
 	}
@@ -24,5 +30,12 @@ public class PocketRogue extends Game {
 
 	public AssetManager getAssetManager() {
 		return assetManager;
+	}
+
+	public static PocketRogue getInstance() {
+		if (_instance == null) {
+			return new PocketRogue();
+		}
+		return _instance;
 	}
 }

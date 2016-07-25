@@ -3,9 +3,11 @@ package xyz.vec3d.game.entities;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 
+import xyz.vec3d.game.entities.components.InventoryComponent;
 import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.model.Inventory;
 
 /**
  * Created by darakelian on 7/6/2016.
@@ -26,6 +28,7 @@ public class Player extends Entity {
         add(new PositionComponent(startX, startY));
         add(new VelocityComponent());
         add(new MovementSpeedComponent());
+        add(new InventoryComponent());
     }
 
     public void setVelocity(Vector2 velocity) {
@@ -42,5 +45,16 @@ public class Player extends Entity {
 
     public float getMoveSpeed() {
         return getComponent(MovementSpeedComponent.class).getMoveSpeed();
+    }
+
+    /**
+     * Returns the player's {@link Inventory} taken from the {@link InventoryComponent}
+     * of the player. This is a convenience method to avoid having to access the
+     * component manually each time the inventory is required.
+     *
+     * @return The player's inventory.
+     */
+    public Inventory getInventory() {
+        return getComponent(InventoryComponent.class).getInventory();
     }
 }
