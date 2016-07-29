@@ -48,14 +48,14 @@ public class LoadingScreen implements Screen {
 
     public LoadingScreen(PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
-        this.pocketRogue.getAssetManager().load("loading.pack", TextureAtlas.class);
-        this.pocketRogue.getAssetManager().load("default.fnt", BitmapFont.class);
-        this.pocketRogue.getAssetManager().finishLoading();
+        PocketRogue.getAssetManager().load("loading.pack", TextureAtlas.class);
+        PocketRogue.getAssetManager().load("default.fnt", BitmapFont.class);
+        PocketRogue.getAssetManager().finishLoading();
 
         uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
 
-        TextureAtlas atlas = this.pocketRogue.getAssetManager().get("loading.pack", TextureAtlas.class);
-        BitmapFont font = this.pocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
+        TextureAtlas atlas = PocketRogue.getAssetManager().get("loading.pack", TextureAtlas.class);
+        BitmapFont font = PocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = font;
@@ -84,14 +84,14 @@ public class LoadingScreen implements Screen {
         uiStage.addActor(text);
 
         //Load normal assets here
-        this.pocketRogue.getAssetManager().load("uiskin.atlas", TextureAtlas.class);
-        this.pocketRogue.getAssetManager().load("badlogic.jpg", Texture.class);
-        this.pocketRogue.getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        this.pocketRogue.getAssetManager().load("map.tmx", TiledMap.class);
-        this.pocketRogue.getAssetManager().load("tilesheet_1.png", Texture.class);
-        this.pocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
-        this.pocketRogue.getAssetManager().load("uiskin.json", Skin.class);
-        this.pocketRogue.getAssetManager().load("player.png", Texture.class);
+        PocketRogue.getAssetManager().load("uiskin.atlas", TextureAtlas.class);
+        PocketRogue.getAssetManager().load("badlogic.jpg", Texture.class);
+        PocketRogue.getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+        PocketRogue.getAssetManager().load("map.tmx", TiledMap.class);
+        PocketRogue.getAssetManager().load("tilesheet_1.png", Texture.class);
+        PocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
+        PocketRogue.getAssetManager().load("uiskin.json", Skin.class);
+        PocketRogue.getAssetManager().load("player.png", Texture.class);
     }
 
     /**
@@ -112,14 +112,14 @@ public class LoadingScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (pocketRogue.getAssetManager().update()) {
+        if (PocketRogue.getAssetManager().update()) {
             text.setVisible(true);
             if (Gdx.input.isTouched()) {
                 pocketRogue.setScreen(new MenuScreen(pocketRogue));
             }
         }
 
-        percent = Interpolation.linear.apply(percent, pocketRogue.getAssetManager().getProgress(), 0.2f);
+        percent = Interpolation.linear.apply(percent, PocketRogue.getAssetManager().getProgress(), 0.2f);
 
         loadingBarHidden.setX(startX + endX * percent);
         loadingBg.setX(loadingBarHidden.getX() + 30);
@@ -193,7 +193,7 @@ public class LoadingScreen implements Screen {
      */
     @Override
     public void hide() {
-        pocketRogue.getAssetManager().unload("loading.pack");
+        PocketRogue.getAssetManager().unload("loading.pack");
     }
 
     /**

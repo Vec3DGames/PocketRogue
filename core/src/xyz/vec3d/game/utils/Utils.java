@@ -70,13 +70,13 @@ public class Utils {
      * the object centered in the container. Private because this method should
      * not be called be anyone other than the wrapper methods in the Utils class.
      *
-     * @param objectWidth
-     * @param containerWidth
-     * @param containerPos
+     * @param objectDimension Dimension of the object being centered (either width/height).
+     * @param containerDimension Dimension of the container (either width/height).
+     * @param containerPos Starting x or y coordinate of the container.
      *
      * @return
      */
-    private static float getPosCenter(float objectWidth, float containerWidth, float containerPos) {
-        return containerPos + ((containerWidth - objectWidth) / 2);
+    private static float getPosCenter(float objectDimension, float containerDimension, float containerPos) {
+        return containerPos + ((containerDimension - objectDimension) / 2);
     }
 }

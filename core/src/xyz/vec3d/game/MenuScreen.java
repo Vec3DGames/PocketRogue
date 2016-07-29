@@ -46,7 +46,7 @@ public class MenuScreen implements Screen {
         this.pocketRogue = pocketRogue;
         uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
         Gdx.input.setInputProcessor(uiStage);
-        skin = this.pocketRogue.getAssetManager().get("uiskin.json");
+        skin = PocketRogue.getAssetManager().get("uiskin.json");
 
         //Set up UI components here.
         Table uiTable = new Table(skin);

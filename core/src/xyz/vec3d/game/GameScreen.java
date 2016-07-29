@@ -147,7 +147,7 @@ public class GameScreen implements Screen {
      */
     private void setUpEngine() {
         //Create camera and load map and bind them together.
-        TiledMap map = pocketRogue.getAssetManager().get("map.tmx", TiledMap.class);
+        TiledMap map = PocketRogue.getAssetManager().get("map.tmx", TiledMap.class);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
         worldCamera = new OrthographicCamera();
         worldCamera.setToOrtho(false, 25, 14);

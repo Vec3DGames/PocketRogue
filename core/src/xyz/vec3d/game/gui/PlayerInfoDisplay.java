@@ -2,8 +2,10 @@ package xyz.vec3d.game.gui;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.MessageReceiver;
 
@@ -18,10 +20,14 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver{
 
     private Texture playerIcon;
     private Texture frameBorder;
+    private Texture barBackground;
+    private Texture manaBar;
+    private Texture healthBar;
 
+    private BitmapFont font;
 
     public PlayerInfoDisplay() {
-
+        playerIcon = PocketRogue.getAssetManager().get("playerIcon", Texture.class);
     }
 
     @Override

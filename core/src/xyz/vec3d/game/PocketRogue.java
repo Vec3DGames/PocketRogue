@@ -28,7 +28,7 @@ public class PocketRogue extends Game {
 		super.render();
 	}
 
-	public AssetManager getAssetManager() {
+	public AssetManager getAssets() {
 		return assetManager;
 	}
 
@@ -37,5 +37,9 @@ public class PocketRogue extends Game {
 			return new PocketRogue();
 		}
 		return _instance;
+	}
+
+	public static AssetManager getAssetManager() {
+		return getInstance().getAssets();
 	}
 }
