@@ -19,6 +19,10 @@ public class Settings {
      */
     public static final int HEIGHT = 450;
 
+    public static final int UI_WIDTH = 800;
+
+    public static final int UI_HEIGHT = 450;
+
     /**
      * Represents the world scale the map and camera operate on. The scale is
      * defined as X world units per Y pixels ex. 1/32f = 1 world unit -> 32 pixels.

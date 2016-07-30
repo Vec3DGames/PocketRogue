@@ -13,3 +13,4 @@ android/build/
 build/
 /.idea/
 .idea/libraries/
+/local.properties

@@ -84,6 +84,17 @@ public class LoadingScreen implements Screen {
         uiStage.addActor(text);
 
         //Load normal assets here
+        loadNormalAssets();
+    }
+
+    /**
+     * Loads all game assets that don't need to be immediately loaded for the
+     * loading screen. Currently everything is manually loaded but it should
+     * probably be changed to load the entirety of the file structure so that
+     * it would be hard/impossible for an asset to not be loaded due to not being
+     * on the list.
+     */
+    private void loadNormalAssets() {
         PocketRogue.getAssetManager().load("uiskin.atlas", TextureAtlas.class);
         PocketRogue.getAssetManager().load("badlogic.jpg", Texture.class);
         PocketRogue.getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
@@ -92,6 +103,11 @@ public class LoadingScreen implements Screen {
         PocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
         PocketRogue.getAssetManager().load("uiskin.json", Skin.class);
         PocketRogue.getAssetManager().load("player.png", Texture.class);
+        PocketRogue.getAssetManager().load("frameBorder.png", Texture.class);
+        PocketRogue.getAssetManager().load("playerIcon.png", Texture.class);
+        PocketRogue.getAssetManager().load("barBackground.png", Texture.class);
+        PocketRogue.getAssetManager().load("healthBar.png", Texture.class);
+        PocketRogue.getAssetManager().load("manaBar.png", Texture.class);
     }
 
     /**

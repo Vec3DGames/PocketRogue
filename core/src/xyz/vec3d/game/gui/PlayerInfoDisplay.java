@@ -26,23 +26,43 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver{
 
     private BitmapFont font;
 
+    private float maxHealth, maxMana;
+    private float health, mana;
+
     public PlayerInfoDisplay() {
-        playerIcon = PocketRogue.getAssetManager().get("playerIcon", Texture.class);
+        playerIcon = PocketRogue.getAssetManager().get("playerIcon.png", Texture.class);
+        frameBorder = PocketRogue.getAssetManager().get("frameBorder.png", Texture.class);
+        barBackground = PocketRogue.getAssetManager().get("barBackground.png", Texture.class);
+        manaBar = PocketRogue.getAssetManager().get("manaBar.png", Texture.class);
+        healthBar = PocketRogue.getAssetManager().get("healthBar.png", Texture.class);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        batch.draw(frameBorder, this.getX(), this.getY());
+        batch.draw(playerIcon, this.getX() + 4, this.getY() + 4);
+        batch.draw(barBackground, this.getX() + frameBorder.getWidth(),
+                this.getY() + frameBorder.getHeight() - barBackground.getHeight());
+        batch.draw(barBackground, this.getX() + frameBorder.getWidth(),
+                this.getY() + frameBorder.getHeight() - (5 + 2 * barBackground.getHeight()));
 
     }
 
     @Override
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
+            case PLAYER_INFO_MAX_CHANGED:
+                //Update the info of max values for health/mana.
+                maxHealth = (Integer) message.getPayload()[0];
+                maxMana = (Integer) message.getPayload()[1];
+                break;
             case PLAYER_INFO_HEALTH_CHANGED:
-                //Update health bar
+                //Update health bar value.
+                health = (Integer) message.getPayload()[0];
                 break;
             case PLAYER_INFO_MANA_CHANGED:
-                //Update mana bar
+                //Update mana bar value.
+                mana = (Integer) message.getPayload()[0];
                 break;
         }
     }

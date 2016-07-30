@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
+import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.messages.RogueInputProcessor;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
@@ -112,16 +113,22 @@ public class GameScreen implements Screen {
 
     /**
      * Initializes all the UI components and registers listeners or handlers
-     * for the components.
+     * for the components. Sets up UI components common to both desktop and
+     * android then handles setting up the UI specific to each version.
      */
     private void setUpGui() {
         //Create the stage and viewport for the UI.
-        uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
+        uiStage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
 
         //Set up input multiplexer
         rogueInputProcessor = new RogueInputProcessor(this);
         InputMultiplexer im = new InputMultiplexer(uiStage, rogueInputProcessor);
         Gdx.input.setInputProcessor(im);
+
+        //Set up the player info display.
+        PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay();
+        infoDisplay.setPosition(20, uiStage.getHeight() - 80);
+        uiStage.addActor(infoDisplay);
 
         switch (Gdx.app.getType()) {
             case Android:
