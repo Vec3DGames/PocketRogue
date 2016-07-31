@@ -6,6 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
 import xyz.vec3d.game.GameScreen;
 
 /**
@@ -17,10 +21,15 @@ import xyz.vec3d.game.GameScreen;
  * entity systems based on the input provided. There should only ever be one
  * instance of this class used in an {@link com.badlogic.gdx.InputMultiplexer}.
  */
-public class RogueInputProcessor implements InputProcessor, MessageSender {
+public class RogueInputProcessor extends ChangeListener implements InputProcessor {
 
     private GameScreen gameScreen;
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+
+    @Override
+    public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+        mov.set(((Touchpad) actor).getKnobPercentX(), ((Touchpad) actor).getKnobPercentY());
+    }
 
     /**
      * The {@link Vector2} that stores the movement updating vector. This gets
@@ -32,7 +41,7 @@ public class RogueInputProcessor implements InputProcessor, MessageSender {
      * Creates a new {@link RogueInputProcessor} instance with a given {@link GameScreen}
      * instance to communicate with the screen if needed.
      *
-     * @param gameScreen
+     * @param gameScreen the gamescreen nigga
      */
     public RogueInputProcessor(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -41,7 +50,7 @@ public class RogueInputProcessor implements InputProcessor, MessageSender {
     /**
      * Processes the movement input vector before sending it in a message to the
      * {@link xyz.vec3d.game.systems.MovementSystem}.
-     * @return
+     * @return nigga dis dont return shit, u high
      */
     private Vector2 getMov() {
         return mov.cpy().nor();

@@ -11,11 +11,18 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
+
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.Texture;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
@@ -100,6 +107,11 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
      * Half of the height of the camera viewport in world units.
      */
     private float camViewportHalfY;
+    private Touchpad touchpad;
+    private Touchpad.TouchpadStyle touchpadStyle;
+    private Skin touchpadSkin;
+    private Drawable touchBackground;
+    private Drawable touchKnob;
 
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
 
@@ -151,7 +163,26 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
     }
 
     private void setUpAndroidUi() {
-
+        //Create a touchpad skin
+        touchpadSkin = new Skin();
+        //Set background image
+        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
+        //Set knob image
+        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
+        //Create TouchPad Style
+        touchpadStyle = new TouchpadStyle();
+        //Create Drawable's from TouchPad skin
+        touchBackground = touchpadSkin.getDrawable("touchBackground");
+        touchKnob = touchpadSkin.getDrawable("touchKnob");
+        //Apply the Drawables to the TouchPad Style
+        touchpadStyle.background = touchBackground;
+        touchpadStyle.knob = touchKnob;
+        //Create new TouchPad with the created style
+        touchpad = new Touchpad(10, touchpadStyle);
+        //setBounds(x,y,width,height)
+        touchpad.setBounds(15, 15, 200, 200);
+        uiStage.addActor(touchpad);
+        touchpad.addListener(rogueInputProcessor);
     }
 
     private void setUpDesktopUi() {
