@@ -3,12 +3,11 @@ package xyz.vec3d.game.messages;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
-
-import java.util.ArrayList;
-
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+
+import java.util.ArrayList;
 
 import xyz.vec3d.game.GameScreen;
 
@@ -21,7 +20,7 @@ import xyz.vec3d.game.GameScreen;
  * entity systems based on the input provided. There should only ever be one
  * instance of this class used in an {@link com.badlogic.gdx.InputMultiplexer}.
  */
-public class RogueInputProcessor extends ChangeListener implements InputProcessor {
+public class RogueInputProcessor extends ChangeListener implements InputProcessor, MessageSender {
 
     private GameScreen gameScreen;
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
