@@ -4,6 +4,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+
 import xyz.vec3d.game.GameScreen;
 
 /**
@@ -15,9 +17,10 @@ import xyz.vec3d.game.GameScreen;
  * entity systems based on the input provided. There should only ever be one
  * instance of this class used in an {@link com.badlogic.gdx.InputMultiplexer}.
  */
-public class RogueInputProcessor implements InputProcessor {
+public class RogueInputProcessor implements InputProcessor, MessageSender {
 
     private GameScreen gameScreen;
+    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
 
     /**
      * The {@link Vector2} that stores the movement updating vector. This gets
@@ -62,6 +65,9 @@ public class RogueInputProcessor implements InputProcessor {
                 return true;
             case Keys.D:
                 mov.add(1, 0);
+                return true;
+            case Keys.SPACE:
+                notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_HEALTH_CHANGED, -10));
                 return true;
         }
         return false;
@@ -116,4 +122,26 @@ public class RogueInputProcessor implements InputProcessor {
         return false;
     }
 
+    @Override
+    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+        messageReceivers.add(messageReceiver);
+        System.out.println("Registered receiver: " + messageReceiver + " id: " + messageReceivers.size());
+    }
+
+    @Override
+    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
+
+    }
+
+    @Override
+    public void notifyMessageReceivers(Message message) {
+        int i = 0;
+        for (MessageReceiver messageReceiver : messageReceivers) {
+            messageReceiver.onMessageReceived(message);
+            System.out.println("sent message type: " + message.getMessageType() + " to receiver: " + (i += 1));
+            if (i + 1 == messageReceivers.size()) {
+                i = 0;
+            }
+        }
+    }
 }

@@ -14,9 +14,14 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import java.util.ArrayList;
+
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
+import xyz.vec3d.game.messages.Message;
+import xyz.vec3d.game.messages.MessageReceiver;
+import xyz.vec3d.game.messages.MessageSender;
 import xyz.vec3d.game.messages.RogueInputProcessor;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
@@ -29,7 +34,7 @@ import xyz.vec3d.game.systems.RenderingSystem;
  * Game state representation. Has a stage for UI and an Ashley engine for entity
  * related matters. Also manages the messaging system between the UI and engine.
  */
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, MessageReceiver, MessageSender {
 
     /**
      * {@link PocketRogue} instance.
@@ -96,6 +101,8 @@ public class GameScreen implements Screen {
      */
     private float camViewportHalfY;
 
+    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
@@ -128,6 +135,9 @@ public class GameScreen implements Screen {
         //Set up the player info display.
         PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay();
         infoDisplay.setPosition(20, uiStage.getHeight() - 80);
+        infoDisplay.registerMessageReceiver(this);
+        this.registerMessageReceiver(infoDisplay);
+        rogueInputProcessor.registerMessageReceiver(infoDisplay);
         uiStage.addActor(infoDisplay);
 
         switch (Gdx.app.getType()) {
@@ -175,6 +185,7 @@ public class GameScreen implements Screen {
         engine.addEntityListener(new EntityTextureListener());
         player = new Player(10, 10);
         engine.addEntity(player);
+        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
     }
 
     /**
@@ -283,5 +294,32 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public void onMessageReceived(Message message) {
+        switch (message.getMessageType()) {
+            case UI_ELEMENT_CLICKED:
+                String uiName = (String) message.getPayload()[0];
+                System.out.println(uiName);
+                break;
+        }
+    }
+
+    @Override
+    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+        messageReceivers.add(messageReceiver);
+    }
+
+    @Override
+    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
+
+    }
+
+    @Override
+    public void notifyMessageReceivers(Message message) {
+        for (MessageReceiver messageReceiver : messageReceivers) {
+            messageReceiver.onMessageReceived(message);
+        }
     }
 }

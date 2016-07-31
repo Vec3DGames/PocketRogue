@@ -4,10 +4,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+import java.util.ArrayList;
 
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.MessageReceiver;
+import xyz.vec3d.game.messages.MessageSender;
 
 /**
  * Created by Daron on 7/24/2016.
@@ -16,7 +21,7 @@ import xyz.vec3d.game.messages.MessageReceiver;
  *
  *
  */
-public class PlayerInfoDisplay extends Actor implements MessageReceiver{
+public class PlayerInfoDisplay extends Actor implements MessageReceiver, MessageSender {
 
     private Texture playerIcon;
     private Texture frameBorder;
@@ -29,16 +34,31 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver{
     private float maxHealth, maxMana;
     private float health, mana;
 
+    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+
     public PlayerInfoDisplay() {
         playerIcon = PocketRogue.getAssetManager().get("playerIcon.png", Texture.class);
         frameBorder = PocketRogue.getAssetManager().get("frameBorder.png", Texture.class);
         barBackground = PocketRogue.getAssetManager().get("barBackground.png", Texture.class);
         manaBar = PocketRogue.getAssetManager().get("manaBar.png", Texture.class);
         healthBar = PocketRogue.getAssetManager().get("healthBar.png", Texture.class);
+        addListener(new ClickListener() {
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Actor actorHit = hit(x, y, true);
+                if (actorHit == event.getListenerActor()) {
+                    Message message = new Message(Message.MessageType.UI_ELEMENT_CLICKED, "player_info_display");
+                    notifyMessageReceivers(message);
+                }
+            }
+
+        });
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        //Draw the frames of everything.
         batch.draw(frameBorder, this.getX(), this.getY());
         batch.draw(playerIcon, this.getX() + 4, this.getY() + 4);
         batch.draw(barBackground, this.getX() + frameBorder.getWidth(),
@@ -46,6 +66,13 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver{
         batch.draw(barBackground, this.getX() + frameBorder.getWidth(),
                 this.getY() + frameBorder.getHeight() - (5 + 2 * barBackground.getHeight()));
 
+        //Draw health/mana bars at their % left values.
+        batch.draw(healthBar, this.getX() + frameBorder.getWidth() + 2,
+                this.getY() + frameBorder.getHeight() - barBackground.getHeight() + 2,
+                healthBar.getWidth() * (health / maxHealth), healthBar.getHeight());
+        batch.draw(manaBar, this.getX() + frameBorder.getWidth() + 2,
+                this.getY() + frameBorder.getHeight() - (11 + 2 * manaBar.getHeight()),
+                manaBar.getWidth() * (mana / maxMana), manaBar.getHeight());
     }
 
     @Override
@@ -53,18 +80,42 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver{
         switch (message.getMessageType()) {
             case PLAYER_INFO_MAX_CHANGED:
                 //Update the info of max values for health/mana.
-                maxHealth = (Integer) message.getPayload()[0];
-                maxMana = (Integer) message.getPayload()[1];
+                maxHealth = health = (Integer) message.getPayload()[0];
+                maxMana = mana = (Integer) message.getPayload()[1];
                 break;
             case PLAYER_INFO_HEALTH_CHANGED:
                 //Update health bar value.
-                health = (Integer) message.getPayload()[0];
+                health += (Integer) message.getPayload()[0];
                 break;
             case PLAYER_INFO_MANA_CHANGED:
                 //Update mana bar value.
-                mana = (Integer) message.getPayload()[0];
+                mana += (Integer) message.getPayload()[0];
                 break;
         }
     }
 
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        if (x >= 0 && x <= frameBorder.getWidth() && y >= 0 && y <= frameBorder.getHeight()) {
+            return this;
+        }
+        return null;
+    }
+
+    @Override
+    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+        messageReceivers.add(messageReceiver);
+    }
+
+    @Override
+    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
+
+    }
+
+    @Override
+    public void notifyMessageReceivers(Message message) {
+        for (MessageReceiver messageReceiver : messageReceivers) {
+            messageReceiver.onMessageReceived(message);
+        }
+    }
 }

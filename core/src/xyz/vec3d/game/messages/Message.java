@@ -52,6 +52,10 @@ public class Message {
         return payload;
     }
 
+    public void setPayload(Object[] payload) {
+        this.payload = payload;
+    }
+
     /**
      * Enum constants representing types of movements. When a new message type
      * is desired, it must be added to this enum for message senders/receivers
@@ -59,6 +63,6 @@ public class Message {
      */
     public enum MessageType {
         PLAYER_MOVEMENT, PLAYER_INFO_HEALTH_CHANGED, PLAYER_INFO_MANA_CHANGED,
-        PLAYER_INFO_MAX_CHANGED
+        PLAYER_INFO_MAX_CHANGED, UI_ELEMENT_CLICKED
     }
 }
