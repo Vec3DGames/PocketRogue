@@ -3,6 +3,7 @@ package xyz.vec3d.game.gui;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -13,13 +14,16 @@ import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.MessageReceiver;
 import xyz.vec3d.game.messages.MessageSender;
+import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 7/24/2016.
  * Copyright vec3d.xyz 2016
  * All rights reserved
  *
- *
+ * The PlayerInfoDisplay is a custom UI element that displays quick information
+ * about the player such as their level and current health/mana levels. This is
+ * a scene2d.ui Actor and thus is used on the Stage.
  */
 public class PlayerInfoDisplay extends Actor implements MessageReceiver, MessageSender {
 
@@ -34,6 +38,8 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver, Message
     private float maxHealth, maxMana;
     private float health, mana;
 
+    private GlyphLayout layout;
+
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
 
     public PlayerInfoDisplay() {
@@ -42,6 +48,8 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver, Message
         barBackground = PocketRogue.getAssetManager().get("barBackground.png", Texture.class);
         manaBar = PocketRogue.getAssetManager().get("manaBar.png", Texture.class);
         healthBar = PocketRogue.getAssetManager().get("healthBar.png", Texture.class);
+        font = PocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
+        layout = new GlyphLayout();
         addListener(new ClickListener() {
 
             @Override
@@ -73,6 +81,19 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver, Message
         batch.draw(manaBar, this.getX() + frameBorder.getWidth() + 2,
                 this.getY() + frameBorder.getHeight() - (11 + 2 * manaBar.getHeight()),
                 manaBar.getWidth() * (mana / maxMana), manaBar.getHeight());
+
+        String drawnString = (int) health + "?" + (int) maxHealth;
+        layout.setText(font, drawnString);
+        font.draw(batch, drawnString, Utils.getPosCenterX(layout.width,
+                barBackground.getWidth(), this.getX() + frameBorder.getWidth()),
+                Utils.getPosCenterY(layout.height, barBackground.getHeight(),
+                        this.getY() + frameBorder.getHeight() - barBackground.getHeight()));
+        drawnString = mana + "/" + maxMana;
+        layout.setText(font, drawnString);
+        font.draw(batch, drawnString, Utils.getPosCenterX(layout.width,
+                barBackground.getWidth(), this.getX() + frameBorder.getWidth()),
+                Utils.getPosCenterY(layout.height, barBackground.getHeight(),
+                        this.getY() + frameBorder.getHeight() - (11 + 2 * manaBar.getHeight())));
     }
 
     @Override
