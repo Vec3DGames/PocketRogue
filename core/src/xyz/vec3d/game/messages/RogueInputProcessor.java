@@ -4,6 +4,10 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
@@ -13,6 +17,7 @@ import xyz.vec3d.game.GameScreen;
 
 /**
  * Created by Daron on 7/6/2016.
+ * Edited By Bobby
  * Copyright vec3d.xyz 2016
  * All rights reserved
  *
@@ -20,14 +25,29 @@ import xyz.vec3d.game.GameScreen;
  * entity systems based on the input provided. There should only ever be one
  * instance of this class used in an {@link com.badlogic.gdx.InputMultiplexer}.
  */
-public class RogueInputProcessor extends ChangeListener implements InputProcessor, MessageSender {
+public class RogueInputProcessor extends ChangeListener implements InputProcessor, MessageSender  {
 
     private GameScreen gameScreen;
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
 
+    /**
+     * Method called when the object registered with it is changed.
+     * @param event The specific change event. Unused in this case.
+     * @param actor The actor the change happened on. Needs to be cast as the touchpad.
+     */
     @Override
     public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-        mov.set(((Touchpad) actor).getKnobPercentX(), ((Touchpad) actor).getKnobPercentY());
+        if(actor.getClass() == Touchpad.class) {
+            mov.set(((Touchpad) actor).getKnobPercentX(), ((Touchpad) actor).getKnobPercentY());
+        }
+        if(actor.getClass() == TextButton.class){
+            if(actor.getName().equals("D")){
+                //TODO: DODGING
+            }
+            if(actor.getName().equals("A")){
+                //TODO: ATTACKING
+            }
+        }
     }
 
     /**
@@ -49,7 +69,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     /**
      * Processes the movement input vector before sending it in a message to the
      * {@link xyz.vec3d.game.systems.MovementSystem}.
-     * @return nigga dis dont return shit, u high
+     * @return nvm am idiot
      */
     private Vector2 getMov() {
         return mov.cpy().nor();

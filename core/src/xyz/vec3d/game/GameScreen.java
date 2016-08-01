@@ -12,15 +12,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.ArrayList;
 
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
+import xyz.vec3d.game.gui.OSButton;
+import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.MessageReceiver;
@@ -103,11 +102,7 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
      * Half of the height of the camera viewport in world units.
      */
     private float camViewportHalfY;
-    private Touchpad touchpad;
-    private Touchpad.TouchpadStyle touchpadStyle;
-    private Skin touchpadSkin;
-    private Drawable touchBackground;
-    private Drawable touchKnob;
+
 
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
 
@@ -159,14 +154,14 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
     }
 
     private void setUpAndroidUi() {
-        //Create a touchpad skin
-        touchpadSkin = PocketRogue.getAssetManager().get("uiskin.json");
-        //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadSkin, "default");
-        //setBounds(x,y,width,height)
-        touchpad.setBounds(15, 15, 200, 200);
-        uiStage.addActor(touchpad);
-        touchpad.addListener(rogueInputProcessor);
+        OSTouchpad touchpad = new OSTouchpad();
+        uiStage.addActor(touchpad.getTouchpad());
+        touchpad.registerWith(rogueInputProcessor);
+
+        //TODO: Find PNGs for buttons. Until then comment out.
+        //OSButton dodge = new OSButton("D");
+        //uiStage.addActor(dodge.getButton());
+        //dodge.registerWith(rogueInputProcessor);
     }
 
     private void setUpDesktopUi() {
