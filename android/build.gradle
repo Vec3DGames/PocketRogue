@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "xyz.vec3d.game"
         minSdkVersion 8
-        targetSdkVersion 23
+        targetSdkVersion 19
     }
 }
 // called every time gradle gets executed, takes the native dependencies of
