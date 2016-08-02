@@ -82,18 +82,26 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver, Message
                 this.getY() + frameBorder.getHeight() - (11 + 2 * manaBar.getHeight()),
                 manaBar.getWidth() * (mana / maxMana), manaBar.getHeight());
 
-        String drawnString = (int) health + "?" + (int) maxHealth;
+        float stringX, stringY;
+
+        String drawnString = health + "/" + maxHealth;
+
         layout.setText(font, drawnString);
-        font.draw(batch, drawnString, Utils.getPosCenterX(layout.width,
-                barBackground.getWidth(), this.getX() + frameBorder.getWidth()),
-                Utils.getPosCenterY(layout.height, barBackground.getHeight(),
-                        this.getY() + frameBorder.getHeight() - barBackground.getHeight()));
+        stringX = Utils.getPosCenterX(layout.width,
+                barBackground.getWidth(), this.getX() + frameBorder.getWidth());
+        stringY = Utils.getPosCenterY(layout.height, barBackground.getHeight(),
+                this.getY() + frameBorder.getHeight() - barBackground.getHeight()
+                        + font.getCapHeight());
+        font.draw(batch, drawnString, stringX, stringY);
+
         drawnString = mana + "/" + maxMana;
+        stringX = Utils.getPosCenterX(layout.width,
+                barBackground.getWidth(), this.getX() + frameBorder.getWidth());
+        stringY = Utils.getPosCenterY(layout.height, barBackground.getHeight(),
+                this.getY() + frameBorder.getHeight() - (13 + 2 * manaBar.getHeight())
+                        + font.getCapHeight());
         layout.setText(font, drawnString);
-        font.draw(batch, drawnString, Utils.getPosCenterX(layout.width,
-                barBackground.getWidth(), this.getX() + frameBorder.getWidth()),
-                Utils.getPosCenterY(layout.height, barBackground.getHeight(),
-                        this.getY() + frameBorder.getHeight() - (11 + 2 * manaBar.getHeight())));
+        font.draw(batch, drawnString, stringX, stringY);
     }
 
     @Override

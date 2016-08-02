@@ -35,7 +35,7 @@ public class Utils {
      * @return
      */
     public static float getPosCenterX(float objectWidth, float containerWidth, float containerPos) {
-        return getPosCenter(objectWidth, containerWidth, containerPos);
+        return getPosCenter(objectWidth, containerWidth, containerPos, false);
     }
 
     /**
@@ -62,7 +62,7 @@ public class Utils {
      * @return
      */
     public static float getPosCenterY(float objectHeight, float containerHeight, float containerPos) {
-        return getPosCenter(objectHeight, containerHeight, containerPos);
+        return getPosCenter(objectHeight, containerHeight, containerPos, true);
     }
 
     /**
@@ -76,7 +76,8 @@ public class Utils {
      *
      * @return
      */
-    private static float getPosCenter(float objectDimension, float containerDimension, float containerPos) {
+    private static float getPosCenter(float objectDimension, float containerDimension,
+                                      float containerPos, boolean negate) {
         return containerPos + ((containerDimension - objectDimension) / 2);
     }
 }

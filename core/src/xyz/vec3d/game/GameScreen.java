@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
-import xyz.vec3d.game.gui.OSButton;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.messages.Message;
@@ -310,6 +309,7 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
             case UI_ELEMENT_CLICKED:
+                //Open player menu here.
                 String uiName = (String) message.getPayload()[0];
                 System.out.println(uiName);
                 break;
