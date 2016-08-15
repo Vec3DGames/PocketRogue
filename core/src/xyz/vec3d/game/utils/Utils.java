@@ -80,4 +80,16 @@ public class Utils {
                                       float containerPos, boolean negate) {
         return containerPos + ((containerDimension - objectDimension) / 2);
     }
+
+    public static void printArray(Object[] array) {
+        printArray(array, true);
+    }
+
+    public static void printArray(Object[] array, boolean oneLine) {
+        String stringToPrint = "";
+        for (Object o : array) {
+            stringToPrint += oneLine ? o.toString() + " " : o.toString() + "\n";
+        }
+        System.out.println(stringToPrint.trim());
+    }
 }

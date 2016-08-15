@@ -2,6 +2,7 @@ package xyz.vec3d.game;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.ArrayList;
@@ -20,12 +22,14 @@ import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
+import xyz.vec3d.game.gui.console.Console;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.MessageReceiver;
 import xyz.vec3d.game.messages.MessageSender;
 import xyz.vec3d.game.messages.RogueInputProcessor;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
+import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 7/5/2016.
@@ -102,8 +106,16 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
      */
     private float camViewportHalfY;
 
-
+    /**
+     * List of {@link MessageReceiver receivers} that get notified of messages
+     * from this screen.
+     */
     private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+
+    /**
+     * The in-game {@link Console console} that will process commands.
+     */
+    private Console console;
 
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
@@ -129,10 +141,11 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
         //Create the stage and viewport for the UI.
         uiStage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
 
-        //Set up input multiplexer
+        //Set up input multiplexer.
         rogueInputProcessor = new RogueInputProcessor(this);
         InputMultiplexer im = new InputMultiplexer(uiStage, rogueInputProcessor);
         Gdx.input.setInputProcessor(im);
+        rogueInputProcessor.registerMessageReceiver(this);
 
         //Set up the player info display.
         PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay();
@@ -141,6 +154,10 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
         this.registerMessageReceiver(infoDisplay);
         rogueInputProcessor.registerMessageReceiver(infoDisplay);
         uiStage.addActor(infoDisplay);
+
+        //Set up console.
+        console = new Console("Pocket Rogue Console", (Skin) PocketRogue.getAssetManager().get("uiskin.json"));
+        console.getDisplay().registerMessageReceiver(this);
 
         switch (Gdx.app.getType()) {
             case Android:
@@ -250,14 +267,16 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
 
         tiledMapRenderer.setView(worldCamera);
         tiledMapRenderer.render();
-        uiStage.act(delta);
-        uiStage.draw();
 
         spriteBatch.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
         rogueInputProcessor.update();
         engine.update(delta);
         spriteBatch.end();
+
+        uiStage.act(delta);
+        uiStage.draw();
+        console.draw();
     }
 
     /**
@@ -271,6 +290,7 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
     @Override
     public void resize(int width, int height) {
         uiStage.getViewport().update(width, height);
+        console.resize(width, height);
     }
 
     /**
@@ -312,6 +332,23 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
                 //Open player menu here.
                 String uiName = (String) message.getPayload()[0];
                 System.out.println(uiName);
+                break;
+            case KEY_TYPED:
+                int keycode = (Integer) message.getPayload()[0];
+                if (keycode == Input.Keys.GRAVE) {
+                    console.toggle();
+                    //RenderingSystem rs = engine.getSystem(RenderingSystem.class);
+                }
+                System.out.println("Key code: " + keycode + "|" + Input.Keys.toString(keycode) + " received.");
+                break;
+            case COMMAND:
+                String[] tokens = (String[]) message.getPayload();
+                String command = tokens[0];
+                switch (command.toLowerCase()) {
+                    default:
+                        System.out.println("Command: " + command + " not implemented yet.");
+                        break;
+                }
                 break;
         }
     }

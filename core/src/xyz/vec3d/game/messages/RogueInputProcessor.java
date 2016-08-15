@@ -4,9 +4,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -97,8 +94,10 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
             case Keys.SPACE:
                 notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_HEALTH_CHANGED, -10));
                 return true;
+            default:
+                notifyMessageReceivers(new Message(Message.MessageType.KEY_TYPED, keycode));
+                return true;
         }
-        return false;
     }
 
     @Override
@@ -132,6 +131,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        System.out.println("done with click");
         return false;
     }
 
@@ -163,13 +163,9 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
 
     @Override
     public void notifyMessageReceivers(Message message) {
-        int i = 0;
-        for (MessageReceiver messageReceiver : messageReceivers) {
-            messageReceiver.onMessageReceived(message);
-            System.out.println("sent message type: " + message.getMessageType() + " to receiver: " + (i += 1));
-            if (i + 1 == messageReceivers.size()) {
-                i = 0;
-            }
-        }
+       for (int i = 0; i < messageReceivers.size(); i++) {
+           messageReceivers.get(i).onMessageReceived(message);
+           System.out.printf("Sent message %s to receiver %d\n", message.getMessageType(), i);
+       }
     }
 }

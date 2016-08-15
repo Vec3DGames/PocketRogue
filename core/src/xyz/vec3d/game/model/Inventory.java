@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Copyright vec3d.xyz 2016
  * All rights reserved
  *
- * Represents the player's inventory via {@link ItemStack}s.
+ * Represents the player's inventory via {@link ItemStack item stacks}.
  */
 public class Inventory {
 
