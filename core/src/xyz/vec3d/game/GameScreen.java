@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -20,13 +19,16 @@ import java.util.ArrayList;
 
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
+import xyz.vec3d.game.gui.Gui;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.gui.console.Console;
+import xyz.vec3d.game.gui.console.LogMessage;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.MessageReceiver;
 import xyz.vec3d.game.messages.MessageSender;
 import xyz.vec3d.game.messages.RogueInputProcessor;
+import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 import xyz.vec3d.game.utils.Utils;
@@ -39,7 +41,7 @@ import xyz.vec3d.game.utils.Utils;
  * Game state representation. Has a stage for UI and an Ashley engine for entity
  * related matters. Also manages the messaging system between the UI and engine.
  */
-public class GameScreen implements Screen, MessageReceiver, MessageSender {
+public class GameScreen extends PocketRogueScreen {
 
     /**
      * {@link PocketRogue} instance.
@@ -82,6 +84,11 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
     private SpriteBatch spriteBatch;
 
     /**
+     * The {@link Skin} used for UI stuff.
+     */
+    private Skin skin;
+
+    /**
      * InputProcessor that handles key/mouse input.
      */
     private RogueInputProcessor rogueInputProcessor;
@@ -95,22 +102,6 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
      * Height of the map in world units.
      */
     private float mapHeight;
-
-    /**
-     * Half of the width of the camera viewport in world units.
-     */
-    private float camViewportHalfX;
-
-    /**
-     * Half of the height of the camera viewport in world units.
-     */
-    private float camViewportHalfY;
-
-    /**
-     * List of {@link MessageReceiver receivers} that get notified of messages
-     * from this screen.
-     */
-    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
 
     /**
      * The in-game {@link Console console} that will process commands.
@@ -140,6 +131,7 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
     private void setUpGui() {
         //Create the stage and viewport for the UI.
         uiStage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
+        skin = (Skin) PocketRogue.getAssetManager().get("uiskin.json");
 
         //Set up input multiplexer.
         rogueInputProcessor = new RogueInputProcessor(this);
@@ -156,7 +148,7 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
         uiStage.addActor(infoDisplay);
 
         //Set up console.
-        console = new Console("Pocket Rogue Console", (Skin) PocketRogue.getAssetManager().get("uiskin.json"));
+        console = new Console("Pocket Rogue Console", skin);
         console.getDisplay().registerMessageReceiver(this);
 
         switch (Gdx.app.getType()) {
@@ -199,8 +191,6 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
         //Set up map and camera viewport properties.
         mapWidth = map.getProperties().get("width", Integer.class);
         mapHeight = map.getProperties().get("height", Integer.class);
-        camViewportHalfX = worldCamera.viewportWidth / 2;
-        camViewportHalfY = worldCamera.viewportHeight / 2;
 
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
@@ -256,14 +246,7 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         worldCamera.update();
 
-        //Move camera.
-        worldCamera.position.x = player.getPosition().x;
-        worldCamera.position.y = player.getPosition().y;
-        //Clamp camera first on x, then on y.
-        worldCamera.position.x = MathUtils.clamp(worldCamera.position.x,
-                camViewportHalfX, mapWidth - camViewportHalfX);
-        worldCamera.position.y = MathUtils.clamp(worldCamera.position.y,
-                camViewportHalfY, mapHeight - camViewportHalfY);
+        Utils.centerCamera(worldCamera, player, mapWidth, mapHeight);
 
         tiledMapRenderer.setView(worldCamera);
         tiledMapRenderer.render();
@@ -276,6 +259,11 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
 
         uiStage.act(delta);
         uiStage.draw();
+
+        if (getGuiOverlay() != null) {
+            getGuiOverlay().draw();
+        }
+
         console.draw();
     }
 
@@ -332,19 +320,37 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
                 //Open player menu here.
                 String uiName = (String) message.getPayload()[0];
                 System.out.println(uiName);
+                switch (uiName.toLowerCase()) {
+                    case "player_info_display":
+                        break;
+                }
                 break;
             case KEY_TYPED:
                 int keycode = (Integer) message.getPayload()[0];
                 if (keycode == Input.Keys.GRAVE) {
                     console.toggle();
-                    //RenderingSystem rs = engine.getSystem(RenderingSystem.class);
                 }
-                System.out.println("Key code: " + keycode + "|" + Input.Keys.toString(keycode) + " received.");
                 break;
             case COMMAND:
                 String[] tokens = (String[]) message.getPayload();
                 String command = tokens[0];
+                String[] args = new String[tokens.length - 1];
+                System.arraycopy(tokens, 1, args, 0, tokens.length - 1);
                 switch (command.toLowerCase()) {
+                    case "gui":
+                        if (console.checkNumArgs(args, 1)) {
+                            String guiName = args[0];
+                            console.toggle();
+                            openGui(guiName, player.getInventory(), skin);
+                        }
+                        break;
+                    case "additem":
+                        if (console.checkNumArgs(args, 1)) {
+                            int itemId = Integer.valueOf(args[0]);
+                            int amount = args.length > 1 ? Integer.valueOf(args[1]) : 1;
+                            //ItemStack stack = new ItemStack();
+                        }
+                        break;
                     default:
                         System.out.println("Command: " + command + " not implemented yet.");
                         break;
@@ -353,20 +359,4 @@ public class GameScreen implements Screen, MessageReceiver, MessageSender {
         }
     }
 
-    @Override
-    public void registerMessageReceiver(MessageReceiver messageReceiver) {
-        messageReceivers.add(messageReceiver);
-    }
-
-    @Override
-    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
-
-    }
-
-    @Override
-    public void notifyMessageReceivers(Message message) {
-        for (MessageReceiver messageReceiver : messageReceivers) {
-            messageReceiver.onMessageReceived(message);
-        }
-    }
 }

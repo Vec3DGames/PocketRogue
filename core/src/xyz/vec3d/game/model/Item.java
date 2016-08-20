@@ -21,6 +21,11 @@ public class Item {
 
     private ItemType type;
 
+    public Item(int id, ItemType type) {
+        this.id = id;
+        this.type = type;
+    }
+
     public Item(int id, int attackBonus, int magicBonus, int rangeBonus,
                 int dexterityBonus, ItemType type) {
         this.id = id;

@@ -1,5 +1,9 @@
 package xyz.vec3d.game.gui.console;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -29,14 +33,16 @@ public class ConsoleDisplay extends Table implements MessageSender {
     private ScrollPane commandScroll;
     private TextField commandInput;
     private Table commandScrollTable;
+    private Console console;
 
     private ArrayList<Label> labels = new ArrayList<Label>();
-    private ArrayList<String> executedCommands = new ArrayList<String>();
+    private ArrayList<LogMessage> executedCommands = new ArrayList<LogMessage>();
 
-    public ConsoleDisplay(String title, Skin skin) {
+    public ConsoleDisplay(String title, Skin skin, Console console) {
         //super(title, skin);
         //setSize(Settings.UI_WIDTH, 150);
         //setMovable(false);
+        this.console = console;
 
         commandScrollTable = new Table(skin);
         commandScroll = new ScrollPane(commandScrollTable, skin);
@@ -45,10 +51,20 @@ public class ConsoleDisplay extends Table implements MessageSender {
         commandInput.setTextFieldListener(new ConsoleListener());
         this.add(commandScroll).expand().fill().pad(4).row();
         this.add(commandInput).expandX().fillX().pad(4);
+        this.addListener(new KeyListener());
     }
 
     public void toggle() {
         commandInput.setDisabled(!commandInput.isDisabled());
+    }
+
+    public void log(String message) {
+        log(message, LogMessage.LogLevel.NORMAL);
+    }
+
+    public void log(String message, LogMessage.LogLevel level) {
+        LogMessage logMessage = new LogMessage(message, level);
+        executedCommands.add(logMessage);
     }
 
     @Override
@@ -69,13 +85,16 @@ public class ConsoleDisplay extends Table implements MessageSender {
         refresh();
     }
 
+    /**
+     * Refreshes the table embedded in the scroll pane. This gets called whenever
+     * a new {@link LogMessage message} is added to the display.
+     */
     private void refresh() {
-        ArrayList<String> entries = executedCommands;
         commandScrollTable.clear();
         commandScrollTable.add().expand().fill().row();
-        int size = entries.size();
+        int size = executedCommands.size();
         for (int i = 0; i < size; i++) {
-            String le = entries.get(i);
+            LogMessage lm = executedCommands.get(i);
             Label l;
             // recycle the labels so we don't create new ones every refresh
             if (labels.size() > i) {
@@ -85,17 +104,27 @@ public class ConsoleDisplay extends Table implements MessageSender {
                 l.setWrap(true);
                 labels.add(l);
             }
-            l.setText(le);
+            l.setText(lm.getMessage());
+            l.setColor(lm.getColor());
             commandScrollTable.add(l).expandX().fillX().top().left().padLeft(4).row();
         }
         commandScroll.validate();
         commandScroll.setScrollPercentY(1);
     }
 
+    public TextField getInput() {
+        return commandInput;
+    }
+
     private class ConsoleListener implements TextField.TextFieldListener {
 
         @Override
         public void keyTyped(TextField textField, char c) {
+            if (("" + c).equalsIgnoreCase(Input.Keys.toString(Input.Keys.GRAVE))) {
+                String s = textField.getText();
+                textField.setText(s.substring(0, s.length() - 1));
+                //console.toggle();
+            }
             if (c == '\r' || c == '\n') {
                 if (commandInput.getText().equals("")) {
                     return;
@@ -106,7 +135,7 @@ public class ConsoleDisplay extends Table implements MessageSender {
                     return;
                 }
                 Message commandMessage = new Message(Message.MessageType.COMMAND, tokens);
-                executedCommands.add(commandInput.getText());
+                log(commandInput.getText());
                 notifyMessageReceivers(commandMessage);
 
                 //Reset text box.
@@ -114,4 +143,20 @@ public class ConsoleDisplay extends Table implements MessageSender {
             }
         }
     }
+
+    private class KeyListener extends InputListener {
+
+        @Override
+        public boolean keyDown(InputEvent event, int keyCode) {
+            if (!console.isDisabled()) {
+                return false;
+            }
+            if (keyCode == Input.Keys.GRAVE) {
+                console.toggle();
+                return true;
+            }
+            return false;
+        }
+    }
+
 }

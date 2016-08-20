@@ -1,5 +1,12 @@
 package xyz.vec3d.game.utils;
 
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.JsonValue;
+
+import xyz.vec3d.game.entities.components.PositionComponent;
+
 /**
  * Created by darakelian on 6/30/2016.
  * Copyright vec3d.xyz 2016
@@ -12,11 +19,13 @@ public class Utils {
 
 
     /**
+     * Gets the x coordinate to draw an object at when being centered in a container
+     * in which point 0,0 is the lower left corner of the object.
      *
      * @param objectWidth The width of the object being centered.
      * @param containerWidth The width of the container that object is centered in.
      *
-     * @return The x position to draw the centered object.
+     * @return The x coordinate to draw the lower left corner of the object.
      *
      * @see Utils#getPosCenterX(float, float, float)
      */
@@ -32,18 +41,20 @@ public class Utils {
      * @param containerWidth The width of the container that object is centered in.
      * @param containerPos The position of the container (0 if container is the screen).
      *
-     * @return
+     * @return The x coordinate to draw the lower left corner of the object.
      */
     public static float getPosCenterX(float objectWidth, float containerWidth, float containerPos) {
         return getPosCenter(objectWidth, containerWidth, containerPos, false);
     }
 
     /**
+     * Gets the y coordinate to draw an object at when being centered in a container
+     * in which point 0,0 is the lower left corner of the object.
      *
      * @param objectHeight The height of the object being centered.
-     * @param containerHeight The widht of the container that object is centered in.
+     * @param containerHeight The wight of the container that object is centered in.
      *
-     * @return The y position to draw the centered object.
+     * @return The y coordinate to draw the lower left corner of the object.
      *
      * @see Utils#getPosCenterY(float, float, float)
      */
@@ -59,7 +70,7 @@ public class Utils {
      * @param containerHeight The height of the container that object is centered in.
      * @param containerPos The position of the container (0 if the container is the screen).
      *
-     * @return
+     * @return The y coordinate to draw the lower left corner of the object.
      */
     public static float getPosCenterY(float objectHeight, float containerHeight, float containerPos) {
         return getPosCenter(objectHeight, containerHeight, containerPos, true);
@@ -91,5 +102,47 @@ public class Utils {
             stringToPrint += oneLine ? o.toString() + " " : o.toString() + "\n";
         }
         System.out.println(stringToPrint.trim());
+    }
+
+    public static void centerCamera(OrthographicCamera worldCamera, Entity entity, float mapWidth,
+                                    float mapHeight) {
+        PositionComponent position = entity.getComponent(PositionComponent.class);
+        if (position == null) {
+            return;
+        }
+        float camViewportHalfX = worldCamera.viewportWidth / 2;
+        float camViewportHalfY = worldCamera.viewportHeight / 2;
+        worldCamera.position.x = position.getPosition().x;
+        worldCamera.position.y = position.getPosition().y;
+        //Clamp camera first on x, then on y.
+        worldCamera.position.x = MathUtils.clamp(worldCamera.position.x,
+                camViewportHalfX, mapWidth - camViewportHalfX);
+        worldCamera.position.y = MathUtils.clamp(worldCamera.position.y,
+                camViewportHalfY, mapHeight - camViewportHalfY);
+    }
+
+    /**
+     * Returns the appropriate Java object type for the JsonValue.
+     *
+     * @param value The JsonValue object.
+     *
+     * @return Returns the value as its intended type.
+     */
+    public static Object getJsonTypeValue(JsonValue value) {
+        switch (value.type()) {
+            case longValue:
+                return value.asInt();
+            case doubleValue:
+                return value.asDouble();
+            case booleanValue:
+                return value.asBoolean();
+            case object:
+                return value;
+            case array:
+                return value.asStringArray();
+            case stringValue:
+            default:
+                return value.asString();
+        }
     }
 }

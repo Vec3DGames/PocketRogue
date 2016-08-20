@@ -20,8 +20,10 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import xyz.vec3d.game.model.ItemDefinitionLoader;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -108,6 +110,7 @@ public class LoadingScreen implements Screen {
         PocketRogue.getAssetManager().load("barBackground.png", Texture.class);
         PocketRogue.getAssetManager().load("healthBar.png", Texture.class);
         PocketRogue.getAssetManager().load("manaBar.png", Texture.class);
+        new ItemDefinitionLoader().loadItemDefinitions();
     }
 
     /**

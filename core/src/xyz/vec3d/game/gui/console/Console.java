@@ -26,11 +26,11 @@ public class Console implements Disposable {
     private Window consoleWindow;
     private Stage stage;
 
-    private boolean active = false;
+    private boolean disabled;
 
     public Console(String title, Skin skin) {
         stage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
-        display = new ConsoleDisplay(title, skin);
+        display = new ConsoleDisplay(title, skin, this);
         display.pad(4);
         display.padTop(22);
         display.setFillParent(true);
@@ -45,14 +45,20 @@ public class Console implements Disposable {
         stage.addActor(consoleWindow);
 
         InputMultiplexer im = (InputMultiplexer) Gdx.input.getInputProcessor();
-        im.addProcessor(stage);
+        im.addProcessor(0, stage);
         Gdx.input.setInputProcessor(im);
+
     }
 
     public void toggle() {
         consoleWindow.setVisible(!consoleWindow.isVisible());
         display.toggle();
-        active = !active;
+        disabled = !disabled;
+        if (disabled) {
+            stage.setKeyboardFocus(display.getInput());
+        } else {
+            stage.setKeyboardFocus(display);
+        }
     }
 
     @Override
@@ -64,7 +70,7 @@ public class Console implements Disposable {
     }
 
     public void draw() {
-        if (!active) {
+        if (!disabled) {
             return;
         }
         stage.act();
@@ -74,15 +80,39 @@ public class Console implements Disposable {
         stage.draw();
     }
 
+    public void log(String message) {
+        log(message, LogMessage.LogLevel.NORMAL);
+    }
+
+    public void log(String message, LogMessage.LogLevel level) {
+        display.log(message, level);
+    }
+
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void disable() {
+        this.disabled = true;
     }
 
     public ConsoleDisplay getDisplay() {
         return display;
+    }
+
+    public Window getConsoleWindow() {
+        return consoleWindow;
+    }
+
+    public boolean checkNumArgs(String[] args, int minArgs) {
+        if (args.length < minArgs) {
+            log("Error: Number of arguments less than " + minArgs, LogMessage.LogLevel.ERROR);
+            return false;
+        }
+        return true;
     }
 }
