@@ -11,9 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.ArrayList;
 
 import xyz.vec3d.game.PocketRogue;
+import xyz.vec3d.game.messages.IMessageReceiver;
+import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
-import xyz.vec3d.game.messages.MessageReceiver;
-import xyz.vec3d.game.messages.MessageSender;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -25,7 +25,7 @@ import xyz.vec3d.game.utils.Utils;
  * about the player such as their level and current health/mana levels. This is
  * a scene2d.ui Actor and thus is used on the Stage.
  */
-public class PlayerInfoDisplay extends Actor implements MessageReceiver, MessageSender {
+public class PlayerInfoDisplay extends Actor implements IMessageReceiver, IMessageSender {
 
     private Texture playerIcon;
     private Texture frameBorder;
@@ -40,7 +40,7 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver, Message
 
     private GlyphLayout layout;
 
-    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+    private ArrayList<IMessageReceiver> messageReceivers = new ArrayList<>();
 
     public PlayerInfoDisplay() {
         playerIcon = PocketRogue.getAssetManager().get("playerIcon.png", Texture.class);
@@ -132,18 +132,18 @@ public class PlayerInfoDisplay extends Actor implements MessageReceiver, Message
     }
 
     @Override
-    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+    public void registerMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.add(messageReceiver);
     }
 
     @Override
-    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
+    public void deregisterMessageReceiver(IMessageReceiver messageReceiver) {
 
     }
 
     @Override
     public void notifyMessageReceivers(Message message) {
-        for (MessageReceiver messageReceiver : messageReceivers) {
+        for (IMessageReceiver messageReceiver : messageReceivers) {
             messageReceiver.onMessageReceived(message);
         }
     }

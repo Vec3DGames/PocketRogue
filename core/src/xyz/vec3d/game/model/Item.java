@@ -1,5 +1,7 @@
 package xyz.vec3d.game.model;
 
+import xyz.vec3d.game.model.ItemDefinitionLoader.ItemDefinition;
+
 /**
  * Created by Paul on 7/22/2016.
  * Copyright vec3d.xyz 2016
@@ -58,6 +60,26 @@ public class Item {
 
     public ItemType getType() {
         return type;
+    }
+
+    /**
+     * Gets the Item's name directly from the ItemDefinition.
+     *
+     * @return The Item's name.
+     */
+    public String getName() {
+        return (String) ItemDefinitionLoader.getDefinition(getId()).getProperty(ItemProperty.NAME);
+    }
+
+    /**
+     * Returns the boolean value for if the Item is stackable. A stackable Item
+     * does not take up multiple slots in the Inventory and rather combines
+     * quantities when multiple of the same Item are added to the Inventory.
+     *
+     * @return True if the Item is stackable.
+     */
+    public boolean isStackable() {
+        return (Boolean) ItemDefinitionLoader.getDefinition(getId()).getProperty(ItemProperty.STACKABLE);
     }
 
     /**

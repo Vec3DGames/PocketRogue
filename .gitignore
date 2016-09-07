@@ -14,3 +14,6 @@ build/
 /.idea/
 .idea/libraries/
 /local.properties
+/core/core.iml
+/android/android.iml
+/desktop/desktop.iml

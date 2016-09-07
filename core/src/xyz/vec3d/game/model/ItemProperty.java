@@ -7,6 +7,9 @@ package xyz.vec3d.game.model;
  */
 public enum ItemProperty {
 
-    NAME, ICON
+    NAME, ICON, STACKABLE, SLOT;
 
+    public static ItemProperty value(String name) {
+        return ItemProperty.valueOf(name.toUpperCase());
+    }
 }

@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,19 +14,19 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import java.util.ArrayList;
-
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
-import xyz.vec3d.game.gui.Gui;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.gui.console.Console;
 import xyz.vec3d.game.gui.console.LogMessage;
 import xyz.vec3d.game.messages.Message;
-import xyz.vec3d.game.messages.MessageReceiver;
-import xyz.vec3d.game.messages.MessageSender;
 import xyz.vec3d.game.messages.RogueInputProcessor;
+import xyz.vec3d.game.model.Item;
+import xyz.vec3d.game.model.Item.ItemType;
+import xyz.vec3d.game.model.ItemDefinitionLoader;
+import xyz.vec3d.game.model.ItemDefinitionLoader.ItemDefinition;
+import xyz.vec3d.game.model.ItemProperty;
 import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
@@ -278,6 +277,7 @@ public class GameScreen extends PocketRogueScreen {
     @Override
     public void resize(int width, int height) {
         uiStage.getViewport().update(width, height);
+        resizeOverlay(width, height);
         console.resize(width, height);
     }
 
@@ -322,6 +322,7 @@ public class GameScreen extends PocketRogueScreen {
                 System.out.println(uiName);
                 switch (uiName.toLowerCase()) {
                     case "player_info_display":
+                        openGui("player_inventory", player.getInventory(), skin);
                         break;
                 }
                 break;
@@ -329,6 +330,10 @@ public class GameScreen extends PocketRogueScreen {
                 int keycode = (Integer) message.getPayload()[0];
                 if (keycode == Input.Keys.GRAVE) {
                     console.toggle();
+                } else if (keycode == Input.Keys.ESCAPE) {
+                    if (getGuiOverlay() != null) {
+                        closeGuiOverlay();
+                    }
                 }
                 break;
             case COMMAND:
@@ -348,11 +353,18 @@ public class GameScreen extends PocketRogueScreen {
                         if (console.checkNumArgs(args, 1)) {
                             int itemId = Integer.valueOf(args[0]);
                             int amount = args.length > 1 ? Integer.valueOf(args[1]) : 1;
-                            //ItemStack stack = new ItemStack();
+                            ItemDefinition def = ItemDefinitionLoader.getDefinition(itemId);
+                            String slot = (String) def.getProperty(ItemProperty.SLOT);
+                            String name = (String) def.getProperty(ItemProperty.NAME);
+                            ItemType type = ItemType.valueOf(slot);
+                            Item item = new Item(itemId, type);
+                            ItemStack stack = new ItemStack(item, amount);
+                            player.getInventory().addItem(stack);
+                            console.log("Added item: " + name);
                         }
                         break;
                     default:
-                        System.out.println("Command: " + command + " not implemented yet.");
+                        console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);
                         break;
                 }
                 break;

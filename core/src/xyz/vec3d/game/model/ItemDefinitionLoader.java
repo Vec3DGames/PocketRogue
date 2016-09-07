@@ -25,8 +25,8 @@ public class ItemDefinitionLoader {
     public void loadItemDefinitions() {
         JsonReader jsonReader = new JsonReader();
         JsonValue values = jsonReader.parse(Gdx.files.internal("item_definitions.json"));
-        for (int i = 0; i < values.child().size; i++) {
-            JsonValue child = values.child().get(i);
+        for (int i = 0; i < values.size; i++) {
+            JsonValue child = values.get(i);
             ItemDefinition definition = new ItemDefinition();
             for (int childIndex = 0; childIndex < child.size; childIndex++) {
                 JsonValue value = child.get(childIndex);
@@ -34,7 +34,12 @@ public class ItemDefinitionLoader {
                 definition.putProperty(key, Utils.getJsonTypeValue(value));
             }
             itemDefinitions.put(i, definition);
+            System.out.println("Loaded definition: " + definition);
         }
+    }
+
+    public static ItemDefinition getDefinition(int itemId) {
+        return itemDefinitions.get(itemId);
     }
 
     public class ItemDefinition {
@@ -50,7 +55,16 @@ public class ItemDefinitionLoader {
         }
 
         public void putProperty(String propertyName, Object property) {
-            definitions.put(ItemProperty.valueOf(propertyName), property);
+            definitions.put(ItemProperty.value(propertyName), property);
+        }
+
+        @Override
+        public String toString() {
+            String toString = "\n";
+            for (ItemProperty property : definitions.keySet()) {
+                toString += ("Property: " + property.name() + ", Value: " + definitions.get(property) + "\n");
+            }
+            return toString;
         }
 
     }

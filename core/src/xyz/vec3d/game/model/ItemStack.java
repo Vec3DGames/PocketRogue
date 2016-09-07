@@ -88,4 +88,16 @@ public class ItemStack {
         return object instanceof ItemStack &&
                 ((ItemStack) object).getItem().equals(getItem());
     }
+
+    /**
+     * Returns a String representation of the ItemStack that provides the name
+     * of the Item as well as the number of Items in the stack.
+     *
+     * @return String format of name (quantity).
+     */
+    @Override
+    public String toString() {
+        String itemName = this.getItem().getName();
+        return itemName + " (" + this.getQuantity() + ")";
+    }
 }

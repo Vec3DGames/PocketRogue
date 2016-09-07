@@ -9,8 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.utils.Logger;
 
 /**
  * Created by Daron on 7/6/2016.
@@ -22,10 +24,10 @@ import xyz.vec3d.game.GameScreen;
  * entity systems based on the input provided. There should only ever be one
  * instance of this class used in an {@link com.badlogic.gdx.InputMultiplexer}.
  */
-public class RogueInputProcessor extends ChangeListener implements InputProcessor, MessageSender  {
+public class RogueInputProcessor extends ChangeListener implements InputProcessor, IMessageSender  {
 
     private GameScreen gameScreen;
-    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+    private ArrayList<IMessageReceiver> messageReceivers = new ArrayList<>();
 
     /**
      * Method called when the object registered with it is changed.
@@ -129,9 +131,18 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
         return false;
     }
 
+    /**
+     * Do click stuff here.
+     *
+     * @param screenX X coordinate in untranslated screen coordinates.
+     * @param screenY Y coordinate in untranslated screen coordinates.
+     * @param pointer The pointer used for the event.
+     * @param button The mouse button clicked (left, right, middle etc).
+     *
+     * @return True if the event was handled.
+     */
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        System.out.println("done with click");
         return false;
     }
 
@@ -151,21 +162,23 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     }
 
     @Override
-    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+    public void registerMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.add(messageReceiver);
-        System.out.println("Registered receiver: " + messageReceiver + " id: " + messageReceivers.size());
+        Logger.log("Registered receiver: " + messageReceiver + " id: " +
+                messageReceivers.size(), this.getClass());
     }
 
     @Override
-    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
-
+    public void deregisterMessageReceiver(IMessageReceiver messageReceiver) {
+        messageReceivers.remove(messageReceiver);
     }
 
     @Override
     public void notifyMessageReceivers(Message message) {
        for (int i = 0; i < messageReceivers.size(); i++) {
            messageReceivers.get(i).onMessageReceived(message);
-           System.out.printf("Sent message %s to receiver %d\n", message.getMessageType(), i);
+           Logger.log(String.format(Locale.US, "Sent message %s to receiver %d",
+                   message.getMessageType(), i), this.getClass());
        }
     }
 }

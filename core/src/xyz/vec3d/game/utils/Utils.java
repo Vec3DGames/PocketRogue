@@ -3,8 +3,11 @@ package xyz.vec3d.game.utils;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
 
+import xyz.vec3d.game.Settings;
 import xyz.vec3d.game.entities.components.PositionComponent;
 
 /**
@@ -139,10 +142,20 @@ public class Utils {
             case object:
                 return value;
             case array:
-                return value.asStringArray();
+                return value.asIntArray();
             case stringValue:
             default:
                 return value.asString();
         }
+    }
+
+    public static void centerActor(Actor actor, Stage stage) {
+        centerActor(actor, stage.getWidth(), stage.getHeight());
+    }
+
+    public static void centerActor(Actor actor, float containerWidth, float containerHeight) {
+        float newX = getPosCenterX(actor.getWidth(), containerWidth);
+        float newY = getPosCenterY(actor.getHeight(), containerHeight);
+        actor.setPosition(newX, newY);
     }
 }

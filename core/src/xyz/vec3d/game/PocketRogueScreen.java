@@ -6,16 +6,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.util.ArrayList;
 
 import xyz.vec3d.game.gui.Gui;
+import xyz.vec3d.game.messages.IMessageReceiver;
+import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
-import xyz.vec3d.game.messages.MessageReceiver;
-import xyz.vec3d.game.messages.MessageSender;
 
 /**
  * Created by Daron on 8/16/2016.
  *
  * Provides a set of common methods for all of the game screens.
  */
-public class PocketRogueScreen implements Screen, MessageReceiver, MessageSender {
+public class PocketRogueScreen implements Screen, IMessageReceiver, IMessageSender {
 
     /**
      * A non-hud GUI. The hud GUI is the collection of actors created at game start
@@ -27,13 +27,35 @@ public class PocketRogueScreen implements Screen, MessageReceiver, MessageSender
     private Gui guiOverlay;
 
     /**
-     * List of {@link MessageReceiver receivers} that get notified of messages
+     * List of {@link IMessageReceiver receivers} that get notified of messages
      * from this screen.
      */
-    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<>();
+    private ArrayList<IMessageReceiver> messageReceivers = new ArrayList<>();
 
     public Gui getGuiOverlay() {
         return guiOverlay;
+    }
+
+    /**
+     * Closes the GUI overlay if one exists by setting the variable to null and
+     * calls dispose on it as well as decouples the message receiver/sender
+     * relationship.
+     */
+    public void closeGuiOverlay() {
+        if (this.guiOverlay == null) {
+            return;
+        }
+        this.guiOverlay.dispose();
+        this.guiOverlay.deregisterMessageReceiver(this);
+        this.deregisterMessageReceiver(this.guiOverlay);
+        this.guiOverlay = null;
+    }
+
+    public void resizeOverlay(int width, int height) {
+        if (this.guiOverlay == null) {
+            return;
+        }
+        this.guiOverlay.resize(width, height);
     }
 
     public void openGui(String guiName, Object... parameters) {
@@ -43,6 +65,9 @@ public class PocketRogueScreen implements Screen, MessageReceiver, MessageSender
         }
         gui.setParameters(parameters);
         gui.setup();
+        //Set up message receiver/sender relationship between the GUI.
+        gui.registerMessageReceiver(this);
+        this.registerMessageReceiver(gui);
         this.guiOverlay = gui;
     }
 
@@ -87,18 +112,18 @@ public class PocketRogueScreen implements Screen, MessageReceiver, MessageSender
     }
 
     @Override
-    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+    public void registerMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.add(messageReceiver);
     }
 
     @Override
-    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
+    public void deregisterMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.remove(messageReceiver);
     }
 
     @Override
     public void notifyMessageReceivers(Message message) {
-        for (MessageReceiver messageReceiver : messageReceivers) {
+        for (IMessageReceiver messageReceiver : messageReceivers) {
             messageReceiver.onMessageReceived(message);
         }
     }

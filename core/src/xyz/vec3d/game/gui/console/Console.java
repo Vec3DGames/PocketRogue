@@ -81,7 +81,7 @@ public class Console implements Disposable {
     }
 
     public void log(String message) {
-        log(message, LogMessage.LogLevel.NORMAL);
+        display.log(message);
     }
 
     public void log(String message, LogMessage.LogLevel level) {

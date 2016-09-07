@@ -32,12 +32,14 @@ public class LogMessage {
                 return Color.YELLOW;
             case ERROR:
                 return Color.RED;
+            case SUCCESS:
+                return Color.GREEN;
             default:
                 return Color.WHITE;
         }
     }
 
     public enum LogLevel {
-        NORMAL, WARNING, ERROR;
+        NORMAL, WARNING, ERROR, SUCCESS;
     }
 }

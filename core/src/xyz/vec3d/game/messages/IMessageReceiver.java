@@ -5,7 +5,7 @@ package xyz.vec3d.game.messages;
  * Copyright vec3d.xyz 2016
  * All rights reserved
  */
-public interface MessageReceiver {
+public interface IMessageReceiver {
 
     void onMessageReceived(Message message);
 

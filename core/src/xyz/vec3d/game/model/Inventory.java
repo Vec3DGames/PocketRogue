@@ -2,6 +2,8 @@ package xyz.vec3d.game.model;
 
 import java.util.ArrayList;
 
+import xyz.vec3d.game.utils.Logger;
+
 /**
  * Created by darakelian on 7/24/2016.
  * Copyright vec3d.xyz 2016
@@ -101,14 +103,17 @@ public class Inventory {
      * @param itemStackToAdd The ItemStack to add to the Inventory.
      */
     public void addItem(ItemStack itemStackToAdd) {
-        if (hasItem(itemStackToAdd)) {
+        if (hasItem(itemStackToAdd) && itemStackToAdd.getItem().isStackable()) {
             getItemStackForItem(itemStackToAdd.getItem()).merge(itemStackToAdd);
+            Logger.log("Merged ItemStack with existing ItemStack.", Inventory.class);
             return;
         }
         if (items.size() + 1 > getMaxItems()) {
+            Logger.log("Tried adding an ItemStack to a full inventory.", Inventory.class);
             return;
         }
         items.add(itemStackToAdd);
+        Logger.log("Added new ItemStack to Inventory.", Inventory.class);
     }
 
     /**
@@ -126,8 +131,8 @@ public class Inventory {
      * greater than or equal to the number of items, the stack is removed from
      * the inventory.
      *
-     * @param itemToRemove
-     * @param amount
+     * @param itemToRemove The Item being removed from the inventory.
+     * @param amount The number of the item to remove.
      */
     public void removeItem(Item itemToRemove, int amount) {
         ItemStack stack = getItemStackForItem(itemToRemove);
@@ -160,6 +165,9 @@ public class Inventory {
      * @return The ItemStack that has the Item or null if one isn't found.
      */
     private ItemStack getItemStackForItem(Item item) {
+        if (item == null) {
+            return null;
+        }
         for (ItemStack itemStack : items) {
             if (itemStack.getItem().equals(item)) {
                 return itemStack;

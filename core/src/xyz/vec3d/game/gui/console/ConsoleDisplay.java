@@ -1,6 +1,5 @@
 package xyz.vec3d.game.gui.console;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -9,17 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Pools;
 
 import java.util.ArrayList;
 
-import xyz.vec3d.game.Settings;
+import xyz.vec3d.game.messages.IMessageReceiver;
+import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
-import xyz.vec3d.game.messages.MessageReceiver;
-import xyz.vec3d.game.messages.MessageSender;
-import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 8/14/2016.
@@ -27,16 +21,16 @@ import xyz.vec3d.game.utils.Utils;
  * The actual components that make up the console. Sends messages to the
  * game screen indicating commands.
  */
-public class ConsoleDisplay extends Table implements MessageSender {
+public class ConsoleDisplay extends Table implements IMessageSender {
 
-    private ArrayList<MessageReceiver> messageReceivers = new ArrayList<MessageReceiver>();
+    private ArrayList<IMessageReceiver> messageReceivers = new ArrayList<>();
     private ScrollPane commandScroll;
     private TextField commandInput;
     private Table commandScrollTable;
     private Console console;
 
-    private ArrayList<Label> labels = new ArrayList<Label>();
-    private ArrayList<LogMessage> executedCommands = new ArrayList<LogMessage>();
+    private ArrayList<Label> labels = new ArrayList<>();
+    private ArrayList<LogMessage> executedCommands = new ArrayList<>();
 
     public ConsoleDisplay(String title, Skin skin, Console console) {
         //super(title, skin);
@@ -59,7 +53,7 @@ public class ConsoleDisplay extends Table implements MessageSender {
     }
 
     public void log(String message) {
-        log(message, LogMessage.LogLevel.NORMAL);
+        log(message, LogMessage.LogLevel.SUCCESS);
     }
 
     public void log(String message, LogMessage.LogLevel level) {
@@ -68,18 +62,18 @@ public class ConsoleDisplay extends Table implements MessageSender {
     }
 
     @Override
-    public void registerMessageReceiver(MessageReceiver messageReceiver) {
+    public void registerMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.add(messageReceiver);
     }
 
     @Override
-    public void deregisterMessageReceiver(MessageReceiver messageReceiver) {
+    public void deregisterMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.remove(messageReceiver);
     }
 
     @Override
     public void notifyMessageReceivers(Message message) {
-        for (MessageReceiver messageReceiver : messageReceivers) {
+        for (IMessageReceiver messageReceiver : messageReceivers) {
             messageReceiver.onMessageReceived(message);
         }
         refresh();
@@ -135,7 +129,7 @@ public class ConsoleDisplay extends Table implements MessageSender {
                     return;
                 }
                 Message commandMessage = new Message(Message.MessageType.COMMAND, tokens);
-                log(commandInput.getText());
+                log(commandInput.getText(), LogMessage.LogLevel.NORMAL);
                 notifyMessageReceivers(commandMessage);
 
                 //Reset text box.

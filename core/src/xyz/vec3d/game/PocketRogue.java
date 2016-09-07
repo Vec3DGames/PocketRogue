@@ -3,6 +3,10 @@ package xyz.vec3d.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 
+import xyz.vec3d.game.gfx.SpriteSheet;
+import xyz.vec3d.game.utils.Logger;
+import xyz.vec3d.game.utils.Utils;
+
 /**
  * Created by darakelian on 6/28/2016.
  * Copyright vec3d.xyz 2016
@@ -13,6 +17,8 @@ import com.badlogic.gdx.assets.AssetManager;
 public class PocketRogue extends Game {
 
 	private AssetManager assetManager = new AssetManager();
+
+	private SpriteSheet[] spriteSheets;
 
 	private static PocketRogue _instance = new PocketRogue();
 
@@ -41,5 +47,13 @@ public class PocketRogue extends Game {
 
 	public static AssetManager getAssetManager() {
 		return getInstance().getAssets();
+	}
+
+	public void setSpriteSheets(SpriteSheet[] spriteSheets) {
+		this.spriteSheets = spriteSheets;
+	}
+
+	public SpriteSheet getSpriteSheet(int itemId) {
+		return spriteSheets[itemId / 256];
 	}
 }
