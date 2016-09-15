@@ -360,6 +360,10 @@ public class GameScreen extends PocketRogueScreen {
                             Item item = new Item(itemId, type);
                             ItemStack stack = new ItemStack(item, amount);
                             player.getInventory().addItem(stack);
+                            Message inventoryChangedMessage = new Message(Message.
+                                    MessageType.PLAYER_INVENTORY_CHANGED,
+                                    player.getInventory());
+                            notifyMessageReceivers(inventoryChangedMessage);
                             console.log("Added item: " + name);
                         }
                         break;

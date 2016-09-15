@@ -5,8 +5,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
 
@@ -34,6 +38,11 @@ public class RenderingSystem extends IteratingSystem {
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
 
     /**
+     * A {@link ComponentMapper} for {@link AnimationComponent}s that entities have.
+     */
+    private ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
+
+    /**
      * The {@link SpriteBatch} being used to draw entities.
      */
     private SpriteBatch batch;
@@ -45,9 +54,12 @@ public class RenderingSystem extends IteratingSystem {
      * @param batch The SpriteBatch provided from the {@link xyz.vec3d.game.GameScreen}.
      */
     public RenderingSystem(SpriteBatch batch) {
-        super(Family.all(TextureComponent.class, PositionComponent.class).get());
+        super(Family.all(PositionComponent.class).one(TextureComponent.class,
+                AnimationComponent.class).get());
         this.batch = batch;
     }
+
+    private float animationTime;
 
     /**
      * Called for each entity in the system each game loop. Gets the position
@@ -62,14 +74,58 @@ public class RenderingSystem extends IteratingSystem {
         //Get texture and position components from the component mappers.
         TextureComponent textureComponent = tm.get(entity);
         PositionComponent positionComponent = pm.get(entity);
+        //AnimationComponent animationComponent = am.get(entity);
 
-        //Get the actual texture object from the texture component.
+        //First see if the entity has an animation that needs to play.
+        /*if (animationComponent != null) {
+            Animation animation = animationComponent.getAnimation();
+            animationTime += deltaTime;
+            TextureRegion animationFrame = animation.getKeyFrame(animationTime, true);
+            batch.draw(animationFrame, positionComponent.getPosition().x,
+                    positionComponent.getPosition().y, 1, 1);
+            return;
+        }*/
+        if (entity instanceof Player) {
+            TextureRegion animationFrame = null;
+            if (((Player) entity).isMovingLeft()) {
+                animationTime += deltaTime;
+                animationFrame = ((Player) entity).leftAnimation.getAnimation()
+                        .getKeyFrame(animationTime, true);
+            }
+            else if (((Player) entity).isMovingRight()) {
+                animationTime += deltaTime;
+                animationFrame = ((Player) entity).rightAnimation.getAnimation()
+                        .getKeyFrame(animationTime, true);
+            }
+            else if (((Player) entity).isMovingUp()) {
+                animationTime += deltaTime;
+                animationFrame = ((Player) entity).upAnimation.getAnimation()
+                        .getKeyFrame(animationTime, true);
+            }
+            else if (((Player) entity).isMovingDown()) {
+                animationTime += deltaTime;
+                animationFrame = ((Player) entity).downAnimation.getAnimation()
+                        .getKeyFrame(animationTime, true);
+            }
+            else if (((Player) entity).isIdle()) {
+                animationFrame = ((Player) entity).downAnimation.getAnimation()
+                        .getKeyFrame(0);
+            }
+            if (animationFrame != null) {
+                batch.draw(animationFrame, positionComponent.getPosition().x,
+                        positionComponent.getPosition().y, 1, 1);
+            }
+            return;
+        }
+
+        //Otherwise, get the actual texture object from the texture component.
         Texture texture = textureComponent.getTexture();
 
         //Draw the texture at the position specified. A width/height of 1 is used
         //to represent the fact that the texture should be 1 world unit (32px) in
         //size.
-        batch.draw(texture, positionComponent.getPosition().x, positionComponent.getPosition().y, 1, 1);
+        batch.draw(texture, positionComponent.getPosition().x,
+                positionComponent.getPosition().y, 1, 1);
     }
 
 }

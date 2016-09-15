@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.utils.Logger;
 
 /**
@@ -42,6 +43,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
         if(actor.getClass() == TextButton.class){
             if(actor.getName().equals("D")){
                 //TODO: DODGING
+                return;
             }
             if(actor.getName().equals("A")){
                 //TODO: ATTACKING
@@ -75,7 +77,11 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     }
 
     public void update() {
-        gameScreen.getPlayer().setVelocity(getMov());
+        Vector2 velocity = getMov();
+        if (velocity.isZero()) {
+            gameScreen.getPlayer().setAnimation(4);
+        }
+        gameScreen.getPlayer().setVelocity(velocity);
     }
 
     @Override
@@ -83,15 +89,19 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
         switch(keycode) {
             case Keys.W:
                 mov.add(0, 1);
+                gameScreen.getPlayer().setAnimation(2);
                 return true;
             case Keys.S:
                 mov.add(0, -1);
+                gameScreen.getPlayer().setAnimation(3);
                 return true;
             case Keys.A:
                 mov.add(-1, 0);
+                gameScreen.getPlayer().setAnimation(0);
                 return true;
             case Keys.D:
                 mov.add(1, 0);
+                gameScreen.getPlayer().setAnimation(1);
                 return true;
             case Keys.SPACE:
                 notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_HEALTH_CHANGED, -10));
@@ -104,18 +114,23 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
 
     @Override
     public boolean keyUp(int keycode) {
+        //gameScreen.getPlayer().remove(AnimationComponent.class);
         switch(keycode) {
             case Keys.W:
                 mov.add(0, -1);
+                gameScreen.getPlayer().setAnimation(2);
                 return true;
             case Keys.S:
                 mov.add(0, 1);
+                gameScreen.getPlayer().setAnimation(3);
                 return true;
             case Keys.A:
                 mov.add(1, 0);
+                gameScreen.getPlayer().setAnimation(0);
                 return true;
             case Keys.D:
                 mov.add(-1, 0);
+                gameScreen.getPlayer().setAnimation(1);
                 return true;
         }
         return false;

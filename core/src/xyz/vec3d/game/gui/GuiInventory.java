@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import java.util.ArrayList;
+
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.model.Inventory;
 import xyz.vec3d.game.model.ItemStack;
@@ -26,6 +28,7 @@ public class GuiInventory extends Gui {
     private Table itemTable;
     private Table componentTable;
     private Table itemInfoTable;
+    private ArrayList<ItemStackDisplay> itemStackDisplays = new ArrayList<>();
 
     private Label attr1, attr2, attr3, attr4;
 
@@ -58,9 +61,13 @@ public class GuiInventory extends Gui {
         //Set up table for item stats.
         itemInfoTable = new Table(skin);
         attr1 = new Label("Attribute 1: ", skin);
+        attr1.setName("Attribute 1: ");
         attr2 = new Label("Attribute 2: ", skin);
+        attr2.setName("Attribute 2: ");
         attr3 = new Label("Attribute 3: ", skin);
+        attr3.setName("Attribute 3: ");
         attr4 = new Label("Attribute 4: ", skin);
+        attr4.setName("Attribute 4: ");
 
         itemInfoTable.add(attr1).pad(4).fillX().expandX().height(40).row();
         itemInfoTable.add(attr2).pad(4).fillX().expandX().height(40).row();
@@ -86,15 +93,27 @@ public class GuiInventory extends Gui {
     private void refreshInventoryTable() {
         ItemStack[] items = inventory.getItemsAsArray();
         itemTable.clear();
-        for (ItemStack item : items) {
-            ItemStackDisplay display = new ItemStackDisplay(item);
-            display.addListener(new ClickListener() {
-               @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    ItemStackDisplay displayFired = (ItemStackDisplay) event.getListenerActor();
-               }
-            });
-            itemTable.add(display).expandX().fillX().left().pad(4).row();
+        for (int i = 0; i < items.length; i++) {
+            ItemStackDisplay display;
+            if (itemStackDisplays.size() > i) {
+                display = itemStackDisplays.get(i);
+            } else {
+                display = new ItemStackDisplay(items[i]);
+                display.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        //Update bonuses.
+                        ItemStackDisplay displayFired = (ItemStackDisplay) event.getListenerActor();
+                        int[] bonuses = displayFired.getItemStack().getItem().getBonuses();
+                        attr1.setText(attr1.getName() + bonuses[0]);
+                        attr2.setText(attr2.getName() + bonuses[1]);
+                        attr3.setText(attr3.getName() + bonuses[2]);
+                        attr4.setText(attr4.getName() + bonuses[3]);
+                    }
+                });
+                itemStackDisplays.add(display);
+            }
+            itemTable.add(display).expandX().fillX().left().width(itemTable.getWidth()).pad(4).row();
         }
         itemTable.add().expand().fill();
         itemScrollPane.validate();

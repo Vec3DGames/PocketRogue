@@ -54,8 +54,17 @@ public class ItemStackDisplay extends Actor implements Disposable {
         this.setSize(200, 64);
     }
 
+    /**
+     * Returns the {@link ItemStack} that the display represents.
+     *
+     * @return ItemStack object stored in this display.
+     */
     public ItemStack getItemStack() {
         return itemStack;
+    }
+
+    public void toggle() {
+
     }
 
     @Override
