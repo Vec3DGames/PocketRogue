@@ -5,14 +5,13 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
+import xyz.vec3d.game.utils.Logger;
 
 /**
  * Created by darakelian on 7/7/2016.
@@ -59,8 +58,6 @@ public class RenderingSystem extends IteratingSystem {
         this.batch = batch;
     }
 
-    private float animationTime;
-
     /**
      * Called for each entity in the system each game loop. Gets the position
      * component and texture component in order to draw the texture on the batch
@@ -74,47 +71,15 @@ public class RenderingSystem extends IteratingSystem {
         //Get texture and position components from the component mappers.
         TextureComponent textureComponent = tm.get(entity);
         PositionComponent positionComponent = pm.get(entity);
-        //AnimationComponent animationComponent = am.get(entity);
+        AnimationComponent animationComponent = am.get(entity);
 
         //First see if the entity has an animation that needs to play.
-        /*if (animationComponent != null) {
-            Animation animation = animationComponent.getAnimation();
-            animationTime += deltaTime;
-            TextureRegion animationFrame = animation.getKeyFrame(animationTime, true);
+        if (animationComponent != null) {
+            animationComponent.addAnimationTime(deltaTime);
+            TextureRegion animationFrame = animationComponent.getAnimation()
+                    .getKeyFrame(animationComponent.getAnimationTime(), true);
             batch.draw(animationFrame, positionComponent.getPosition().x,
                     positionComponent.getPosition().y, 1, 1);
-            return;
-        }*/
-        if (entity instanceof Player) {
-            TextureRegion animationFrame = null;
-            if (((Player) entity).isMovingLeft()) {
-                animationTime += deltaTime;
-                animationFrame = ((Player) entity).leftAnimation.getAnimation()
-                        .getKeyFrame(animationTime, true);
-            }
-            else if (((Player) entity).isMovingRight()) {
-                animationTime += deltaTime;
-                animationFrame = ((Player) entity).rightAnimation.getAnimation()
-                        .getKeyFrame(animationTime, true);
-            }
-            else if (((Player) entity).isMovingUp()) {
-                animationTime += deltaTime;
-                animationFrame = ((Player) entity).upAnimation.getAnimation()
-                        .getKeyFrame(animationTime, true);
-            }
-            else if (((Player) entity).isMovingDown()) {
-                animationTime += deltaTime;
-                animationFrame = ((Player) entity).downAnimation.getAnimation()
-                        .getKeyFrame(animationTime, true);
-            }
-            else if (((Player) entity).isIdle()) {
-                animationFrame = ((Player) entity).downAnimation.getAnimation()
-                        .getKeyFrame(0);
-            }
-            if (animationFrame != null) {
-                batch.draw(animationFrame, positionComponent.getPosition().x,
-                        positionComponent.getPosition().y, 1, 1);
-            }
             return;
         }
 

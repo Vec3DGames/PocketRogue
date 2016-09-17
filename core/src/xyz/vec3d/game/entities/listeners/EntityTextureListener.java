@@ -27,7 +27,7 @@ public class EntityTextureListener implements EntityListener {
     @Override
     public void entityAdded(Entity entity) {
         String entityName = entity.getClass().getSimpleName().toLowerCase() + ".png";
-        Texture texture = PocketRogue.getInstance().getAssetManager().get(entityName, Texture.class);
+        Texture texture = PocketRogue.getAssetManager().get(entityName, Texture.class);
         entity.add(new TextureComponent(texture));
     }
 

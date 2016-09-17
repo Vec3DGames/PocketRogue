@@ -78,9 +78,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
 
     public void update() {
         Vector2 velocity = getMov();
-        if (velocity.isZero()) {
-            gameScreen.getPlayer().setAnimation(4);
-        }
+        //gameScreen.getPlayer().setAnimationFromVelocity(velocity);
         gameScreen.getPlayer().setVelocity(velocity);
     }
 
@@ -89,19 +87,15 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
         switch(keycode) {
             case Keys.W:
                 mov.add(0, 1);
-                gameScreen.getPlayer().setAnimation(2);
                 return true;
             case Keys.S:
                 mov.add(0, -1);
-                gameScreen.getPlayer().setAnimation(3);
                 return true;
             case Keys.A:
                 mov.add(-1, 0);
-                gameScreen.getPlayer().setAnimation(0);
                 return true;
             case Keys.D:
                 mov.add(1, 0);
-                gameScreen.getPlayer().setAnimation(1);
                 return true;
             case Keys.SPACE:
                 notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_HEALTH_CHANGED, -10));
@@ -118,19 +112,15 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
         switch(keycode) {
             case Keys.W:
                 mov.add(0, -1);
-                gameScreen.getPlayer().setAnimation(2);
                 return true;
             case Keys.S:
                 mov.add(0, 1);
-                gameScreen.getPlayer().setAnimation(3);
                 return true;
             case Keys.A:
                 mov.add(1, 0);
-                gameScreen.getPlayer().setAnimation(0);
                 return true;
             case Keys.D:
                 mov.add(-1, 0);
-                gameScreen.getPlayer().setAnimation(1);
                 return true;
         }
         return false;

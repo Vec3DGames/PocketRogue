@@ -1,6 +1,7 @@
 package xyz.vec3d.game;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -14,7 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
@@ -195,8 +198,8 @@ public class GameScreen extends PocketRogueScreen {
         engine = new Engine();
         RenderingSystem renderingSystem = new RenderingSystem(spriteBatch);
         MovementSystem movementSystem = new MovementSystem();
-        engine.addSystem(renderingSystem);
         engine.addSystem(movementSystem);
+        engine.addSystem(renderingSystem);
         engine.addEntityListener(new EntityTextureListener());
         player = new Player(10, 10);
         engine.addEntity(player);
@@ -365,6 +368,26 @@ public class GameScreen extends PocketRogueScreen {
                                     player.getInventory());
                             notifyMessageReceivers(inventoryChangedMessage);
                             console.log("Added item: " + name);
+                        }
+                        break;
+                    case "entity":
+                        if (console.checkNumArgs(args, 1)) {
+                            int entityId = Integer.valueOf(args[0]);
+                            float x = player.getPosition().x;
+                            float y = player.getPosition().y;
+                            if (args.length == 3) {
+                                x = Float.valueOf(args[1]);
+                                y = Float.valueOf(args[2]);
+                            }
+                            Enemy enemy = new Enemy(entityId, x, y);
+                            engine.addEntity(enemy);
+                        }
+                        break;
+                    case "kill":
+                        for (Entity entity : engine.getEntities()) {
+                            if (entity instanceof Enemy) {
+                                engine.removeEntity(entity);
+                            }
                         }
                         break;
                     default:

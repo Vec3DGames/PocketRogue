@@ -52,5 +52,14 @@
     ],
     "stackable": false,
     "slot": "PRIMARY_HAND"
+  },
+  {
+    "name": "Health Potion",
+    "icon": [
+      2,
+      2
+    ],
+    "stackable": true,
+    "slot": "PRIMARY_HAND"
   }
 ]

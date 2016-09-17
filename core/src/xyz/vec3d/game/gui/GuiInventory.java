@@ -109,11 +109,15 @@ public class GuiInventory extends Gui {
                         attr2.setText(attr2.getName() + bonuses[1]);
                         attr3.setText(attr3.getName() + bonuses[2]);
                         attr4.setText(attr4.getName() + bonuses[3]);
+                        for (ItemStackDisplay stackDisplay : itemStackDisplays) {
+                            stackDisplay.deselect();
+                        }
+                        displayFired.select();
                     }
                 });
                 itemStackDisplays.add(display);
             }
-            itemTable.add(display).expandX().fillX().left().width(itemTable.getWidth()).pad(4).row();
+            itemTable.add(display).expandX().fillX().left().pad(4).row();
         }
         itemTable.add().expand().fill();
         itemScrollPane.validate();

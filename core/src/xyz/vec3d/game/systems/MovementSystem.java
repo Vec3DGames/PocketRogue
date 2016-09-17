@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 
@@ -20,10 +21,15 @@ public class MovementSystem extends IteratingSystem {
      */
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
 
+    /**
+     * A {@link ComponentMapper} for {@link VelocityComponent}s that entities have.
+     */
     private ComponentMapper<VelocityComponent> vm = ComponentMapper.getFor(VelocityComponent.class);
 
-    //private ComponentMapper<MovementSpeedComponent> mm = ComponentMapper.getFor(MovementSpeedComponent.class);
-
+    /**1
+     * Create a new MovementSystem composed of entities that have both a velocity
+     * component as well as a position component.
+     */
     public MovementSystem() {
         super(Family.all(VelocityComponent.class, PositionComponent.class).get());
     }
@@ -32,6 +38,10 @@ public class MovementSystem extends IteratingSystem {
         PositionComponent positionComponent = pm.get(entity);
         VelocityComponent velocityComponent = vm.get(entity);
         positionComponent.getPosition().add(velocityComponent.getVelocity());
+        if (entity instanceof PocketRogueEntity) {
+            //Update animation here.
+            ((PocketRogueEntity) entity).setAnimationFromVelocity(velocityComponent.getVelocity());
+        }
         if (positionComponent.getPosition().x <= 0) {
             positionComponent.getPosition().x = 0;
         }

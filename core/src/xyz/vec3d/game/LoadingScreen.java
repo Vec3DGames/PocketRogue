@@ -105,6 +105,7 @@ public class LoadingScreen implements Screen {
         PocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
         PocketRogue.getAssetManager().load("uiskin.json", Skin.class);
         PocketRogue.getAssetManager().load("player.png", Texture.class);
+        PocketRogue.getAssetManager().load("enemy.png", Texture.class);
         PocketRogue.getAssetManager().load("frameBorder.png", Texture.class);
         PocketRogue.getAssetManager().load("playerIcon.png", Texture.class);
         PocketRogue.getAssetManager().load("barBackground.png", Texture.class);

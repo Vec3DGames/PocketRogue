@@ -31,7 +31,15 @@ public class ItemStackDisplay extends Actor implements Disposable {
      */
     private TextureRegion itemIcon;
 
+    /**
+     * Font used for drawing item name and quantity.
+     */
     private BitmapFont font;
+
+    /**
+     * True if the stack has been selected in the inventory.
+     */
+    private boolean selected;
 
     /**
      * Creates a new ItemStackDisplay from an ItemStack.
@@ -44,9 +52,8 @@ public class ItemStackDisplay extends Actor implements Disposable {
         int itemId = this.itemStack.getItem().getId();
         ItemDefinition definition = ItemDefinitionLoader.getDefinition(itemId);
         int[] iconCoords = (int[]) definition.getProperty(ItemProperty.ICON);
-        TextureRegion region = PocketRogue.getInstance().getSpriteSheet(itemId).
-                getTextureFromSheet(iconCoords[0], iconCoords[1]);
-        itemIcon = region;
+        itemIcon = PocketRogue.getInstance().getSpriteSheet(itemId).
+                getTextureFromSheet(iconCoords[0], iconCoords[1]);;
         if (itemIcon == null) {
             Logger.log("No icon found.", this.getClass());
         }
@@ -63,8 +70,14 @@ public class ItemStackDisplay extends Actor implements Disposable {
         return itemStack;
     }
 
-    public void toggle() {
+    public void select() {
+        selected = true;
+        this.setDebug(selected);
+    }
 
+    public void deselect() {
+        selected = false;
+        this.setDebug(selected);
     }
 
     @Override
