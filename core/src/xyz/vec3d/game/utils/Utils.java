@@ -2,13 +2,19 @@ package xyz.vec3d.game.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.JsonValue;
 
+import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.Settings;
 import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.model.Item;
+import xyz.vec3d.game.model.ItemDefinitionLoader;
+import xyz.vec3d.game.model.ItemProperty;
+import xyz.vec3d.game.model.ItemStack;
 
 /**
  * Created by darakelian on 6/30/2016.
@@ -95,18 +101,40 @@ public class Utils {
         return containerPos + ((containerDimension - objectDimension) / 2);
     }
 
+    /**
+     * Prints out an array's contents rather than the Java implementation.
+     *
+     * @param array Array to be printed out.
+     */
     public static void printArray(Object[] array) {
         printArray(array, true);
     }
 
+    /**
+     * Prints out an array's contents in either list format or a one-liner.
+     *
+     * @param array Array to be printed out.
+     * @param oneLine True if contents are to be placed on one line.
+     */
     public static void printArray(Object[] array, boolean oneLine) {
         String stringToPrint = "";
         for (Object o : array) {
             stringToPrint += oneLine ? o.toString() + " " : o.toString() + "\n";
         }
-        System.out.println(stringToPrint.trim());
+        Logger.log(stringToPrint.trim());
     }
 
+    /**
+     * Attempts to center the camera on a given entity. This can be used for
+     * anything that needs to focus on a specific entity.
+     *
+     * @param worldCamera The camera being centered. There should probably
+     *                    only ever be one instance of a camera object in the
+     *                    game.
+     * @param entity The entity that the camera is being centered on.
+     * @param mapWidth The width of the map in world units.
+     * @param mapHeight The height of the map in world units.
+     */
     public static void centerCamera(OrthographicCamera worldCamera, Entity entity, float mapWidth,
                                     float mapHeight) {
         PositionComponent position = entity.getComponent(PositionComponent.class);
@@ -149,13 +177,35 @@ public class Utils {
         }
     }
 
+    /**
+     * Centers an Actor within the specified stage.
+     *
+     * @param actor Actor being centered.
+     * @param stage The stage to center the actor in.
+     */
     public static void centerActor(Actor actor, Stage stage) {
-        centerActor(actor, stage.getWidth(), stage.getHeight());
+        float newX = getPosCenterX(actor.getWidth(), stage.getWidth());
+        float newY = getPosCenterY(actor.getHeight(), stage.getHeight());
+        actor.setPosition(newX, newY);
     }
 
-    public static void centerActor(Actor actor, float containerWidth, float containerHeight) {
-        float newX = getPosCenterX(actor.getWidth(), containerWidth);
-        float newY = getPosCenterY(actor.getHeight(), containerHeight);
-        actor.setPosition(newX, newY);
+    public static TextureRegion getItemTexture(ItemStack itemStack) {
+        return getItemTexture(itemStack.getItem());
+    }
+
+    public static TextureRegion getItemTexture(Item item) {
+        return getItemTexture(item.getId());
+    }
+
+    public static TextureRegion getItemTexture(int itemId) {
+        ItemDefinitionLoader.ItemDefinition definition = ItemDefinitionLoader.getDefinition(itemId);
+        int[] iconCoords = (int[]) definition.getProperty(ItemProperty.ICON);
+        TextureRegion itemIcon = PocketRogue.getInstance().getSpriteSheet(itemId).
+                getTextureFromSheet(iconCoords[0], iconCoords[1]);
+        if (itemIcon == null) {
+            Logger.log("Unable to find icon for item.", Utils.class);
+            return null;
+        }
+        return itemIcon;
     }
 }

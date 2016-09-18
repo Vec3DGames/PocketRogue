@@ -1,6 +1,5 @@
 package xyz.vec3d.game.gui;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,11 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Disposable;
 
 import xyz.vec3d.game.PocketRogue;
-import xyz.vec3d.game.model.ItemDefinitionLoader;
-import xyz.vec3d.game.model.ItemDefinitionLoader.ItemDefinition;
-import xyz.vec3d.game.model.ItemProperty;
 import xyz.vec3d.game.model.ItemStack;
-import xyz.vec3d.game.utils.Logger;
+import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 8/24/2016.
@@ -49,14 +45,7 @@ public class ItemStackDisplay extends Actor implements Disposable {
     public ItemStackDisplay(ItemStack itemStack) {
         this.itemStack = itemStack;
         //Get the texture.
-        int itemId = this.itemStack.getItem().getId();
-        ItemDefinition definition = ItemDefinitionLoader.getDefinition(itemId);
-        int[] iconCoords = (int[]) definition.getProperty(ItemProperty.ICON);
-        itemIcon = PocketRogue.getInstance().getSpriteSheet(itemId).
-                getTextureFromSheet(iconCoords[0], iconCoords[1]);;
-        if (itemIcon == null) {
-            Logger.log("No icon found.", this.getClass());
-        }
+        itemIcon = Utils.getItemTexture(itemStack);
         font = PocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
         this.setSize(200, 64);
     }
