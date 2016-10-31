@@ -3,6 +3,10 @@ My incomplete 2D RPG targeting both desktop and android runtimes. Game is built 
 
 Key features of the code base include:
 -Entity component system.
+
 -Message system for communicating between objects.
+
 -Loading of item definitions from JSON files.
+
 -Custom GUI system leveraging existing LibGDX GUI classes.
+
