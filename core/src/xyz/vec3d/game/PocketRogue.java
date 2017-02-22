@@ -56,4 +56,15 @@ public class PocketRogue extends Game {
 	public SpriteSheet getSpriteSheet(int itemId) {
 		return spriteSheets[itemId / 256];
 	}
+
+	public static <T> T getAsset(String name) {
+		return getAsset(name, true);
+	}
+
+	public static <T> T getAsset(String name, boolean managed) {
+		if (managed) {
+			return getAssetManager().get("./managed_assets/" + name);
+		}
+		return getAssetManager().get(name);
+	}
 }

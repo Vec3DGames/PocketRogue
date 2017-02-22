@@ -43,12 +43,12 @@ public class PlayerInfoDisplay extends Actor implements IMessageReceiver, IMessa
     private ArrayList<IMessageReceiver> messageReceivers = new ArrayList<>();
 
     public PlayerInfoDisplay() {
-        playerIcon = PocketRogue.getAssetManager().get("playerIcon.png", Texture.class);
-        frameBorder = PocketRogue.getAssetManager().get("frameBorder.png", Texture.class);
-        barBackground = PocketRogue.getAssetManager().get("barBackground.png", Texture.class);
-        manaBar = PocketRogue.getAssetManager().get("manaBar.png", Texture.class);
-        healthBar = PocketRogue.getAssetManager().get("healthBar.png", Texture.class);
-        font = PocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
+        playerIcon = PocketRogue.getAsset("playerIcon.png");
+        frameBorder = PocketRogue.getAsset("frameBorder.png");
+        barBackground = PocketRogue.getAsset("barBackground.png");
+        manaBar = PocketRogue.getAsset("manaBar.png");
+        healthBar = PocketRogue.getAsset("healthBar.png");
+        font = PocketRogue.getAsset("default.fnt", false);
         layout = new GlyphLayout();
         addListener(new ClickListener() {
 

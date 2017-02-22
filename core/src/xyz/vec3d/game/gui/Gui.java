@@ -107,7 +107,9 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
 
     static {
         try {
-            handledGuis.put("player_inventory", (Class<Gui>) Class.forName(GuiInventory.class.getCanonicalName()));
+            handledGuis.put("player_inventory",
+                    (Class<Gui>) Class.forName(GuiInventory.class.getCanonicalName()));
+
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

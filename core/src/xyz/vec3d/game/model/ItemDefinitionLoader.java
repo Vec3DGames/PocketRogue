@@ -1,12 +1,14 @@
 package xyz.vec3d.game.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -24,7 +26,7 @@ public class ItemDefinitionLoader {
 
     public void loadItemDefinitions() {
         JsonReader jsonReader = new JsonReader();
-        JsonValue values = jsonReader.parse(Gdx.files.internal("item_definitions.json"));
+        JsonValue values = jsonReader.parse(Gdx.files.internal("managed_assets/item_definitions.json"));
         for (int i = 0; i < values.size; i++) {
             JsonValue child = values.get(i);
             ItemDefinition definition = new ItemDefinition();
@@ -34,7 +36,7 @@ public class ItemDefinitionLoader {
                 definition.putProperty(key, Utils.getJsonTypeValue(value));
             }
             itemDefinitions.put(i, definition);
-            System.out.println("Loaded definition: " + definition);
+            //System.out.println("Loaded definition: " + definition);
         }
     }
 
@@ -46,7 +48,7 @@ public class ItemDefinitionLoader {
 
         private Map<ItemProperty, Object> definitions;
 
-        public ItemDefinition() {
+        ItemDefinition() {
             definitions = new HashMap<>();
         }
 
@@ -54,7 +56,7 @@ public class ItemDefinitionLoader {
             return definitions.get(property);
         }
 
-        public void putProperty(String propertyName, Object property) {
+        void putProperty(String propertyName, Object property) {
             definitions.put(ItemProperty.value(propertyName), property);
         }
 

@@ -1,9 +1,11 @@
 package xyz.vec3d.game;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -20,10 +22,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import xyz.vec3d.game.gfx.SpriteSheet;
 import xyz.vec3d.game.model.ItemDefinitionLoader;
+import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -48,7 +52,7 @@ public class LoadingScreen implements Screen {
     private LoadingBar loadingBar;
     private float percent;
 
-    public LoadingScreen(PocketRogue pocketRogue) {
+    LoadingScreen(PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
         PocketRogue.getAssetManager().load("loading.pack", TextureAtlas.class);
         PocketRogue.getAssetManager().load("default.fnt", BitmapFont.class);
@@ -61,7 +65,9 @@ public class LoadingScreen implements Screen {
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = font;
-        text = new Label("Touch to start!", style);
+        String labelText = Gdx.app.getType() == Application.ApplicationType.Android
+                ? "Touch to start!" : "Click to start!";
+        text = new Label(labelText, style);
         text.setFontScale(2);
         text.setSize(text.getWidth() * 2, text.getHeight() * 2);
         text.addAction(Actions.alpha(0));
@@ -97,23 +103,58 @@ public class LoadingScreen implements Screen {
      * on the list.
      */
     private void loadNormalAssets() {
-        PocketRogue.getAssetManager().load("uiskin.atlas", TextureAtlas.class);
-        PocketRogue.getAssetManager().load("badlogic.jpg", Texture.class);
+        //Set loader types
         PocketRogue.getAssetManager().setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        PocketRogue.getAssetManager().load("map.tmx", TiledMap.class);
-        PocketRogue.getAssetManager().load("tilesheet_1.png", Texture.class);
         PocketRogue.getAssetManager().setLoader(Skin.class, new SkinLoader(new InternalFileHandleResolver()));
-        PocketRogue.getAssetManager().load("uiskin.json", Skin.class);
-        PocketRogue.getAssetManager().load("player.png", Texture.class);
-        PocketRogue.getAssetManager().load("enemy.png", Texture.class);
-        PocketRogue.getAssetManager().load("frameBorder.png", Texture.class);
-        PocketRogue.getAssetManager().load("playerIcon.png", Texture.class);
-        PocketRogue.getAssetManager().load("barBackground.png", Texture.class);
-        PocketRogue.getAssetManager().load("healthBar.png", Texture.class);
-        PocketRogue.getAssetManager().load("manaBar.png", Texture.class);
-        PocketRogue.getAssetManager().load("spritesheet_1.png", Texture.class);
-        PocketRogue.getAssetManager().load("animation_sheets/player_animation.png", Texture.class);
+        FileHandle dirHandle;
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            dirHandle = Gdx.files.internal("/");
+        } else {
+            dirHandle = Gdx.files.internal("./managed_assets/");
+        }
+        Array<FileHandle> handles = new Array<FileHandle>();
+        getHandles(dirHandle, handles);
+        for (FileHandle handle : handles) {
+            if (handle.name().contains("definitions"))
+                continue;
+            Class<?> classToLoadAs = Texture.class;
+            switch (handle.extension()) {
+                case "atlas":
+                    classToLoadAs = TextureAtlas.class;
+                    break;
+                case "json":
+                    classToLoadAs = Skin.class;
+                    break;
+                case "tmx":
+                    classToLoadAs = TiledMap.class;
+                    break;
+            }
+            PocketRogue.getAssetManager().load(handle.path(), classToLoadAs);
+            Logger.log("Loaded asset: " + handle.path());
+        }
         new ItemDefinitionLoader().loadItemDefinitions();
+    }
+
+    /**
+     * Used to get file handles for all files in a directory.
+     *
+     * @param begin FileHandle representing the root directory.
+     * @param handles Array of FileHandles that is recursively passed to function.
+     */
+    private void getHandles(FileHandle begin, Array<FileHandle> handles) {
+        FileHandle[] newHandles = begin.list();
+        for (FileHandle f : newHandles)
+        {
+            if (f.isDirectory())
+            {
+                getHandles(f, handles);
+            }
+            else
+            {
+                handles.add(f);
+                Logger.log("Found asset: " + f.name() + " path: " + f.path(), LoadingScreen.class);
+            }
+        }
     }
 
     /**
@@ -145,7 +186,7 @@ public class LoadingScreen implements Screen {
 
         loadingBarHidden.setX(startX + endX * percent);
         loadingBg.setX(loadingBarHidden.getX() + 30);
-        loadingBg.setWidth(450 - 450 * percent);
+        loadingBg.setWidth(450*(1-percent));
         loadingBg.invalidate();
 
         uiStage.act();

@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
+import xyz.vec3d.game.Settings;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
@@ -42,8 +43,22 @@ public class MovementSystem extends IteratingSystem {
             //Update animation here.
             ((PocketRogueEntity) entity).setAnimationFromVelocity(velocityComponent.getVelocity());
         }
+        //Boundary checks here
         if (positionComponent.getPosition().x <= 0) {
             positionComponent.getPosition().x = 0;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
+        if (positionComponent.getPosition().y <= 0) {
+            positionComponent.getPosition().y = 0;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
+        if (positionComponent.getPosition().x + 1 >= Settings.MAX_WORLD_WIDTH) {
+            positionComponent.getPosition().x = Settings.MAX_WORLD_WIDTH - 1;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
+        if (positionComponent.getPosition().y + 1 >= Settings.MAX_WORLD_HEIGHT) {
+            positionComponent.getPosition().y = Settings.MAX_WORLD_HEIGHT - 1;
+            velocityComponent.getVelocity().set(0f, 0f);
         }
     }
 

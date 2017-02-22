@@ -18,7 +18,9 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
+import xyz.vec3d.game.entities.WorldItem;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
+import xyz.vec3d.game.gui.GuiDebug;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.gui.console.Console;
@@ -31,8 +33,10 @@ import xyz.vec3d.game.model.ItemDefinitionLoader;
 import xyz.vec3d.game.model.ItemDefinitionLoader.ItemDefinition;
 import xyz.vec3d.game.model.ItemProperty;
 import xyz.vec3d.game.model.ItemStack;
+import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
+import xyz.vec3d.game.systems.UpdateSystem;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -111,6 +115,13 @@ public class GameScreen extends PocketRogueScreen {
     private Console console;
 
     /**
+     * Debug overlay containing various tidbits of information about the state
+     * of the game.
+     */
+    private GuiDebug debugOverlay;
+    private boolean renderDebugOverlay = false;
+
+    /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
      *
@@ -133,7 +144,7 @@ public class GameScreen extends PocketRogueScreen {
     private void setUpGui() {
         //Create the stage and viewport for the UI.
         uiStage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
-        skin = (Skin) PocketRogue.getAssetManager().get("uiskin.json");
+        skin = (Skin) PocketRogue.getAsset("uiskin.json");
 
         //Set up input multiplexer.
         rogueInputProcessor = new RogueInputProcessor(this);
@@ -184,7 +195,9 @@ public class GameScreen extends PocketRogueScreen {
      */
     private void setUpEngine() {
         //Create camera and load map and bind them together.
-        TiledMap map = PocketRogue.getAssetManager().get("map.tmx", TiledMap.class);
+        TiledMap map = PocketRogue.getAsset("map.tmx");
+        Settings.MAX_WORLD_WIDTH = map.getProperties().get("width", Integer.class);
+        Settings.MAX_WORLD_HEIGHT = map.getProperties().get("height", Integer.class);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
         worldCamera = new OrthographicCamera();
         worldCamera.setToOrtho(false, 25, 14);
@@ -196,8 +209,11 @@ public class GameScreen extends PocketRogueScreen {
 
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
+        UpdateSystem updateSystem = new UpdateSystem();
         RenderingSystem renderingSystem = new RenderingSystem(spriteBatch);
         MovementSystem movementSystem = new MovementSystem();
+        engine.addSystem(updateSystem);
+        engine.addSystem(new CollisionSystem());
         engine.addSystem(movementSystem);
         engine.addSystem(renderingSystem);
         engine.addEntityListener(new EntityTextureListener());
@@ -267,6 +283,9 @@ public class GameScreen extends PocketRogueScreen {
         }
 
         console.draw();
+        if (renderDebugOverlay) {
+            debugOverlay.draw();
+        }
     }
 
     /**
@@ -339,6 +358,10 @@ public class GameScreen extends PocketRogueScreen {
                     }
                 }
                 break;
+            case ENTITY_SPAWNED:
+                PocketRogueEntity entitySpawned = (PocketRogueEntity) message.getPayload()[0];
+                engine.addEntity(entitySpawned);
+                break;
             case COMMAND:
                 String[] tokens = (String[]) message.getPayload();
                 String command = tokens[0];
@@ -386,9 +409,28 @@ public class GameScreen extends PocketRogueScreen {
                     case "kill":
                         for (Entity entity : engine.getEntities()) {
                             if (entity instanceof Enemy) {
-                                engine.removeEntity(entity);
+                                ((Enemy) entity).kill();
                             }
                         }
+                        break;
+                    case "dropitem":
+                        if (console.checkNumArgs(args, 1)) {
+                            int itemId = Integer.valueOf(args[0]);
+                            ItemDefinition def = ItemDefinitionLoader.getDefinition(itemId);
+                            String slot = (String) def.getProperty(ItemProperty.SLOT);
+                            ItemStack stack = new ItemStack(new Item(itemId, ItemType.valueOf(slot)), 1);
+                            WorldItem worldItem = new WorldItem(stack,
+                                    player.getPosition().x + 1, player.getPosition().y + 1);
+                            engine.addEntity(worldItem);
+                        }
+                        break;
+                    case "debug":
+                        if (debugOverlay == null) {
+                            this.debugOverlay = new GuiDebug(this.engine, this.player);
+                            this.debugOverlay.setParameters(new Object[] {skin});
+                            this.debugOverlay.setup();
+                        }
+                        renderDebugOverlay = !renderDebugOverlay;
                         break;
                     default:
                         console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);

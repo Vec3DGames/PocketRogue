@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.entities.Projectile;
 import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.utils.Logger;
 
@@ -97,8 +98,25 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
             case Keys.D:
                 mov.add(1, 0);
                 return true;
+            //Fire projectile code here.
             case Keys.SPACE:
-                notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_HEALTH_CHANGED, -10));
+                //Get player's direction to use as base velocity.
+                Vector2 velocity = gameScreen.getPlayer().getDirection().cpy();
+                //Scale to desired speed
+                velocity.scl(0.4f);
+                //Get player's position to use as base position.
+                Vector2 position = gameScreen.getPlayer().getPosition().cpy();
+                //Get angle of range -180<=theta<=180
+                float angle = velocity.angle();
+                float xMod = (angle == 270 || angle == 90) ? 0 :
+                        (angle == 135 || angle == 225 || angle == 180) ? -1 : 1;
+                float yMod = (angle == 180 || angle == 0) ? 0 :
+                        (angle == 225 || angle == 315 || angle == 270) ? -1 : 1;
+                position.add(1.1f * xMod, 1.1f * yMod);
+                //Spawn projectile.
+                Projectile mageProjectile = new Projectile(gameScreen.getPlayer(),
+                        position, velocity, "Bolt");
+                notifyMessageReceivers(new Message(Message.MessageType.ENTITY_SPAWNED, mageProjectile));
                 return true;
             default:
                 notifyMessageReceivers(new Message(Message.MessageType.KEY_TYPED, keycode));

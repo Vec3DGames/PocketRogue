@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.entities.components.RotationComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
 import xyz.vec3d.game.utils.Logger;
 
@@ -40,6 +42,11 @@ public class RenderingSystem extends IteratingSystem {
      * A {@link ComponentMapper} for {@link AnimationComponent}s that entities have.
      */
     private ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
+
+    /**
+     * A {@link ComponentMapper} for {@link RotationComponent}s that entities have.
+     */
+    private ComponentMapper<RotationComponent> rm = ComponentMapper.getFor(RotationComponent.class);
 
     /**
      * The {@link SpriteBatch} being used to draw entities.
@@ -75,20 +82,29 @@ public class RenderingSystem extends IteratingSystem {
 
         //First see if the entity has an animation that needs to play.
         if (animationComponent != null) {
+            boolean moving = ((PocketRogueEntity) entity).isMoving();
             animationComponent.addAnimationTime(deltaTime);
+            float animationTime = animationComponent.getAnimationTime();
             TextureRegion animationFrame = animationComponent.getAnimation()
-                    .getKeyFrame(animationComponent.getAnimationTime(), true);
+                    .getKeyFrame(moving ? animationTime : 0, true);
             batch.draw(animationFrame, positionComponent.getPosition().x,
                     positionComponent.getPosition().y, 1, 1);
             return;
         }
 
         //Otherwise, get the actual texture object from the texture component.
-        Texture texture = textureComponent.getTexture();
+        TextureRegion texture = textureComponent.getTexture();
 
         //Draw the texture at the position specified. A width/height of 1 is used
         //to represent the fact that the texture should be 1 world unit (32px) in
         //size.
+        RotationComponent rotationComponent = rm.get(entity);
+        if (rotationComponent != null) {
+            batch.draw(texture, positionComponent.getPosition().x,
+                    positionComponent.getPosition().y, 0.5f, 0.5f, 1, 1, 1, 1,
+                    rotationComponent.getRotationAngle() - 90f, false);
+            return;
+        }
         batch.draw(texture, positionComponent.getPosition().x,
                 positionComponent.getPosition().y, 1, 1);
     }

@@ -2,14 +2,17 @@ package xyz.vec3d.game.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.JsonValue;
 
 import xyz.vec3d.game.PocketRogue;
-import xyz.vec3d.game.Settings;
+import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.ItemDefinitionLoader;
@@ -94,7 +97,7 @@ public class Utils {
      * @param containerDimension Dimension of the container (either width/height).
      * @param containerPos Starting x or y coordinate of the container.
      *
-     * @return
+     * @return The coordinate to draw the lower left corner of the object.
      */
     private static float getPosCenter(float objectDimension, float containerDimension,
                                       float containerPos, boolean negate) {
@@ -116,7 +119,7 @@ public class Utils {
      * @param array Array to be printed out.
      * @param oneLine True if contents are to be placed on one line.
      */
-    public static void printArray(Object[] array, boolean oneLine) {
+    private static void printArray(Object[] array, boolean oneLine) {
         String stringToPrint = "";
         for (Object o : array) {
             stringToPrint += oneLine ? o.toString() + " " : o.toString() + "\n";
@@ -189,6 +192,15 @@ public class Utils {
         actor.setPosition(newX, newY);
     }
 
+    /**
+     * Retrieves a TextureRegion corresponding to the provided ItemStack.
+     *
+     * @param itemStack The ItemStack for which a TextureRegion is being retrieved.
+     *
+     * @return The TextureRegion for the item stack.
+     *
+     * @see Utils#getItemTexture(Item)
+     */
     public static TextureRegion getItemTexture(ItemStack itemStack) {
         return getItemTexture(itemStack.getItem());
     }
@@ -207,5 +219,33 @@ public class Utils {
             return null;
         }
         return itemIcon;
+    }
+
+    public static TextureRegion getEntityTexture(String entityName) {
+        String name = entityName.toLowerCase() + ".png";
+        Texture texture = PocketRogue.getAsset(name);
+        if (texture == null) {
+            return null;
+        }
+        return new TextureRegion(texture, texture.getWidth(), texture.getHeight());
+    }
+
+    public static boolean inRange(PocketRogueEntity e1, PocketRogueEntity e2, float range) {
+        Vector2 e1pos = e1.getPosition();
+        Vector2 e2pos = e2.getPosition();
+        return (e2pos.x + 0.5 - e1pos.x + 0.5) * (e2pos.x + 0.5 - e1pos.x + 0.5) +
+                (e2pos.y + 0.5 - e1pos.y + 0.5) * (e2pos.y + 0.5 - e1pos.y + 0.5)
+                <= range * range;
+    }
+
+    public static String modifyDisplayValue(Label label, Object newString) {
+        return modifyDisplayValue(label.getText().toString(), newString);
+    }
+
+    private static String modifyDisplayValue(String original, Object newString) {
+        if (!original.contains(":")) {
+            return original;
+        }
+        return original.substring(0, original.indexOf(":") + 2) + newString;
     }
 }

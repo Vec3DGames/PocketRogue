@@ -18,12 +18,12 @@ public class Enemy extends PocketRogueEntity {
     private int id;
 
     public Enemy(int id, float x, float y) {
+        super();
         this.id = id;
         add(new PositionComponent(x, y));
         add(new VelocityComponent());
         //Set up animations here.
-        Texture animationSheet = PocketRogue.getAssetManager()
-                .get("animation_sheets/player_animation.png");
+        Texture animationSheet = PocketRogue.getAsset("animation_sheets/player_animation.png");
         TextureRegion[][] tmpRegions = TextureRegion.split(animationSheet, 32, 32);
         TextureRegion[] idle = new TextureRegion[3];
         System.arraycopy(tmpRegions[0], 0, idle, 0, idle.length);

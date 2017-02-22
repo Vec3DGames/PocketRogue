@@ -21,7 +21,7 @@ public class SpriteSheet {
     public static final int ICON_SIZE = 16;
 
     public SpriteSheet(String name) {
-        internalTexture = PocketRogue.getAssetManager().get(name);
+        internalTexture = PocketRogue.getAsset(name);
     }
 
     public TextureRegion getTextureFromSheet(int x, int y) {

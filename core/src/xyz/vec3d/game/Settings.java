@@ -19,8 +19,14 @@ public class Settings {
      */
     public static final int HEIGHT = 450;
 
+    /**
+     * Represents the width used for the UI stages.
+     */
     public static final int UI_WIDTH = 800;
 
+    /**
+     * Represents the height used for the UI stages.
+     */
     public static final int UI_HEIGHT = 450;
 
     /**
@@ -28,4 +34,9 @@ public class Settings {
      * defined as X world units per Y pixels ex. 1/32f = 1 world unit -> 32 pixels.
      */
     public static final float WORLD_SCALE = 1/32f;
+
+    public static int MAX_WORLD_WIDTH;
+
+    public static int MAX_WORLD_HEIGHT;
+
 }

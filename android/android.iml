@@ -78,23 +78,36 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="ashley-1.7.0" level="project" />
     <orderEntry type="library" exported="" name="gdx-backend-android-1.9.3" level="project" />
+    <orderEntry type="library" exported="" name="lwjgl_util-2.9.2" level="project" />
+    <orderEntry type="library" exported="" name="jorbis-0.0.17" level="project" />
+    <orderEntry type="library" exported="" name="jutils-1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="jinput-platform-2.0.5-natives-osx" level="project" />
+    <orderEntry type="library" exported="" name="gdx-backend-headless-1.9.3" level="project" />
+    <orderEntry type="library" exported="" name="gdx-freetype-platform-1.9.3-natives-desktop" level="project" />
+    <orderEntry type="library" exported="" name="lwjgl-platform-2.9.2-natives-linux" level="project" />
+    <orderEntry type="library" exported="" name="gdx-backend-lwjgl-1.9.3" level="project" />
+    <orderEntry type="library" exported="" name="jinput-platform-2.0.5-natives-windows" level="project" />
+    <orderEntry type="library" exported="" name="lwjgl-platform-2.9.2-natives-osx" level="project" />
+    <orderEntry type="library" exported="" name="gdx-tools-1.9.3" level="project" />
     <orderEntry type="library" exported="" name="gdx-1.9.3" level="project" />
+    <orderEntry type="library" exported="" name="jinput-platform-2.0.5-natives-linux" level="project" />
+    <orderEntry type="library" exported="" name="lwjgl-2.9.2" level="project" />
+    <orderEntry type="library" exported="" name="jlayer-1.0.1-gdx" level="project" />
+    <orderEntry type="library" exported="" name="jinput-2.0.5" level="project" />
+    <orderEntry type="library" exported="" name="lwjgl-platform-2.9.2-natives-windows" level="project" />
+    <orderEntry type="library" exported="" name="gdx-freetype-1.9.3" level="project" />
     <orderEntry type="module" module-name="core" exported="" />
     <orderEntry type="library" exported="" name="android-android-19" level="project" />
   </component>

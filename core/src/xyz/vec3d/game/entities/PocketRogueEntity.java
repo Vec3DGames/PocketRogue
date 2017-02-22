@@ -1,10 +1,16 @@
 package xyz.vec3d.game.entities;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 
 import xyz.vec3d.game.entities.components.AnimationComponent;
+import xyz.vec3d.game.entities.components.CollideComponent;
+import xyz.vec3d.game.entities.components.MovementSpeedComponent;
+import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.utils.Logger;
 
 /**
  * Created by Daron on 9/15/2016.
@@ -20,6 +26,24 @@ public class PocketRogueEntity extends Entity {
     private Animation[] possibleAnimations;
 
     /**
+     * Updated each time a new animation is selected.
+     */
+    private Animation lastUsedAnimation;
+
+    /**
+     * Updated each time the entity changes direction.
+     */
+    private Vector2 lastDirection = new Vector2(0, -1);
+
+    private String name;
+
+    protected boolean isDead;
+
+    public PocketRogueEntity() {
+        add(new CollideComponent());
+    }
+
+    /**
      * Sets the animation array to the specified array. Entities that need
      * animations must call this method. Animation direction convention is that
      * 0 = left, 1 = right, 2 = up, 3 = down, 4 = idle.
@@ -28,6 +52,7 @@ public class PocketRogueEntity extends Entity {
      */
     public void setAnimations(Animation[] possibleAnimations) {
         this.possibleAnimations = possibleAnimations;
+        lastUsedAnimation = this.possibleAnimations[this.possibleAnimations.length - 1];
     }
 
     /**
@@ -50,7 +75,7 @@ public class PocketRogueEntity extends Entity {
         float yMag = velocity.y;
         //Logger.log("X velocity: " + xMag + " Y velocity: " + yMag);
         if (velocity.isZero()) {
-            return possibleAnimations[possibleAnimations.length - 1];
+            return lastUsedAnimation;
         }
         if (yMag < 1 || yMag > -1) {
             //Moving up or down.
@@ -82,6 +107,7 @@ public class PocketRogueEntity extends Entity {
      */
     public void setAnimationFromVelocity(Vector2 velocity) {
         Animation animation = getAnimationForVelocity(velocity);
+        lastUsedAnimation = animation;
         if (animation != null) {
             AnimationComponent animationComponent = getComponent(AnimationComponent.class);
             if (animationComponent != null) {
@@ -90,5 +116,91 @@ public class PocketRogueEntity extends Entity {
                 add(new AnimationComponent(animation));
             }
         }
+    }
+
+    /**
+     * Returns whether or not an entity is moving at the time of the method being
+     * called.
+     *
+     * @return True if the velocity is non-zero.
+     */
+    public boolean isMoving() {
+        VelocityComponent vc = getComponent(VelocityComponent.class);
+        return !vc.getVelocity().isZero();
+    }
+
+    /**
+     * Called whenever an entity should be removed from the entity.
+     */
+    public void kill() {
+        Logger.log("Killed", PocketRogueEntity.class);
+        isDead = true;
+    }
+
+    public void update(Engine engine, float delta) {
+        if (isDead) {
+            engine.removeEntity(this);
+        }
+    }
+
+    /**
+     * Attempts to retrieve a PositionComponent for the entity.
+     *
+     * @return The position component or null if one doesn't exist.
+     */
+    public Vector2 getPosition() {
+        return getComponent(PositionComponent.class).getPosition();
+    }
+
+    /**
+     * Attempts to retrieve a VelocityComponent for the entity.
+     *
+     * @return The velocity component or null if one doesn't exist.
+     */
+    public Vector2 getVelocity() {
+        return getComponent(VelocityComponent.class).getVelocity();
+    }
+
+    /**
+     * Sets the velocity of the entity to the new velocity.
+     *
+     * @param velocity The Vector2 representing entity's new velocity.
+     */
+    public void setVelocity(Vector2 velocity) {
+        Vector2 vel = getVelocity();
+        if (vel != null) {
+            getVelocity().set(velocity.cpy().scl(getMoveSpeed()));
+        } else {
+            add(new VelocityComponent(velocity.cpy().scl(getMoveSpeed())));
+        }
+        if (!velocity.isZero()) {
+            lastDirection = velocity.cpy();
+        }
+    }
+
+    /**
+     * Attempts to retrieve a MovespeedComponent for the entity.
+     *
+     * @return The movespeed component or null if one doesn't exist.
+     */
+    private float getMoveSpeed() {
+        return getComponent(MovementSpeedComponent.class).getMoveSpeed();
+    }
+
+    public Vector2 getDirection() {
+        return lastDirection;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void doCollision(PocketRogueEntity entityCollidedWith) {
+        Logger.log(String.format("Entity %s collided with entity %s", this,
+                entityCollidedWith), PocketRogueEntity.class);
     }
 }
