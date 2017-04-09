@@ -44,4 +44,21 @@ public class Enemy extends PocketRogueEntity {
     public enum EntityType {
         OVERWORLD_GRASS, OVERWORLD_SAND, DUNGEON
     }
+
+    private float health = 100.0f;
+
+    @Override
+    public void doCollision(PocketRogueEntity otherEntity) {
+        if (otherEntity instanceof Projectile) {
+            float damage = (float) ((Projectile) otherEntity).getProperty("dmg");
+            if ((health -= damage) <= 0) {
+                this.kill();
+            }
+        }
+    }
+
+    @Override
+    public void doHit(PocketRogueEntity entityHitting) {
+        this.kill();
+    }
 }

@@ -25,8 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import xyz.vec3d.game.gfx.SpriteSheet;
-import xyz.vec3d.game.model.ItemDefinitionLoader;
+import xyz.vec3d.game.model.DefinitionLoader;
 import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
@@ -132,7 +131,7 @@ public class LoadingScreen implements Screen {
             PocketRogue.getAssetManager().load(handle.path(), classToLoadAs);
             Logger.log("Loaded asset: " + handle.path());
         }
-        new ItemDefinitionLoader().loadItemDefinitions();
+        new DefinitionLoader().loadDefinitions();
     }
 
     /**

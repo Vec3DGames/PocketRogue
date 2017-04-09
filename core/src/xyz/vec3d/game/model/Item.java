@@ -110,7 +110,7 @@ public class Item {
      * @return The Item's name.
      */
     public String getName() {
-        return (String) ItemDefinitionLoader.getDefinition(getId()).getProperty(ItemProperty.NAME);
+        return (String) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.NAME);
     }
 
     /**
@@ -121,7 +121,7 @@ public class Item {
      * @return True if the Item is stackable.
      */
     public boolean isStackable() {
-        return (Boolean) ItemDefinitionLoader.getDefinition(getId()).getProperty(ItemProperty.STACKABLE);
+        return (Boolean) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.STACKABLE);
     }
 
     /**

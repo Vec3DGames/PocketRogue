@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -29,10 +30,11 @@ import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.RogueInputProcessor;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.Item.ItemType;
-import xyz.vec3d.game.model.ItemDefinitionLoader;
-import xyz.vec3d.game.model.ItemDefinitionLoader.ItemDefinition;
-import xyz.vec3d.game.model.ItemProperty;
+import xyz.vec3d.game.model.DefinitionLoader;
+import xyz.vec3d.game.model.DefinitionLoader.Definition;
+import xyz.vec3d.game.model.DefinitionProperty;
 import xyz.vec3d.game.model.ItemStack;
+import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
@@ -88,6 +90,7 @@ public class GameScreen extends PocketRogueScreen {
      * {@link RenderingSystem} to be used for drawing.
      */
     private SpriteBatch spriteBatch;
+    private ShapeRenderer shapeRenderer;
 
     /**
      * The {@link Skin} used for UI stuff.
@@ -120,6 +123,12 @@ public class GameScreen extends PocketRogueScreen {
      */
     private GuiDebug debugOverlay;
     private boolean renderDebugOverlay = false;
+    public static boolean IS_DEBUG = false;
+
+    /**
+     * The {@link CombatSystem combat system} used for the game screen.
+     */
+    private CombatSystem combatSystem;
 
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
@@ -132,6 +141,8 @@ public class GameScreen extends PocketRogueScreen {
         this.engine = new Engine();
         this.uiStage = new Stage();
         this.spriteBatch = new SpriteBatch();
+        this.shapeRenderer = new ShapeRenderer();
+        this.shapeRenderer.setAutoShapeType(true);
         setUpGui();
         setUpEngine();
     }
@@ -178,7 +189,6 @@ public class GameScreen extends PocketRogueScreen {
         OSTouchpad touchpad = new OSTouchpad();
         uiStage.addActor(touchpad.getTouchpad());
         touchpad.registerWith(rogueInputProcessor);
-
         //TODO: Find PNGs for buttons. Until then comment out.
         //OSButton dodge = new OSButton("D");
         //uiStage.addActor(dodge.getButton());
@@ -210,7 +220,7 @@ public class GameScreen extends PocketRogueScreen {
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
         UpdateSystem updateSystem = new UpdateSystem();
-        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch);
+        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
         MovementSystem movementSystem = new MovementSystem();
         engine.addSystem(updateSystem);
         engine.addSystem(new CollisionSystem());
@@ -220,6 +230,7 @@ public class GameScreen extends PocketRogueScreen {
         player = new Player(10, 10);
         engine.addEntity(player);
         notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
+        this.combatSystem = new CombatSystem(engine, player);
     }
 
     /**
@@ -241,6 +252,10 @@ public class GameScreen extends PocketRogueScreen {
      */
     public Player getPlayer() {
         return player;
+    }
+
+    public CombatSystem getCombatSystem() {
+        return combatSystem;
     }
 
     /**
@@ -270,10 +285,14 @@ public class GameScreen extends PocketRogueScreen {
         tiledMapRenderer.render();
 
         spriteBatch.setProjectionMatrix(worldCamera.combined);
+        shapeRenderer.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
+        shapeRenderer.begin();
         rogueInputProcessor.update();
         engine.update(delta);
+        combatSystem.update(delta);
         spriteBatch.end();
+        shapeRenderer.end();
 
         uiStage.act(delta);
         uiStage.draw();
@@ -379,9 +398,12 @@ public class GameScreen extends PocketRogueScreen {
                         if (console.checkNumArgs(args, 1)) {
                             int itemId = Integer.valueOf(args[0]);
                             int amount = args.length > 1 ? Integer.valueOf(args[1]) : 1;
-                            ItemDefinition def = ItemDefinitionLoader.getDefinition(itemId);
-                            String slot = (String) def.getProperty(ItemProperty.SLOT);
-                            String name = (String) def.getProperty(ItemProperty.NAME);
+                            Definition def = DefinitionLoader.getItemDefinition(itemId);
+                            if (def == null) {
+                                break;
+                            }
+                            String slot = (String) def.getProperty(DefinitionProperty.SLOT);
+                            String name = (String) def.getProperty(DefinitionProperty.NAME);
                             ItemType type = ItemType.valueOf(slot);
                             Item item = new Item(itemId, type);
                             ItemStack stack = new ItemStack(item, amount);
@@ -416,8 +438,8 @@ public class GameScreen extends PocketRogueScreen {
                     case "dropitem":
                         if (console.checkNumArgs(args, 1)) {
                             int itemId = Integer.valueOf(args[0]);
-                            ItemDefinition def = ItemDefinitionLoader.getDefinition(itemId);
-                            String slot = (String) def.getProperty(ItemProperty.SLOT);
+                            Definition def = DefinitionLoader.getItemDefinition(itemId);
+                            String slot = (String) def.getProperty(DefinitionProperty.SLOT);
                             ItemStack stack = new ItemStack(new Item(itemId, ItemType.valueOf(slot)), 1);
                             WorldItem worldItem = new WorldItem(stack,
                                     player.getPosition().x + 1, player.getPosition().y + 1);
@@ -431,6 +453,7 @@ public class GameScreen extends PocketRogueScreen {
                             this.debugOverlay.setup();
                         }
                         renderDebugOverlay = !renderDebugOverlay;
+                        IS_DEBUG = !IS_DEBUG;
                         break;
                     default:
                         console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);

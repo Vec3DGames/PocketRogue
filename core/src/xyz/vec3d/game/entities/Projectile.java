@@ -3,6 +3,9 @@ package xyz.vec3d.game.entities;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.RotationComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
@@ -35,6 +38,8 @@ public class Projectile extends PocketRogueEntity {
      */
     private float lifeThreshold = 5;
 
+    private Map<String, Object> properties;
+
     public Projectile(PocketRogueEntity source, float x, float y, float velocityX,
                       float velocityY, String name) {
         this(source, new Vector2(x, y), new Vector2(velocityX, velocityY), name);
@@ -48,10 +53,23 @@ public class Projectile extends PocketRogueEntity {
         add(new VelocityComponent(velocity));
         add(new RotationComponent(velocity.angle()));
         setName(name);
+        properties = new HashMap<>();
     }
 
     public PocketRogueEntity getSource() {
         return source;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void putProperty(String key, Object value) {
+        properties.put(key, value);
+    }
+
+    public Object getProperty(String key) {
+        return properties.get(key);
     }
 
     @Override

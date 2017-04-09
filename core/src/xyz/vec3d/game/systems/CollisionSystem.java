@@ -21,38 +21,47 @@ import xyz.vec3d.game.utils.Utils;
 
 public class CollisionSystem extends IteratingSystem {
 
+    /**
+     * The max range that entity collision checks are performed at. AKA the
+     * higher this value, the more entities that will be swept up in the culling
+     * process of the processEntity method. Lowering this value would technically
+     * improve performance however since the absolute minimum run time is O(n)
+     * there isn't much of a benefit from changing this value.
+     */
+    public static float COLLISION_MAX_RANGE = 15.0f;
+
+    /**
+     * Creates a new collision system that tracks all entities with a position
+     * and collide component.
+     */
     public CollisionSystem() {
         super(Family.all(PositionComponent.class, CollideComponent.class).get());
     }
 
+    /**
+     * Called each tick for all the entities being tracked by this system. First
+     * the system culls entities and gets all the entities within a certain
+     * range. Then, from those entities found, we check if any of them collide
+     * with the entity that is being referenced in this tick update.
+     *
+     * By culling the entities to a certain range we can limit the number of checks
+     * performed from worst case O(n^2) to O(n) + O(k) where k is the number
+     * of entities found in the new region.
+     *
+     * @param entity The entity that we are performing collision checks for.
+     * @param deltaTime The time in ms since last update.
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         //Get entities within a certain range of the entity.
-        ArrayList<PocketRogueEntity> entitiesInRange = getEntitiesWithinRange(entity, 15f);
+        ArrayList<PocketRogueEntity> entitiesInRange = Utils.
+                getEntitiesWithinRange(getEntities(), (PocketRogueEntity) entity,
+                        COLLISION_MAX_RANGE);
         for (PocketRogueEntity otherEntity : entitiesInRange) {
-            if (entitiesCollide((PocketRogueEntity) entity, otherEntity)) {
+            if (Utils.entitiesCollide((PocketRogueEntity) entity, otherEntity)) {
                 ((PocketRogueEntity) entity).doCollision(otherEntity);
             }
         }
     }
 
-    private ArrayList<PocketRogueEntity> getEntitiesWithinRange(Entity entity, float tileRange) {
-        ArrayList<PocketRogueEntity> entities = new ArrayList<>();
-        for (Entity e : getEntities()) {
-            if (!e.equals(entity)) {
-                if (Utils.inRange((PocketRogueEntity) e,
-                        (PocketRogueEntity) entity, tileRange)) {
-                    entities.add((PocketRogueEntity) e);
-                }
-            }
-        }
-        return entities;
-    }
-
-    private boolean entitiesCollide(PocketRogueEntity e1, PocketRogueEntity e2) {
-        Rectangle e1r = new Rectangle(e1.getPosition().x, e1.getPosition().y, 1, 1);
-        Rectangle e2r = new Rectangle(e2.getPosition().x, e2.getPosition().y, 1, 1);
-        //Logger.log(String.format("Checking if entity %s collided with entity %s", e1, e2));
-        return e1r.overlaps(e2r);
-    }
 }

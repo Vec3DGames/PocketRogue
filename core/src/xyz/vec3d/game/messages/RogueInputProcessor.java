@@ -13,8 +13,8 @@ import java.util.Locale;
 
 import xyz.vec3d.game.GameScreen;
 import xyz.vec3d.game.entities.Projectile;
-import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.utils.Logger;
+import xyz.vec3d.game.messages.Message.MessageType;
 
 /**
  * Created by Daron on 7/6/2016.
@@ -100,33 +100,19 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
                 return true;
             //Fire projectile code here.
             case Keys.SPACE:
-                //Get player's direction to use as base velocity.
-                Vector2 velocity = gameScreen.getPlayer().getDirection().cpy();
-                //Scale to desired speed
-                velocity.scl(0.4f);
-                //Get player's position to use as base position.
-                Vector2 position = gameScreen.getPlayer().getPosition().cpy();
-                //Get angle of range -180<=theta<=180
-                float angle = velocity.angle();
-                float xMod = (angle == 270 || angle == 90) ? 0 :
-                        (angle == 135 || angle == 225 || angle == 180) ? -1 : 1;
-                float yMod = (angle == 180 || angle == 0) ? 0 :
-                        (angle == 225 || angle == 315 || angle == 270) ? -1 : 1;
-                position.add(1.1f * xMod, 1.1f * yMod);
-                //Spawn projectile.
-                Projectile mageProjectile = new Projectile(gameScreen.getPlayer(),
-                        position, velocity, "Bolt");
-                notifyMessageReceivers(new Message(Message.MessageType.ENTITY_SPAWNED, mageProjectile));
+                Projectile projectile = gameScreen.getPlayer().getFiringSystem().fireProjectile();
+                if (projectile != null) {
+                    notifyMessageReceivers(new Message(MessageType.ENTITY_SPAWNED, projectile));
+                }
                 return true;
             default:
-                notifyMessageReceivers(new Message(Message.MessageType.KEY_TYPED, keycode));
+                notifyMessageReceivers(new Message(MessageType.KEY_TYPED, keycode));
                 return true;
         }
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        //gameScreen.getPlayer().remove(AnimationComponent.class);
         switch(keycode) {
             case Keys.W:
                 mov.add(0, -1);
@@ -149,11 +135,6 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
         return false;
     }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
     /**
      * Do click stuff here.
      *
@@ -164,6 +145,16 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
      *
      * @return True if the event was handled.
      */
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (gameScreen.getGuiOverlay() == null) {
+            //Do combat action here
+            gameScreen.getCombatSystem().doPlayerAttack();
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         return false;

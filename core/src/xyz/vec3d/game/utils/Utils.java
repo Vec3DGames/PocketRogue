@@ -1,22 +1,27 @@
 package xyz.vec3d.game.utils;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.JsonValue;
 
+import java.util.ArrayList;
+
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.model.DefinitionLoader;
+import xyz.vec3d.game.model.DefinitionLoader.Definition;
 import xyz.vec3d.game.model.Item;
-import xyz.vec3d.game.model.ItemDefinitionLoader;
-import xyz.vec3d.game.model.ItemProperty;
+import xyz.vec3d.game.model.DefinitionProperty;
 import xyz.vec3d.game.model.ItemStack;
 
 /**
@@ -210,8 +215,8 @@ public class Utils {
     }
 
     public static TextureRegion getItemTexture(int itemId) {
-        ItemDefinitionLoader.ItemDefinition definition = ItemDefinitionLoader.getDefinition(itemId);
-        int[] iconCoords = (int[]) definition.getProperty(ItemProperty.ICON);
+        Definition definition = DefinitionLoader.getItemDefinition(itemId);
+        int[] iconCoords = (int[]) definition.getProperty(DefinitionProperty.ICON);
         TextureRegion itemIcon = PocketRogue.getInstance().getSpriteSheet(itemId).
                 getTextureFromSheet(iconCoords[0], iconCoords[1]);
         if (itemIcon == null) {
@@ -230,12 +235,61 @@ public class Utils {
         return new TextureRegion(texture, texture.getWidth(), texture.getHeight());
     }
 
+    /**
+     * Determines if two specified entities are within range of each other. This
+     * check is done using the bottom left corners of the hit boxes which are what
+     * entity positions represent anyways. There is no reason to offset these
+     * positions so that they represent the center as when the distance is calculated
+     * the offsets end up cancelling themselves anyways. Makes use of Pythagoras'
+     * Theorem (a^2 + b^2 <= c^2) as opposed to using the built in Java math
+     * functions because those are technically slower.
+     *
+     * @param e1 The first entity in the comparison.
+     * @param e2 The second entity in the comparison.
+     * @param range The range we are checking for [0-range]
+     *
+     * @return True if the entities are within range.
+     */
     public static boolean inRange(PocketRogueEntity e1, PocketRogueEntity e2, float range) {
         Vector2 e1pos = e1.getPosition();
         Vector2 e2pos = e2.getPosition();
-        return (e2pos.x + 0.5 - e1pos.x + 0.5) * (e2pos.x + 0.5 - e1pos.x + 0.5) +
-                (e2pos.y + 0.5 - e1pos.y + 0.5) * (e2pos.y + 0.5 - e1pos.y + 0.5)
+        return (e2pos.x - e1pos.x) * (e2pos.x - e1pos.x) +
+                (e2pos.y - e1pos.y) * (e2pos.y - e1pos.y)
                 <= range * range;
+    }
+
+    /**
+     * Iterates through a collection of entities and returns an array list
+     * containing all the entities that were found within a certain range.
+     *
+     * @param entityPool The collection of entities to perform the checks on.
+     * @param entityRelativeTo The entity that checks are being performed off of.
+     * @param range The max distance in world units allowed between entities.
+     *
+     * @return A new collection of all entities within range of another entity.
+     */
+    public static ArrayList<PocketRogueEntity> getEntitiesWithinRange(
+            ImmutableArray<Entity> entityPool, PocketRogueEntity entityRelativeTo,
+            float range) {
+        //Create a new collection
+        ArrayList<PocketRogueEntity> entitiesInRange = new ArrayList<>();
+        //Loop through the entities in the collection
+        for (Entity entity : entityPool) {
+            //Only look at entities that aren't the same as the provided one
+            if (!entity.equals(entityRelativeTo)) {
+                if (inRange((PocketRogueEntity) entity, entityRelativeTo, range)) {
+                    entitiesInRange.add((PocketRogueEntity) entity);
+                }
+            }
+        }
+        return entitiesInRange;
+    }
+
+    public static boolean entitiesCollide(PocketRogueEntity e1, PocketRogueEntity e2) {
+        Rectangle e1r = new Rectangle(e1.getPosition().x, e1.getPosition().y, 1, 1);
+        Rectangle e2r = new Rectangle(e2.getPosition().x, e2.getPosition().y, 1, 1);
+        //Logger.log(String.format("Checking if entity %s collided with entity %s", e1, e2));
+        return e1r.overlaps(e2r);
     }
 
     public static String modifyDisplayValue(Label label, Object newString) {

@@ -7,7 +7,10 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
+import xyz.vec3d.game.GameScreen;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
@@ -52,6 +55,7 @@ public class RenderingSystem extends IteratingSystem {
      * The {@link SpriteBatch} being used to draw entities.
      */
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
 
     /**
      * Creates a new {@link RenderingSystem} for the game engine from a provided
@@ -59,10 +63,11 @@ public class RenderingSystem extends IteratingSystem {
      *
      * @param batch The SpriteBatch provided from the {@link xyz.vec3d.game.GameScreen}.
      */
-    public RenderingSystem(SpriteBatch batch) {
+    public RenderingSystem(SpriteBatch batch, ShapeRenderer shapeRenderer) {
         super(Family.all(PositionComponent.class).one(TextureComponent.class,
                 AnimationComponent.class).get());
         this.batch = batch;
+        this.shapeRenderer = shapeRenderer;
     }
 
     /**
@@ -79,6 +84,12 @@ public class RenderingSystem extends IteratingSystem {
         TextureComponent textureComponent = tm.get(entity);
         PositionComponent positionComponent = pm.get(entity);
         AnimationComponent animationComponent = am.get(entity);
+
+        //If in debug mode, draw a red square around hitbox
+        if (GameScreen.IS_DEBUG) {
+            shapeRenderer.rect(positionComponent.getPosition().x,
+                    positionComponent.getPosition().y, 1, 1);
+        }
 
         //First see if the entity has an animation that needs to play.
         if (animationComponent != null) {

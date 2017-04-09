@@ -9,7 +9,6 @@
     <facet type="android" name="Android">
       <configuration>
         <option name="SELECTED_BUILD_VARIANT" value="debug" />
-        <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
         <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugSources" />
         <afterSyncTasks>
@@ -29,12 +28,14 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
@@ -42,7 +43,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/aidl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/debug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/shaders" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/res" type="java-test-resource" />
@@ -50,21 +50,18 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
@@ -72,7 +69,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/aidl" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
@@ -90,24 +86,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="ashley-1.7.0" level="project" />
     <orderEntry type="library" exported="" name="gdx-backend-android-1.9.3" level="project" />
-    <orderEntry type="library" exported="" name="lwjgl_util-2.9.2" level="project" />
-    <orderEntry type="library" exported="" name="jorbis-0.0.17" level="project" />
-    <orderEntry type="library" exported="" name="jutils-1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="jinput-platform-2.0.5-natives-osx" level="project" />
-    <orderEntry type="library" exported="" name="gdx-backend-headless-1.9.3" level="project" />
-    <orderEntry type="library" exported="" name="gdx-freetype-platform-1.9.3-natives-desktop" level="project" />
-    <orderEntry type="library" exported="" name="lwjgl-platform-2.9.2-natives-linux" level="project" />
-    <orderEntry type="library" exported="" name="gdx-backend-lwjgl-1.9.3" level="project" />
-    <orderEntry type="library" exported="" name="jinput-platform-2.0.5-natives-windows" level="project" />
-    <orderEntry type="library" exported="" name="lwjgl-platform-2.9.2-natives-osx" level="project" />
-    <orderEntry type="library" exported="" name="gdx-tools-1.9.3" level="project" />
     <orderEntry type="library" exported="" name="gdx-1.9.3" level="project" />
-    <orderEntry type="library" exported="" name="jinput-platform-2.0.5-natives-linux" level="project" />
-    <orderEntry type="library" exported="" name="lwjgl-2.9.2" level="project" />
-    <orderEntry type="library" exported="" name="jlayer-1.0.1-gdx" level="project" />
-    <orderEntry type="library" exported="" name="jinput-2.0.5" level="project" />
-    <orderEntry type="library" exported="" name="lwjgl-platform-2.9.2-natives-windows" level="project" />
-    <orderEntry type="library" exported="" name="gdx-freetype-1.9.3" level="project" />
     <orderEntry type="module" module-name="core" exported="" />
     <orderEntry type="library" exported="" name="android-android-19" level="project" />
   </component>

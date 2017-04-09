@@ -10,6 +10,7 @@ import xyz.vec3d.game.entities.components.CollideComponent;
 import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.model.combat.ProjectileFiringSystem;
 import xyz.vec3d.game.utils.Logger;
 
 /**
@@ -35,9 +36,17 @@ public class PocketRogueEntity extends Entity {
      */
     private Vector2 lastDirection = new Vector2(0, -1);
 
+    /**
+     * The entity's name.
+     */
     private String name;
 
+    /**
+     * True if the entity is dead and should be removed from the engine.
+     */
     protected boolean isDead;
+
+    protected ProjectileFiringSystem projectileFiringSystem;
 
     public PocketRogueEntity() {
         add(new CollideComponent());
@@ -141,6 +150,9 @@ public class PocketRogueEntity extends Entity {
         if (isDead) {
             engine.removeEntity(this);
         }
+        if (projectileFiringSystem != null) {
+            projectileFiringSystem.update(delta);
+        }
     }
 
     /**
@@ -199,8 +211,38 @@ public class PocketRogueEntity extends Entity {
         this.name = name;
     }
 
+    /**
+     * Called whenever the entity collides with another entity. Collision is
+     * currently defined as the rectangles of the entities intersecting or not.
+     *
+     * @param entityCollidedWith This is the entity that collided with the entity
+     *                           this method is called on. Say a projectile collides
+     *                           with a mob, the mob would have doCollision called
+     *                           where entityCollidedWith is the projectile object.
+     */
     public void doCollision(PocketRogueEntity entityCollidedWith) {
-        Logger.log(String.format("Entity %s collided with entity %s", this,
-                entityCollidedWith), PocketRogueEntity.class);
+        //Logger.log(String.format("Entity %s collided with entity %s", this, entityCollidedWith), PocketRogueEntity.class);
+    }
+
+    /**
+     * Called whenever the entity is hit be another entity. This is different than
+     * the doCollision method as this one is called by melee attack methods or
+     * any other systems that need to apply an onHit effect without using entities
+     * for collision.
+     *
+     * Note: doCollision could in theory call this method for various other on
+     * hit effects as opposed to doing it in the doCollision method.
+     *
+     * @param entityHitting This is the entity that is applying the hit effect.
+     *                      For example, if the player hits a mob, doHit would be
+     *                      called on the mob and entityHitting would reference
+     *                      the player.
+     */
+    public void doHit(PocketRogueEntity entityHitting) {
+
+    }
+
+    public ProjectileFiringSystem getFiringSystem() {
+        return projectileFiringSystem;
     }
 }

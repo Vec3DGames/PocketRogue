@@ -13,6 +13,7 @@ import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.model.Inventory;
+import xyz.vec3d.game.model.combat.ProjectileFiringSystem;
 
 /**
  * Created by darakelian on 7/6/2016.
@@ -50,6 +51,7 @@ public class Player extends PocketRogueEntity {
                 new Animation(1/10f, tmpRegions[0]), //Down
                 new Animation(1/10f, idle) //Idle
         });
+        this.projectileFiringSystem = new ProjectileFiringSystem(this);
     }
 
     /**
