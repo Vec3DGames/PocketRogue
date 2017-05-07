@@ -1,5 +1,7 @@
 package xyz.vec3d.game.model;
 
+import xyz.vec3d.game.utils.Utils;
+
 /**
  * Created by darakelian on 7/24/2016.
  * Copyright vec3d.xyz 2016
@@ -47,7 +49,7 @@ public class ItemStack {
      *
      * @return The number of items in the stack.
      */
-    public int getQuantity() {
+    int getQuantity() {
         return quantity;
     }
 
@@ -56,7 +58,7 @@ public class ItemStack {
      *
      * @param quantityToRemove The number of Items to remove.
      */
-    public void removeQuantity(int quantityToRemove) {
+    void removeQuantity(int quantityToRemove) {
         quantity -= quantityToRemove;
     }
 
@@ -69,7 +71,7 @@ public class ItemStack {
      *
      * @return The new ItemStack instance with the combined quantities.
      */
-    public ItemStack merge(ItemStack itemStackToMerge) {
+    ItemStack merge(ItemStack itemStackToMerge) {
         if (!this.getItem().equals(itemStackToMerge.getItem())) {
             System.out.println("ItemStacks must be of same Item type to merge.");
             return this;
@@ -100,14 +102,19 @@ public class ItemStack {
     @Override
     public String toString() {
         String itemName = this.getItem().getName();
-        return itemName + " (" + this.getQuantity() + ") Equipped: " + isEquipped;
+        int quantity = this.getQuantity();
+        String quantityString = Utils.shortenQuantityString(quantity);
+        boolean isEquipped = isEquipped();
+
+        return String.format("%s%s%s", itemName,
+                quantity > 1 ? " (" + quantityString + ")" : "",
+                isEquipped ? " *" : "");
     }
 
-    public void equipItem() {
+    void equipItem() {
         isEquipped = true;
     }
-
-    public void unequipItem() {
+    void unequipItem() {
         isEquipped = false;
     }
 

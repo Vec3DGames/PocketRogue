@@ -1,7 +1,10 @@
 package xyz.vec3d.game.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import xyz.vec3d.game.model.Item.ItemType;
 
 /**
  * Created by Daron on 4/16/2017.
@@ -14,7 +17,7 @@ import java.util.Map;
 
 public class EquipmentManager {
 
-    private Map<Item.ItemType, ItemStack> equipment;
+    private Map<ItemType, ItemStack> equipment;
 
     /**
      * The parent Inventory object.
@@ -26,29 +29,49 @@ public class EquipmentManager {
         equipment = new HashMap<>();
     }
 
-    public void equipItem(ItemStack itemStack) {
-        Item.ItemType slot = itemStack.getItem().getType();
-        //If there is already an item in the slot, get the old item, unequip it
-        //and equip the new one.
+    public boolean equipItem(ItemStack itemStack) {
+        ItemType slot = itemStack.getItem().getType();
+        if (!itemStack.getItem().isEquipable()) {
+            return false;
+        }
         if (equipment.containsKey(slot)) {
             ItemStack oldItem = equipment.remove(slot);
-            if (oldItem != null) {
+            if (oldItem.equals(itemStack)) {
+                itemStack.unequipItem();
+            } else {
                 oldItem.unequipItem();
                 itemStack.equipItem();
                 equipment.put(slot, itemStack);
             }
-        } else { //Otherwise, put the new item in the slot
+        } else {
             itemStack.equipItem();
             equipment.put(slot, itemStack);
+
         }
+        return true;
     }
 
     @Override
     public String toString() {
         String s = "[Equipment]";
-        for (Item.ItemType slot : equipment.keySet()) {
+        for (ItemType slot : equipment.keySet()) {
             s += (equipment.get(slot) + "\n");
         }
         return s;
+    }
+
+    public Item getItem(ItemType slot) {
+        return equipment.get(slot).getItem();
+    }
+
+    /*public ArrayList<ItemStack> getEquipment() {
+        return (ArrayList<ItemStack>) equipment.values();
+    }*/
+    public float getTotalDamageBonuses() {
+        float damage = 0f;
+        for (ItemStack item : equipment.values()) {
+            damage += item.getItem().getBonus(Item.ATTACK);
+        }
+        return damage;
     }
 }

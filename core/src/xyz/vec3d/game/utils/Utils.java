@@ -210,11 +210,11 @@ public class Utils {
         return getItemTexture(itemStack.getItem());
     }
 
-    public static TextureRegion getItemTexture(Item item) {
+    private static TextureRegion getItemTexture(Item item) {
         return getItemTexture(item.getId());
     }
 
-    public static TextureRegion getItemTexture(int itemId) {
+    private static TextureRegion getItemTexture(int itemId) {
         Definition definition = DefinitionLoader.getItemDefinition(itemId);
         int[] iconCoords = (int[]) definition.getProperty(DefinitionProperty.ICON);
         TextureRegion itemIcon = PocketRogue.getInstance().getSpriteSheet(itemId).
@@ -285,10 +285,17 @@ public class Utils {
         return entitiesInRange;
     }
 
+    /**
+     * Determines if two entities are currently colliding with each other.
+     *
+     * @param e1 The first entity in the collision check.
+     * @param e2 The second entity in the collision check.
+     *
+     * @return True if the entities are overlapping.
+     */
     public static boolean entitiesCollide(PocketRogueEntity e1, PocketRogueEntity e2) {
         Rectangle e1r = new Rectangle(e1.getPosition().x, e1.getPosition().y, e1.getSize(), e1.getSize());
         Rectangle e2r = new Rectangle(e2.getPosition().x, e2.getPosition().y, e1.getSize(), e1.getSize());
-        //Logger.log(String.format("Checking if entity %s collided with entity %s", e1, e2));
         return e1r.overlaps(e2r);
     }
 
@@ -301,5 +308,66 @@ public class Utils {
             return original;
         }
         return original.substring(0, original.indexOf(":") + 2) + newString;
+    }
+
+    /**
+     * Converts a String of numbers to an integer array using a comma as the
+     * delimiter.
+     *
+     * @see Utils#stringToIntArray(String, String)
+     *
+     * @param arrayAsString The String of numbers before separation.
+     *
+     * @return An integer array of the Strings converted to ints.
+     */
+    public static int[] stringToIntArray(String arrayAsString) {
+        return stringToIntArray(arrayAsString, ",");
+    }
+
+    /**
+     * Converts a String of numbers separated by a delimiter to an integer array.
+     *
+     * @param arrayAsString The String of numbers before separation.
+     *
+     * @param delimiter The delimiter that the numbers are separated by.
+     *
+     * @return An integer array of the Strings converted to ints.
+     */
+    private static int[] stringToIntArray(String arrayAsString, String delimiter) {
+        String[] tokens = arrayAsString.split(delimiter);
+        int[] intArray = new int[tokens.length];
+        for (int i = 0; i < tokens.length; i++) {
+            try {
+                intArray[i] = Integer.parseInt(tokens[i]);
+            } catch (NumberFormatException e) {
+                //Log that we found invalid string but return what has been parsed so far.
+                Logger.log("Invalid string!", Utils.class, Logger.LogLevel.ERROR);
+                return intArray;
+            }
+        }
+        return intArray;
+    }
+
+    /**
+     * Converts an item's quantity to a shorthand presentation to avoid
+     * exceptionally long strings. The formatting is as follows: 1-99,999 is
+     * returned as is. 100,000-999,999 is returned as quantity / 1000 with a K
+     * appended. 1,000,000 and onward is returned as quantity / 1,000,000 with
+     * and M appended.
+     *
+     * @param quantity The quantity of the item stack.
+     *
+     * @return Shortened string representation of the quantity.
+     */
+    public static String shortenQuantityString(int quantity) {
+        if (quantity < 100_000) {
+            return String.valueOf(quantity);
+        } else {
+            if (quantity >= 100_000 && quantity < 1_000_000) {
+                return (quantity / 1_000) + "K";
+            } else {
+                return (quantity / 1_000_000) + "M";
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ package xyz.vec3d.game.model;
  */
 public enum DefinitionProperty {
 
-    NAME, ICON, STACKABLE, SLOT, ID, HEALTH;
+    NAME, ICON, STACKABLE, SLOT, ID, HEALTH, BONUSES;
 
     public static DefinitionProperty value(String name) {
         return DefinitionProperty.valueOf(name.toUpperCase());

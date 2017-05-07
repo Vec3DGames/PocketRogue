@@ -41,9 +41,15 @@ public class Item {
     public static final int RANGE = 2;
 
     /**
-     * Constant representing the index in bonus array for the dexterity bonus.
+     * Constant representing the index in bonus array for the attack speed bonus.
      */
-    public static final int DEXTERITY = 3;
+    public static final int ATTACK_SPEED = 3;
+
+    public static final int MELEE_DEFENSE = 4;
+
+    public static final int MAGIC_DEFENSE = 5;
+
+    public static final int RANGE_DEFENSE = 6;
 
     /**
      * Creates a new Item with an ID and {@link ItemType} but no bonuses.
@@ -86,7 +92,14 @@ public class Item {
      * @return Integer array of bonuses indexed with the class constants.
      */
     public int[] getBonuses() {
-        return bonuses == null ? new int[] {0, 0, 0, 0} : bonuses;
+        int[] bonusesFromDefinitions = (int[]) DefinitionLoader.getItemDefinition(getId())
+                .getProperty(DefinitionProperty.BONUSES);
+        if (bonusesFromDefinitions == null) {
+            return new int[] {0, 0, 0, 0, 0, 0, 0};
+        } else {
+            bonuses = bonusesFromDefinitions;
+            return bonuses;
+        }
     }
 
     /**
@@ -97,10 +110,10 @@ public class Item {
      * @return The value of the specified bonus type.
      */
     public int getBonus(int bonusType) {
-        return bonuses[bonusType];
+        return getBonuses()[bonusType];
     }
 
-    public ItemType getType() {
+    ItemType getType() {
         return type;
     }
 
@@ -113,7 +126,7 @@ public class Item {
         return (String) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.NAME);
     }
 
-    public String getSlot() {
+    private String getSlot() {
         return (String) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.SLOT);
     }
 
@@ -124,7 +137,7 @@ public class Item {
      *
      * @return True if the Item is stackable.
      */
-    public boolean isStackable() {
+    boolean isStackable() {
         return (Boolean) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.STACKABLE);
     }
 
@@ -133,8 +146,8 @@ public class Item {
      *
      * @return True if the item can be equipped.
      */
-    public boolean isEquipable() {
-        return getSlot().equalsIgnoreCase("none");
+    boolean isEquipable() {
+        return !getSlot().equalsIgnoreCase("general");
     }
 
     /**
@@ -157,4 +170,5 @@ public class Item {
     public enum ItemType {
         HELMET, CHEST, LEGS, BOOTS, RING, PRIMARY_HAND, OFF_HAND, GENERAL;
     }
+
 }

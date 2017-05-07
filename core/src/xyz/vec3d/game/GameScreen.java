@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import java.util.stream.Stream;
+
 import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
@@ -136,7 +138,7 @@ public class GameScreen extends PocketRogueScreen {
      *
      * @param pocketRogue The {@link PocketRogue} instance.
      */
-    public GameScreen(PocketRogue pocketRogue) {
+    GameScreen(PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
         this.engine = new Engine();
         this.uiStage = new Stage();
@@ -155,7 +157,7 @@ public class GameScreen extends PocketRogueScreen {
     private void setUpGui() {
         //Create the stage and viewport for the UI.
         uiStage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
-        skin = (Skin) PocketRogue.getAsset("uiskin.json");
+        skin = PocketRogue.getAsset("uiskin.json");
 
         //Set up input multiplexer.
         rogueInputProcessor = new RogueInputProcessor(this);
@@ -363,7 +365,7 @@ public class GameScreen extends PocketRogueScreen {
                 System.out.println(uiName);
                 switch (uiName.toLowerCase()) {
                     case "player_info_display":
-                        openGui("player_inventory", player.getInventory(), skin);
+                        openGui("player_inventory", player.getInventory(), skin, combatSystem);
                         break;
                 }
                 break;
@@ -406,6 +408,11 @@ public class GameScreen extends PocketRogueScreen {
                             String name = (String) def.getProperty(DefinitionProperty.NAME);
                             ItemType type = ItemType.valueOf(slot);
                             Item item = new Item(itemId, type);
+                            if (args.length >= 3) {
+                                String bonuses = args[2];
+                                int[] intBonuses = Utils.stringToIntArray(bonuses);
+                                item = new Item(itemId, intBonuses, type);
+                            }
                             ItemStack stack = new ItemStack(item, amount);
                             player.getInventory().addItem(stack);
                             Message inventoryChangedMessage = new Message(Message.

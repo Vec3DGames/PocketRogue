@@ -39,6 +39,7 @@ public class DefinitionLoader {
                 String key = value.name;
                 definition.putProperty(key, Utils.getJsonTypeValue(value));
             }
+            definition.putProperty("id", i);
             itemDefinitions.put((int)definition.getProperty(DefinitionProperty.ID), definition);
             System.out.println("Loaded definition: " + definition);
         }

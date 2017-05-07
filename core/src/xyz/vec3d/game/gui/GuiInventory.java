@@ -11,10 +11,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import xyz.vec3d.game.messages.IMessageReceiver;
+import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.model.Inventory;
+import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.ItemStack;
+import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -22,17 +27,16 @@ import xyz.vec3d.game.utils.Utils;
  *
  * GUI overlay for the player {@link Inventory};
  */
-public class GuiInventory extends Gui {
+class GuiInventory extends Gui {
 
     private Inventory inventory;
     private ScrollPane itemScrollPane;
     private Table itemTable;
-    private Table componentTable;
-    private Table itemInfoTable;
-    private Button equipButton;
-    private ArrayList<ItemStackDisplay> itemStackDisplays = new ArrayList<>();
+    private List<ItemStackDisplay> itemStackDisplays = new ArrayList<>();
+    private List<IMessageReceiver> messageReceivers = new ArrayList<>();
 
-    private Label attr1, attr2, attr3, attr4;
+    private Label meleeDamage, magicDamage, rangeDamage, attackSpeed, meleeDef,
+            magicDef, rangeDef;
 
     public GuiInventory() {
         super();
@@ -42,6 +46,8 @@ public class GuiInventory extends Gui {
     public void setup() {
         this.inventory = (Inventory) getParameters()[0];
         Skin skin = (Skin) getParameters()[1];
+        CombatSystem combatSystem = (CombatSystem) getParameters()[2];
+        this.messageReceivers.add(combatSystem);
 
         //Create and set up the window.
         Window window = new Window("Inventory", skin);
@@ -51,7 +57,7 @@ public class GuiInventory extends Gui {
         Utils.centerActor(window, getStage());
 
         //Set up root table.
-        componentTable = new Table(skin);
+        Table componentTable = new Table(skin);
         componentTable.pad(4);
         componentTable.padTop(22);
         componentTable.setFillParent(true);
@@ -61,30 +67,39 @@ public class GuiInventory extends Gui {
         itemScrollPane = new ScrollPane(itemTable, skin);
 
         //Set up table for item stats.
-        itemInfoTable = new Table(skin);
-        attr1 = new Label("Damage: ", skin);
-        attr2 = new Label("Attack Speed: ", skin);
-        attr3 = new Label("Attribute 3: ", skin);
-        attr4 = new Label("Attribute 4: ", skin);
-        equipButton = new TextButton("Equip", skin);
+        Table itemInfoTable = new Table(skin);
+        meleeDamage = new Label("Melee Damage: ", skin);
+        magicDamage = new Label("Magic Damage: ", skin);
+        rangeDamage = new Label("Range Damage: ", skin);
+        attackSpeed = new Label("Attack Speed: ", skin);
+        meleeDef = new Label("Melee Defense: ", skin);
+        magicDef = new Label("Magic Defense: ", skin);
+        rangeDef = new Label("Range Defense: ", skin);
+        Button equipButton = new TextButton("Equip", skin);
         equipButton.addCaptureListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ItemStackDisplay itemStackDisplay = getSelectedDisplay();
-                if (getSelectedDisplay() == null) {
+                if (itemStackDisplay == null) {
                     return;
                 }
+
                 ItemStack itemToEquip = itemStackDisplay.getItemStack();
-                //itemStackDisplay.setItemEquipped(true);
-                inventory.equipItem(itemToEquip);
-                refreshInventoryTable();
+                if (inventory.equipItem(itemToEquip)) {
+                    Message itemEquippedMessage = new Message(Message.MessageType.ITEM_EQUIPPED);
+                    notifyMessageReceivers(itemEquippedMessage);
+                    refreshInventoryTable();
+                }
             }
         });
 
-        itemInfoTable.add(attr1).pad(4).fillX().expandX().height(40).row();
-        itemInfoTable.add(attr2).pad(4).fillX().expandX().height(40).row();
-        itemInfoTable.add(attr3).pad(4).fillX().expandX().height(40).row();
-        itemInfoTable.add(attr4).pad(4).fillX().expandX().height(40).row();
+        itemInfoTable.add(meleeDamage).pad(4).fillX().expandX().height(20).row();
+        itemInfoTable.add(magicDamage).pad(4).fillX().expandX().height(20).row();
+        itemInfoTable.add(rangeDamage).pad(4).fillX().expandX().height(20).row();
+        itemInfoTable.add(attackSpeed).pad(4).fillX().expandX().height(20).row();
+        itemInfoTable.add(meleeDef).pad(4).fillX().expandX().height(20).row();
+        itemInfoTable.add(magicDef).pad(4).fillX().expandX().height(20).row();
+        itemInfoTable.add(rangeDef).pad(4).fillX().expandX().height(20).row();
         itemInfoTable.add(equipButton).pad(4).fillX().expandX().height(40);
         itemInfoTable.add().fill().expand();
         //itemInfoTable.add().expand().fill();
@@ -118,15 +133,17 @@ public class GuiInventory extends Gui {
                         //Update bonuses.
                         ItemStackDisplay displayFired = (ItemStackDisplay) event.getListenerActor();
                         int[] bonuses = displayFired.getItemStack().getItem().getBonuses();
-                        attr1.setText(Utils.modifyDisplayValue(attr1, bonuses[0]));
-                        attr2.setText(Utils.modifyDisplayValue(attr1, bonuses[1]));
-                        attr3.setText(Utils.modifyDisplayValue(attr1, bonuses[2]));
-                        attr4.setText(Utils.modifyDisplayValue(attr1, bonuses[3]));
+                        meleeDamage.setText(Utils.modifyDisplayValue(meleeDamage, bonuses[Item.ATTACK]));
+                        magicDamage.setText(Utils.modifyDisplayValue(magicDamage, bonuses[Item.MAGIC]));
+                        rangeDamage.setText(Utils.modifyDisplayValue(rangeDamage, bonuses[Item.RANGE]));
+                        attackSpeed.setText(Utils.modifyDisplayValue(attackSpeed, bonuses[Item.ATTACK_SPEED]));
+                        meleeDef.setText(Utils.modifyDisplayValue(meleeDef, bonuses[Item.MELEE_DEFENSE]));
+                        magicDef.setText(Utils.modifyDisplayValue(magicDef, bonuses[Item.MAGIC_DEFENSE]));
+                        rangeDef.setText(Utils.modifyDisplayValue(rangeDef, bonuses[Item.RANGE_DEFENSE]));
                         for (ItemStackDisplay stackDisplay : itemStackDisplays) {
                             stackDisplay.deselect();
                         }
                         displayFired.select();
-                        //inventory.equipItem(displayFired.getItemStack());
                     }
                 });
                 itemStackDisplays.add(display);
@@ -154,6 +171,13 @@ public class GuiInventory extends Gui {
                 this.inventory = (Inventory) message.getPayload()[0];
                 refreshInventoryTable();
                 break;
+        }
+    }
+
+    @Override
+    public void notifyMessageReceivers(Message message) {
+        for (IMessageReceiver messageReceiver : messageReceivers) {
+            messageReceiver.onMessageReceived(message);
         }
     }
 }

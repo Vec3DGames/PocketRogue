@@ -15,7 +15,7 @@ import xyz.vec3d.game.utils.Utils;
  *
  * Graphical representation of an ItemStack to be drawn in a scroll pane.
  */
-public class ItemStackDisplay extends Actor implements Disposable {
+class ItemStackDisplay extends Actor implements Disposable {
 
     /**
      * The ItemStack represented by the display.
@@ -42,7 +42,7 @@ public class ItemStackDisplay extends Actor implements Disposable {
      *
      * @param itemStack The ItemStack to represent.
      */
-    public ItemStackDisplay(ItemStack itemStack) {
+    ItemStackDisplay(ItemStack itemStack) {
         this.itemStack = itemStack;
         //Get the texture.
         itemIcon = Utils.getItemTexture(itemStack);
@@ -55,21 +55,21 @@ public class ItemStackDisplay extends Actor implements Disposable {
      *
      * @return ItemStack object stored in this display.
      */
-    public ItemStack getItemStack() {
+    ItemStack getItemStack() {
         return itemStack;
     }
 
-    public void select() {
+    void select() {
         selected = true;
-        this.setDebug(selected);
+        this.setDebug(true);
     }
 
-    public void deselect() {
+    void deselect() {
         selected = false;
-        this.setDebug(selected);
+        this.setDebug(false);
     }
 
-    public boolean isSelected() {
+    boolean isSelected() {
         return selected;
     }
 
@@ -82,6 +82,7 @@ public class ItemStackDisplay extends Actor implements Disposable {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.draw(itemIcon, getX(), getY(), 64, 64);
-        font.draw(batch, itemStack.getItem().getName() + (itemStack.isEquipped() ? " *" : ""), getX() + 70, getY() + 64);
+        font.draw(batch, itemStack.toString(), getX() + 70, getY() + 64);
     }
+
 }

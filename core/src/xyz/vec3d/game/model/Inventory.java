@@ -211,11 +211,11 @@ public class Inventory {
      *
      * @param itemStack The item trying to be equipped.
      */
-    public void equipItem(ItemStack itemStack) {
-        if (!itemStack.getItem().isEquipable()) {
+    public boolean equipItem(ItemStack itemStack) {
+        /*if (itemStack.getItem().isEquipable()) {
             equipmentManager.equipItem(itemStack);
-            return;
-        }
+        }*/
+        return equipmentManager.equipItem(itemStack);
     }
 
     public EquipmentManager getEquipmentManager() {

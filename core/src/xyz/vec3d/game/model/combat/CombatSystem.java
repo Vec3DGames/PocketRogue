@@ -7,6 +7,10 @@ import java.util.ArrayList;
 
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
+import xyz.vec3d.game.messages.IMessageReceiver;
+import xyz.vec3d.game.messages.Message;
+import xyz.vec3d.game.model.Item;
+import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
@@ -18,7 +22,7 @@ import xyz.vec3d.game.utils.Utils;
  * This class handles all player combat interaction.
  */
 
-public class CombatSystem {
+public class CombatSystem implements IMessageReceiver {
 
     private Engine engine;
 
@@ -40,7 +44,7 @@ public class CombatSystem {
     public CombatSystem(Engine engine, Player player) {
         this.player = player;
         this.engine = engine;
-        this.timeSinceLastAttack = this.timeTillNextAttack = 1f;
+        this.timeSinceLastAttack = this.timeTillNextAttack = 2f;
     }
 
     public void update(float delta) {
@@ -79,6 +83,19 @@ public class CombatSystem {
     }
 
     private float calculatePlayerDamage(PocketRogueEntity entityBeingHit) {
-        return 10f;
+        return player.getInventory().getEquipmentManager().getTotalDamageBonuses();
+    }
+
+    @Override
+    public void onMessageReceived(Message message) {
+        switch (message.getMessageType()) {
+            case ITEM_EQUIPPED:
+                Item itemEquipped = player.getInventory().getEquipmentManager()
+                        .getItem(Item.ItemType.PRIMARY_HAND);
+                if (itemEquipped != null) {
+                    this.timeTillNextAttack = itemEquipped.getBonus(Item.ATTACK_SPEED);
+                }
+                break;
+        }
     }
 }

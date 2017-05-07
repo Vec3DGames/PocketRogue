@@ -128,7 +128,7 @@ public class ConsoleDisplay extends Table implements IMessageSender {
                 if (tokens.length == 0) {
                     return;
                 }
-                Message commandMessage = new Message(Message.MessageType.COMMAND, (String[]) tokens);
+                Message commandMessage = new Message(Message.MessageType.COMMAND, (Object[]) tokens);
                 log(commandInput.getText(), LogMessage.LogLevel.NORMAL);
                 notifyMessageReceivers(commandMessage);
 
