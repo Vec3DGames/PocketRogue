@@ -5,8 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import xyz.vec3d.game.PocketRogue;
+import xyz.vec3d.game.entities.components.HealthComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.model.DefinitionLoader;
+import xyz.vec3d.game.model.DefinitionProperty;
 
 /**
  * Created by Daron on 8/11/2016.
@@ -22,6 +25,9 @@ public class Enemy extends PocketRogueEntity {
         this.id = id;
         add(new PositionComponent(x, y));
         add(new VelocityComponent());
+        //Load up properties
+        this.health = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.HEALTH));
+        add(new HealthComponent(this.health));
         //Set up animations here.
         Texture animationSheet = PocketRogue.getAsset("animation_sheets/player_animation.png");
         TextureRegion[][] tmpRegions = TextureRegion.split(animationSheet, 32, 32);
@@ -45,20 +51,18 @@ public class Enemy extends PocketRogueEntity {
         OVERWORLD_GRASS, OVERWORLD_SAND, DUNGEON
     }
 
-    private float health = 100.0f;
-
     @Override
     public void doCollision(PocketRogueEntity otherEntity) {
         if (otherEntity instanceof Projectile) {
             float damage = (float) ((Projectile) otherEntity).getProperty("dmg");
-            if ((health -= damage) <= 0) {
-                this.kill();
-            }
+            applyDamage(damage);
         }
     }
 
     @Override
-    public void doHit(PocketRogueEntity entityHitting) {
-        this.kill();
+    public void doHit(PocketRogueEntity entityHitting, float damage) {
+        if (entityHitting instanceof Player) {
+            applyDamage(damage);
+        }
     }
 }

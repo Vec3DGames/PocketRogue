@@ -3,7 +3,6 @@ package xyz.vec3d.game.entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.components.HealthComponent;
@@ -13,6 +12,7 @@ import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.model.Inventory;
+import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.model.combat.ProjectileFiringSystem;
 
 /**
@@ -41,15 +41,13 @@ public class Player extends PocketRogueEntity {
         //Set up animations here.
         Texture animationSheet = PocketRogue.getAsset("animation_sheets/player_animation.png");
         TextureRegion[][] tmpRegions = TextureRegion.split(animationSheet, 32, 32);
-        TextureRegion[] idle = new TextureRegion[3];
-        System.arraycopy(tmpRegions[0], 0, idle, 0, idle.length);
         //Set the animations available
         setAnimations(new Animation[] {
                 new Animation(1/10f, tmpRegions[3]), //Left
                 new Animation(1/10f, tmpRegions[2]), //Right
                 new Animation(1/10f, tmpRegions[1]), //Up
                 new Animation(1/10f, tmpRegions[0]), //Down
-                new Animation(1/10f, idle) //Idle
+                new Animation(1/10f, tmpRegions[0]) //Idle
         });
         this.projectileFiringSystem = new ProjectileFiringSystem(this);
     }
@@ -63,6 +61,20 @@ public class Player extends PocketRogueEntity {
      */
     public Inventory getInventory() {
         return getComponent(InventoryComponent.class).getInventory();
+    }
+
+    @Override
+    public void doCollision(PocketRogueEntity otherEntity) {
+        if (otherEntity instanceof WorldItem) {
+            //Make sure the item hasn't been picked up somehow so we don't get
+            //duplicates.
+            if (otherEntity.isDead()) {
+                return;
+            }
+            ItemStack itemStack = ((WorldItem) otherEntity).getItemStack();
+            otherEntity.kill();
+            getInventory().addItem(itemStack);
+        }
     }
 
 }

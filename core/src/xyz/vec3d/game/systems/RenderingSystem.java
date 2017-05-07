@@ -5,18 +5,19 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 
 import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.AnimationComponent;
+import xyz.vec3d.game.entities.components.HealthComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.RotationComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
-import xyz.vec3d.game.utils.Logger;
 
 /**
  * Created by darakelian on 7/7/2016.
@@ -51,6 +52,8 @@ public class RenderingSystem extends IteratingSystem {
      */
     private ComponentMapper<RotationComponent> rm = ComponentMapper.getFor(RotationComponent.class);
 
+    private ComponentMapper<HealthComponent> hm = ComponentMapper.getFor(HealthComponent.class);
+
     /**
      * The {@link SpriteBatch} being used to draw entities.
      */
@@ -84,22 +87,37 @@ public class RenderingSystem extends IteratingSystem {
         TextureComponent textureComponent = tm.get(entity);
         PositionComponent positionComponent = pm.get(entity);
         AnimationComponent animationComponent = am.get(entity);
+        HealthComponent healthComponent = hm.get(entity);
+
+        float x = positionComponent.getPosition().x;
+        float y = positionComponent.getPosition().y;
 
         //If in debug mode, draw a red square around hitbox
         if (GameScreen.IS_DEBUG) {
-            shapeRenderer.rect(positionComponent.getPosition().x,
-                    positionComponent.getPosition().y, 1, 1);
+            shapeRenderer.rect(x, y, 1, 1);
+        }
+
+        //Try to draw a health bar for entities that have health.
+        if (healthComponent != null) {
+            float healthBarScale = healthComponent.getPercentHealthRemainingScale();
+            Texture healthBar = PocketRogue.getAsset("healthBar.png");
+            batch.draw(healthBar, x, y + 1.1f, 1 * healthBarScale, 0.125f);
         }
 
         //First see if the entity has an animation that needs to play.
         if (animationComponent != null) {
             boolean moving = ((PocketRogueEntity) entity).isMoving();
             animationComponent.addAnimationTime(deltaTime);
-            float animationTime = animationComponent.getAnimationTime();
+            /*float animationTime = animationComponent.getAnimationTime();
             TextureRegion animationFrame = animationComponent.getAnimation()
                     .getKeyFrame(moving ? animationTime : 0, true);
-            batch.draw(animationFrame, positionComponent.getPosition().x,
-                    positionComponent.getPosition().y, 1, 1);
+            batch.draw(animationFrame, x, y, 1, 1);*/
+            float animationTime = animationComponent.getAnimationTime();
+            for (Animation animation : animationComponent.getAnimations()) {
+                TextureRegion animationFrame = animation.getKeyFrame(moving ?
+                        animationTime : 0, true);
+                batch.draw(animationFrame, x, y, ((PocketRogueEntity) entity).getSize(), ((PocketRogueEntity) entity).getSize());
+            }
             return;
         }
 
@@ -111,13 +129,11 @@ public class RenderingSystem extends IteratingSystem {
         //size.
         RotationComponent rotationComponent = rm.get(entity);
         if (rotationComponent != null) {
-            batch.draw(texture, positionComponent.getPosition().x,
-                    positionComponent.getPosition().y, 0.5f, 0.5f, 1, 1, 1, 1,
+            batch.draw(texture, x, y, 0.5f, 0.5f, 1, 1, 1, 1,
                     rotationComponent.getRotationAngle() - 90f, false);
             return;
         }
-        batch.draw(texture, positionComponent.getPosition().x,
-                positionComponent.getPosition().y, 1, 1);
+        batch.draw(texture, x, y, ((PocketRogueEntity) entity).getSize(), ((PocketRogueEntity) entity).getSize());
     }
 
 }

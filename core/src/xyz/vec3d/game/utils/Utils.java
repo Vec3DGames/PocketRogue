@@ -286,8 +286,8 @@ public class Utils {
     }
 
     public static boolean entitiesCollide(PocketRogueEntity e1, PocketRogueEntity e2) {
-        Rectangle e1r = new Rectangle(e1.getPosition().x, e1.getPosition().y, 1, 1);
-        Rectangle e2r = new Rectangle(e2.getPosition().x, e2.getPosition().y, 1, 1);
+        Rectangle e1r = new Rectangle(e1.getPosition().x, e1.getPosition().y, e1.getSize(), e1.getSize());
+        Rectangle e2r = new Rectangle(e2.getPosition().x, e2.getPosition().y, e1.getSize(), e1.getSize());
         //Logger.log(String.format("Checking if entity %s collided with entity %s", e1, e2));
         return e1r.overlaps(e2r);
     }

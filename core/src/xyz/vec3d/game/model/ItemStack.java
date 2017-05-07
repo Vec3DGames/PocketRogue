@@ -20,6 +20,8 @@ public class ItemStack {
      */
     private int quantity;
 
+    private boolean isEquipped = false;
+
     /**
      * Creates a new ItemStack being passed an Item and a quantity.
      *
@@ -98,6 +100,18 @@ public class ItemStack {
     @Override
     public String toString() {
         String itemName = this.getItem().getName();
-        return itemName + " (" + this.getQuantity() + ")";
+        return itemName + " (" + this.getQuantity() + ") Equipped: " + isEquipped;
+    }
+
+    public void equipItem() {
+        isEquipped = true;
+    }
+
+    public void unequipItem() {
+        isEquipped = false;
+    }
+
+    public boolean isEquipped() {
+        return isEquipped;
     }
 }

@@ -6,8 +6,7 @@
       1
     ],
     "stackable": false,
-    "slot": "PRIMARY_HAND",
-    "id": 0
+    "slot": "PRIMARY_HAND"
   },
   {
     "name": "Iron Sword",
@@ -16,8 +15,7 @@
       1
     ],
     "stackable": false,
-    "slot": "PRIMARY_HAND",
-    "id": 1
+    "slot": "PRIMARY_HAND"
   },
   {
     "name": "Steel Sword",
@@ -26,8 +24,7 @@
       1
     ],
     "stackable": false,
-    "slot": "PRIMARY_HAND",
-    "id": 2
+    "slot": "PRIMARY_HAND"
   },
   {
     "name": "Mithril Sword",
@@ -36,8 +33,7 @@
       1
     ],
     "stackable": false,
-    "slot": "PRIMARY_HAND",
-    "id": 3
+    "slot": "PRIMARY_HAND"
   },
   {
     "name": "Enigmite Sword",
@@ -46,8 +42,7 @@
       1
     ],
     "stackable": false,
-    "slot": "PRIMARY_HAND",
-    "id": 4
+    "slot": "PRIMARY_HAND"
   },
   {
     "name": "Bloodsteel Sword",
@@ -56,17 +51,33 @@
       1
     ],
     "stackable": false,
-    "slot": "PRIMARY_HAND",
-    "id": 5
+    "slot": "PRIMARY_HAND"
   },
   {
     "name": "Health Potion",
     "icon": [
-      2,
+      16,
+      1
+    ],
+    "stackable": true,
+    "slot": "NONE"
+  },
+  {
+    "name": "Bronze Chestplate",
+    "icon": [
+      1,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST"
+  },
+  {
+    "name": "Mana Potion",
+    "icon": [
+      16,
       2
     ],
     "stackable": true,
-    "slot": "PRIMARY_HAND",
-    "id": 7
+    "slot": "NONE"
   }
 ]

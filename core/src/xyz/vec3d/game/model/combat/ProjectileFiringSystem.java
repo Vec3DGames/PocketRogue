@@ -24,7 +24,7 @@ public class ProjectileFiringSystem extends EntitySystem {
     /**
      * Time in seconds before another projectile can be fired.
      */
-    private float delayBetweenShots = 3f;
+    private float delayBetweenShots = 2f;
 
     public ProjectileFiringSystem(PocketRogueEntity owner) {
         this.owner = owner;

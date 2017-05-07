@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import xyz.vec3d.game.entities.PocketRogueEntity;
+import xyz.vec3d.game.entities.WorldItem;
 import xyz.vec3d.game.entities.components.TextureComponent;
 import xyz.vec3d.game.utils.Utils;
 
@@ -28,6 +29,9 @@ public class EntityTextureListener implements EntityListener {
     @Override
     public void entityAdded(Entity entity) {
         if (entity instanceof PocketRogueEntity) {
+            if (entity instanceof WorldItem) {
+                return;
+            }
             String name = ((PocketRogueEntity) entity).getName();
             if (name == null) {
                 name = entity.getClass().getSimpleName().toLowerCase();

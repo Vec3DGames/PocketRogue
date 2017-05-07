@@ -76,11 +76,11 @@ public class Projectile extends PocketRogueEntity {
     public void update(Engine engine, float deltaTime) {
         super.update(engine, deltaTime);
         life += deltaTime;
-        if ((life >= lifeThreshold) && !isDead) {
+        if ((life >= lifeThreshold) && !isDead()) {
             this.kill();
         }
 
-        if (getVelocity().isZero() && !isDead) {
+        if (getVelocity().isZero() && !isDead()) {
             this.kill();
         }
     }

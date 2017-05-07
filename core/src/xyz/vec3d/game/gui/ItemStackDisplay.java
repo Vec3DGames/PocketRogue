@@ -69,13 +69,19 @@ public class ItemStackDisplay extends Actor implements Disposable {
         this.setDebug(selected);
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
     @Override
     public void dispose() {
+        font.dispose();
+        itemIcon.getTexture().dispose();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.draw(itemIcon, getX(), getY(), 64, 64);
-        font.draw(batch, itemStack.getItem().getName(), getX() + 70, getY() + 64);
+        font.draw(batch, itemStack.getItem().getName() + (itemStack.isEquipped() ? " *" : ""), getX() + 70, getY() + 64);
     }
 }

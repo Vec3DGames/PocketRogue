@@ -1,14 +1,12 @@
 package xyz.vec3d.game.model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -19,8 +17,8 @@ import xyz.vec3d.game.utils.Utils;
  */
 public class DefinitionLoader {
 
-    public static Map<Integer, Definition> itemDefinitions;
-    public static Map<Integer, Definition> entityDefinitions;
+    private static Map<Integer, Definition> itemDefinitions;
+    private static Map<Integer, Definition> entityDefinitions;
 
     public DefinitionLoader() {
         itemDefinitions = new HashMap<>();
@@ -61,6 +59,10 @@ public class DefinitionLoader {
 
     public static Definition getItemDefinition(int itemId) {
         return itemDefinitions.get(itemId);
+    }
+
+    public static Definition getEntityDefinition(int entityId) {
+        return entityDefinitions.get(entityId);
     }
 
     public class Definition {

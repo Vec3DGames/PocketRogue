@@ -1,10 +1,12 @@
 package xyz.vec3d.game.gui;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -13,7 +15,6 @@ import java.util.ArrayList;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.model.Inventory;
 import xyz.vec3d.game.model.ItemStack;
-import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -28,6 +29,7 @@ public class GuiInventory extends Gui {
     private Table itemTable;
     private Table componentTable;
     private Table itemInfoTable;
+    private Button equipButton;
     private ArrayList<ItemStackDisplay> itemStackDisplays = new ArrayList<>();
 
     private Label attr1, attr2, attr3, attr4;
@@ -60,19 +62,30 @@ public class GuiInventory extends Gui {
 
         //Set up table for item stats.
         itemInfoTable = new Table(skin);
-        attr1 = new Label("Attribute 1: ", skin);
-        attr1.setName("Attribute 1: ");
-        attr2 = new Label("Attribute 2: ", skin);
-        attr2.setName("Attribute 2: ");
+        attr1 = new Label("Damage: ", skin);
+        attr2 = new Label("Attack Speed: ", skin);
         attr3 = new Label("Attribute 3: ", skin);
-        attr3.setName("Attribute 3: ");
         attr4 = new Label("Attribute 4: ", skin);
-        attr4.setName("Attribute 4: ");
+        equipButton = new TextButton("Equip", skin);
+        equipButton.addCaptureListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ItemStackDisplay itemStackDisplay = getSelectedDisplay();
+                if (getSelectedDisplay() == null) {
+                    return;
+                }
+                ItemStack itemToEquip = itemStackDisplay.getItemStack();
+                //itemStackDisplay.setItemEquipped(true);
+                inventory.equipItem(itemToEquip);
+                refreshInventoryTable();
+            }
+        });
 
         itemInfoTable.add(attr1).pad(4).fillX().expandX().height(40).row();
         itemInfoTable.add(attr2).pad(4).fillX().expandX().height(40).row();
         itemInfoTable.add(attr3).pad(4).fillX().expandX().height(40).row();
         itemInfoTable.add(attr4).pad(4).fillX().expandX().height(40).row();
+        itemInfoTable.add(equipButton).pad(4).fillX().expandX().height(40);
         itemInfoTable.add().fill().expand();
         //itemInfoTable.add().expand().fill();
 
@@ -105,14 +118,15 @@ public class GuiInventory extends Gui {
                         //Update bonuses.
                         ItemStackDisplay displayFired = (ItemStackDisplay) event.getListenerActor();
                         int[] bonuses = displayFired.getItemStack().getItem().getBonuses();
-                        attr1.setText(attr1.getName() + bonuses[0]);
-                        attr2.setText(attr2.getName() + bonuses[1]);
-                        attr3.setText(attr3.getName() + bonuses[2]);
-                        attr4.setText(attr4.getName() + bonuses[3]);
+                        attr1.setText(Utils.modifyDisplayValue(attr1, bonuses[0]));
+                        attr2.setText(Utils.modifyDisplayValue(attr1, bonuses[1]));
+                        attr3.setText(Utils.modifyDisplayValue(attr1, bonuses[2]));
+                        attr4.setText(Utils.modifyDisplayValue(attr1, bonuses[3]));
                         for (ItemStackDisplay stackDisplay : itemStackDisplays) {
                             stackDisplay.deselect();
                         }
                         displayFired.select();
+                        //inventory.equipItem(displayFired.getItemStack());
                     }
                 });
                 itemStackDisplays.add(display);
@@ -121,6 +135,15 @@ public class GuiInventory extends Gui {
         }
         itemTable.add().expand().fill();
         itemScrollPane.validate();
+    }
+
+    private ItemStackDisplay getSelectedDisplay() {
+        for (ItemStackDisplay display : itemStackDisplays) {
+            if (display.isSelected()) {
+                return display;
+            }
+        }
+        return null;
     }
 
     @Override

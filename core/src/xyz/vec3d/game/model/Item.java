@@ -113,6 +113,10 @@ public class Item {
         return (String) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.NAME);
     }
 
+    public String getSlot() {
+        return (String) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.SLOT);
+    }
+
     /**
      * Returns the boolean value for if the Item is stackable. A stackable Item
      * does not take up multiple slots in the Inventory and rather combines
@@ -122,6 +126,15 @@ public class Item {
      */
     public boolean isStackable() {
         return (Boolean) DefinitionLoader.getItemDefinition(getId()).getProperty(DefinitionProperty.STACKABLE);
+    }
+
+    /**
+     * Returns true if the slot of the item is "none" which signifies the item is equipable.
+     *
+     * @return True if the item can be equipped.
+     */
+    public boolean isEquipable() {
+        return getSlot().equalsIgnoreCase("none");
     }
 
     /**

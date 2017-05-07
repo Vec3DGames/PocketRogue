@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import xyz.vec3d.game.entities.components.AnimationComponent;
 import xyz.vec3d.game.entities.components.CollideComponent;
+import xyz.vec3d.game.entities.components.HealthComponent;
 import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
@@ -44,9 +45,11 @@ public class PocketRogueEntity extends Entity {
     /**
      * True if the entity is dead and should be removed from the engine.
      */
-    protected boolean isDead;
+    private boolean isDead;
 
-    protected ProjectileFiringSystem projectileFiringSystem;
+    float health;
+
+    ProjectileFiringSystem projectileFiringSystem;
 
     public PocketRogueEntity() {
         add(new CollideComponent());
@@ -59,7 +62,7 @@ public class PocketRogueEntity extends Entity {
      *
      * @param possibleAnimations Animation[] of entity's animations.
      */
-    public void setAnimations(Animation[] possibleAnimations) {
+    void setAnimations(Animation[] possibleAnimations) {
         this.possibleAnimations = possibleAnimations;
         lastUsedAnimation = this.possibleAnimations[this.possibleAnimations.length - 1];
     }
@@ -73,7 +76,7 @@ public class PocketRogueEntity extends Entity {
      *
      * @return Animation to be drawn.
      */
-    public Animation getAnimationForVelocity(Vector2 velocity) {
+    private Animation getAnimationForVelocity(Vector2 velocity) {
         if (possibleAnimations == null) {
             return null;
         }
@@ -120,9 +123,11 @@ public class PocketRogueEntity extends Entity {
         if (animation != null) {
             AnimationComponent animationComponent = getComponent(AnimationComponent.class);
             if (animationComponent != null) {
-                animationComponent.setAnimation(animation);
+                animationComponent.setAnimation("movement", animation);
             } else {
-                add(new AnimationComponent(animation));
+                AnimationComponent aComponent = new AnimationComponent();
+                aComponent.setAnimation("movement", animation);
+                add(aComponent);
             }
         }
     }
@@ -139,7 +144,7 @@ public class PocketRogueEntity extends Entity {
     }
 
     /**
-     * Called whenever an entity should be removed from the entity.
+     * Called whenever an entity should be removed from the engine.
      */
     public void kill() {
         Logger.log("Killed", PocketRogueEntity.class);
@@ -169,7 +174,7 @@ public class PocketRogueEntity extends Entity {
      *
      * @return The velocity component or null if one doesn't exist.
      */
-    public Vector2 getVelocity() {
+    Vector2 getVelocity() {
         return getComponent(VelocityComponent.class).getVelocity();
     }
 
@@ -238,11 +243,30 @@ public class PocketRogueEntity extends Entity {
      *                      called on the mob and entityHitting would reference
      *                      the player.
      */
-    public void doHit(PocketRogueEntity entityHitting) {
+    public void doHit(PocketRogueEntity entityHitting, float damage) {
 
     }
 
     public ProjectileFiringSystem getFiringSystem() {
         return projectileFiringSystem;
+    }
+
+    void applyDamage(float damage) {
+        this.health -= damage;
+        HealthComponent healthComponent = getComponent(HealthComponent.class);
+        if (healthComponent != null) {
+            healthComponent.removeHealth(damage);
+        }
+        if (this.health <= 0) {
+            this.kill();
+        }
+    }
+
+    public float getSize() {
+        return 1.0f;
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }

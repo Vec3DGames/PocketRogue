@@ -19,6 +19,11 @@ public class Inventory {
     private ArrayList<ItemStack> items;
 
     /**
+     * Represents all the items that are currently equipped by the player.
+     */
+    private EquipmentManager equipmentManager;
+
+    /**
      * The maximum number of ItemStacks that the Inventory can have. This value
      * can be modified via things such as achievements or upgrades that increase
      * the inventory size. This value is not a static final because it can be
@@ -33,6 +38,7 @@ public class Inventory {
      */
     public Inventory() {
         items = new ArrayList<ItemStack>(maxItems);
+        equipmentManager = new EquipmentManager(this);
     }
 
     /**
@@ -197,5 +203,22 @@ public class Inventory {
      */
     public boolean hasItem(ItemStack itemStackToCheck) {
         return items.contains(itemStackToCheck);
+    }
+
+    /**
+     * Tries to equip an item. Will do nothing if the item is not able to be
+     * equipped.
+     *
+     * @param itemStack The item trying to be equipped.
+     */
+    public void equipItem(ItemStack itemStack) {
+        if (!itemStack.getItem().isEquipable()) {
+            equipmentManager.equipItem(itemStack);
+            return;
+        }
+    }
+
+    public EquipmentManager getEquipmentManager() {
+        return equipmentManager;
     }
 }

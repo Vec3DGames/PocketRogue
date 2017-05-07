@@ -50,7 +50,26 @@ public class HealthComponent implements Component {
         return maxHealth;
     }
 
+    /**
+     * Returns the percent of health left ranging from 0.0-100.0.
+     *
+     * @return The floating point percent of health left.
+     */
     public float getPercentHealthRemaining() {
+        return getPercentHealthRemainingScale() * 100;
+    }
+
+    /**
+     * Returns the percent of health left ranging from 0.0-1.0 for UI scaling
+     * things.
+     *
+     * @return The scale 0.0-1.0 of health left.
+     */
+    public float getPercentHealthRemainingScale() {
         return currentHealth / maxHealth;
+    }
+
+    public void removeHealth(float health) {
+        this.currentHealth -= health;
     }
 }

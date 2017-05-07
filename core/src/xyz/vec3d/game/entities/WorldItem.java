@@ -3,6 +3,7 @@ package xyz.vec3d.game.entities;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import xyz.vec3d.game.entities.components.CollideComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
 import xyz.vec3d.game.model.ItemStack;
@@ -22,6 +23,7 @@ public class WorldItem extends PocketRogueEntity {
         TextureRegion textureRegion = Utils.getItemTexture(this.itemStack);
         add(new PositionComponent(x, y));
         add(new TextureComponent(textureRegion));
+        add(new CollideComponent());
     }
 
     public ItemStack getItemStack() {
@@ -30,6 +32,11 @@ public class WorldItem extends PocketRogueEntity {
 
     @Override
     public void update(Engine engine, float deltaTime) {
+        super.update(engine, deltaTime);
+    }
 
+    @Override
+    public float getSize() {
+        return 0.75f;
     }
 }

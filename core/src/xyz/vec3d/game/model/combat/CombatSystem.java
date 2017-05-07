@@ -71,10 +71,14 @@ public class CombatSystem {
             if (distance <= 1) {
                 Logger.log("Sweep pos: " + attackSweepPosition + ", Enemy pos: " + enemyPos);
                 Logger.log("Hit entity from distance: " + distance + " at angle: " + angle);
-                otherEntity.doHit(player);
+                otherEntity.doHit(player, calculatePlayerDamage(otherEntity));
             }
         }
         //Reset attack timer.
         timeSinceLastAttack = 0;
+    }
+
+    private float calculatePlayerDamage(PocketRogueEntity entityBeingHit) {
+        return 10f;
     }
 }

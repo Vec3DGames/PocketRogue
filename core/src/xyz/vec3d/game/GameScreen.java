@@ -418,6 +418,10 @@ public class GameScreen extends PocketRogueScreen {
                     case "entity":
                         if (console.checkNumArgs(args, 1)) {
                             int entityId = Integer.valueOf(args[0]);
+                            if (DefinitionLoader.getEntityDefinition(entityId) == null) {
+                                console.log("No definition exists for this entity ID!", LogMessage.LogLevel.ERROR );
+                                return;
+                            }
                             float x = player.getPosition().x;
                             float y = player.getPosition().y;
                             if (args.length == 3) {
