@@ -9,8 +9,6 @@ import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.messages.IMessageReceiver;
 import xyz.vec3d.game.messages.Message;
-import xyz.vec3d.game.model.Item;
-import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
@@ -90,11 +88,8 @@ public class CombatSystem implements IMessageReceiver {
     public void onMessageReceived(Message message) {
         switch (message.getMessageType()) {
             case ITEM_EQUIPPED:
-                Item itemEquipped = player.getInventory().getEquipmentManager()
-                        .getItem(Item.ItemType.PRIMARY_HAND);
-                if (itemEquipped != null) {
-                    this.timeTillNextAttack = itemEquipped.getBonus(Item.ATTACK_SPEED);
-                }
+                this.timeTillNextAttack = player.getInventory().
+                        getEquipmentManager().getAttackSpeed();
                 break;
         }
     }

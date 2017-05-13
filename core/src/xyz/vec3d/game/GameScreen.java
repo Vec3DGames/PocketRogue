@@ -16,8 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import java.util.stream.Stream;
-
 import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
@@ -30,11 +28,11 @@ import xyz.vec3d.game.gui.console.Console;
 import xyz.vec3d.game.gui.console.LogMessage;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.RogueInputProcessor;
-import xyz.vec3d.game.model.Item;
-import xyz.vec3d.game.model.Item.ItemType;
 import xyz.vec3d.game.model.DefinitionLoader;
 import xyz.vec3d.game.model.DefinitionLoader.Definition;
 import xyz.vec3d.game.model.DefinitionProperty;
+import xyz.vec3d.game.model.Item;
+import xyz.vec3d.game.model.Item.ItemType;
 import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.systems.CollisionSystem;
@@ -451,7 +449,11 @@ public class GameScreen extends PocketRogueScreen {
                             int itemId = Integer.valueOf(args[0]);
                             Definition def = DefinitionLoader.getItemDefinition(itemId);
                             String slot = (String) def.getProperty(DefinitionProperty.SLOT);
-                            ItemStack stack = new ItemStack(new Item(itemId, ItemType.valueOf(slot)), 1);
+                            int quantity = 1;
+                            if (args.length == 2) {
+                                quantity = Integer.valueOf(args[1]);
+                            }
+                            ItemStack stack = new ItemStack(new Item(itemId, ItemType.valueOf(slot)), quantity);
                             WorldItem worldItem = new WorldItem(stack,
                                     player.getPosition().x + 1, player.getPosition().y + 1);
                             engine.addEntity(worldItem);

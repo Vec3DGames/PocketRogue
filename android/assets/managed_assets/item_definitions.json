@@ -8,7 +8,13 @@
     "stackable": false,
     "slot": "PRIMARY_HAND",
     "bonuses": [
-      1, 1, 1, 1, 0, 0, 0
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
     ]
   },
   {
@@ -20,7 +26,13 @@
     "stackable": false,
     "slot": "PRIMARY_HAND",
     "bonuses": [
-      2, 1, 1, 1, 0, 0, 0
+      2,
+      1,
+      1,
+      1,
+      0,
+      0,
+      2
     ]
   },
   {
@@ -32,7 +44,13 @@
     "stackable": false,
     "slot": "PRIMARY_HAND",
     "bonuses": [
-      4, 1, 1, 1, 0, 0, 0
+      4,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
     ]
   },
   {
@@ -44,7 +62,13 @@
     "stackable": false,
     "slot": "PRIMARY_HAND",
     "bonuses": [
-      8, 1, 1, 1, 0, 0, 0
+      8,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
     ]
   },
   {
@@ -56,7 +80,13 @@
     "stackable": false,
     "slot": "PRIMARY_HAND",
     "bonuses": [
-      16, 1, 1, 1, 0, 0, 0
+      16,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
     ]
   },
   {
@@ -68,7 +98,13 @@
     "stackable": false,
     "slot": "PRIMARY_HAND",
     "bonuses": [
-      32, 1, 1, 1, 0, 0, 0
+      32,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
     ]
   },
   {
@@ -78,7 +114,8 @@
       1
     ],
     "stackable": true,
-    "slot": "GENERAL"
+    "slot": "GENERAL",
+    "bonuses": []
   },
   {
     "name": "Bronze Chestplate",
@@ -89,7 +126,13 @@
     "stackable": false,
     "slot": "CHEST",
     "bonuses": [
-      10, 0, 0, 0, 1, 1, 1
+      10,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
     ]
   },
   {
@@ -99,7 +142,8 @@
       2
     ],
     "stackable": true,
-    "slot": "GENERAL"
+    "slot": "GENERAL",
+    "bonuses": []
   },
   {
     "name": "Coin",
@@ -108,6 +152,7 @@
       3
     ],
     "stackable": true,
-    "slot": "GENERAL"
+    "slot": "GENERAL",
+    "bonuses": []
   }
 ]

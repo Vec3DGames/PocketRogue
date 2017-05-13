@@ -1,6 +1,5 @@
 package xyz.vec3d.game.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,5 +72,13 @@ public class EquipmentManager {
             damage += item.getItem().getBonus(Item.ATTACK);
         }
         return damage;
+    }
+
+    public float getAttackSpeed() {
+        float attackSpeed = 0f;
+        for (ItemStack item : equipment.values()) {
+            attackSpeed += item.getItem().getBonus(Item.ATTACK_SPEED);
+        }
+        return attackSpeed;
     }
 }
