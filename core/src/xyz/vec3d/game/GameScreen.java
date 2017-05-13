@@ -105,12 +105,12 @@ public class GameScreen extends PocketRogueScreen {
     /**
      * Width of the map in world units.
      */
-    private float mapWidth;
+    private int mapWidth;
 
     /**
      * Height of the map in world units.
      */
-    private float mapHeight;
+    private int mapHeight;
 
     /**
      * The in-game {@link Console console} that will process commands.
@@ -129,6 +129,8 @@ public class GameScreen extends PocketRogueScreen {
      * The {@link CombatSystem combat system} used for the game screen.
      */
     private CombatSystem combatSystem;
+
+    private WaveManager waveManager;
 
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
@@ -185,6 +187,9 @@ public class GameScreen extends PocketRogueScreen {
         }
     }
 
+    /**
+     * Handle any android specific UI here.
+     */
     private void setUpAndroidUi() {
         OSTouchpad touchpad = new OSTouchpad();
         uiStage.addActor(touchpad.getTouchpad());
@@ -195,6 +200,9 @@ public class GameScreen extends PocketRogueScreen {
         //dodge.registerWith(rogueInputProcessor);
     }
 
+    /**
+     * Handle any desktop specific UI here.
+     */
     private void setUpDesktopUi() {
 
     }
@@ -230,7 +238,16 @@ public class GameScreen extends PocketRogueScreen {
         player = new Player(10, 10);
         engine.addEntity(player);
         notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
+        setUpCore(engine);
+    }
+
+    /**
+     * Set up core functionality not specifically related to the engine.
+     */
+    private void setUpCore(Engine engine) {
         this.combatSystem = new CombatSystem(engine, player);
+        this.waveManager = new WaveManager(this, engine);
+        this.waveManager.startWave();
     }
 
     /**
@@ -468,6 +485,17 @@ public class GameScreen extends PocketRogueScreen {
                         renderDebugOverlay = !renderDebugOverlay;
                         IS_DEBUG = !IS_DEBUG;
                         break;
+                    case "startwave":
+                        if (args.length == 1) {
+                            int waveNumber = Integer.valueOf(args[0]);
+                            waveManager.startWave(waveNumber);
+                            break;
+                        }
+                        waveManager.startWave();
+                        break;
+                    case "endwave":
+                        waveManager.endWave();
+                        break;
                     default:
                         console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);
                         break;
@@ -476,4 +504,11 @@ public class GameScreen extends PocketRogueScreen {
         }
     }
 
+    int getMapWidth() {
+        return mapWidth;
+    }
+
+    int getMapHeight() {
+        return mapHeight;
+    }
 }

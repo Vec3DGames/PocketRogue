@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.PocketRogueEntity;
@@ -34,6 +35,10 @@ import xyz.vec3d.game.model.ItemStack;
  */
 public class Utils {
 
+    /**
+     * The singleton random generator to use for all random number generations.
+     */
+    public static final Random random = new Random();
 
     /**
      * Gets the x coordinate to draw an object at when being centered in a container
@@ -61,7 +66,7 @@ public class Utils {
      * @return The x coordinate to draw the lower left corner of the object.
      */
     public static float getPosCenterX(float objectWidth, float containerWidth, float containerPos) {
-        return getPosCenter(objectWidth, containerWidth, containerPos, false);
+        return getPosCenter(objectWidth, containerWidth, containerPos);
     }
 
     /**
@@ -75,7 +80,7 @@ public class Utils {
      *
      * @see Utils#getPosCenterY(float, float, float)
      */
-    public static float getPosCenterY(float objectHeight, float containerHeight) {
+    private static float getPosCenterY(float objectHeight, float containerHeight) {
         return getPosCenterY(objectHeight, containerHeight, 0);
     }
 
@@ -90,7 +95,7 @@ public class Utils {
      * @return The y coordinate to draw the lower left corner of the object.
      */
     public static float getPosCenterY(float objectHeight, float containerHeight, float containerPos) {
-        return getPosCenter(objectHeight, containerHeight, containerPos, true);
+        return getPosCenter(objectHeight, containerHeight, containerPos);
     }
 
     /**
@@ -105,7 +110,7 @@ public class Utils {
      * @return The coordinate to draw the lower left corner of the object.
      */
     private static float getPosCenter(float objectDimension, float containerDimension,
-                                      float containerPos, boolean negate) {
+                                      float containerPos) {
         return containerPos + ((containerDimension - objectDimension) / 2);
     }
 
@@ -250,7 +255,7 @@ public class Utils {
      *
      * @return True if the entities are within range.
      */
-    public static boolean inRange(PocketRogueEntity e1, PocketRogueEntity e2, float range) {
+    private static boolean inRange(PocketRogueEntity e1, PocketRogueEntity e2, float range) {
         Vector2 e1pos = e1.getPosition();
         Vector2 e2pos = e2.getPosition();
         return (e2pos.x - e1pos.x) * (e2pos.x - e1pos.x) +
@@ -369,5 +374,18 @@ public class Utils {
                 return (quantity / 1_000_000) + "M";
             }
         }
+    }
+
+    public static int generateEntityId() {
+        int maxPossibleIds = DefinitionLoader.NUMBER_OF_ENTITIES;
+        return generateRandomNumber(1, maxPossibleIds);
+    }
+
+    public static int generateRandomNumber(int max) {
+        return generateRandomNumber(0, max);
+    }
+
+    private static int generateRandomNumber(int min, int max) {
+        return random.nextInt((max - min) + 1) + min;
     }
 }

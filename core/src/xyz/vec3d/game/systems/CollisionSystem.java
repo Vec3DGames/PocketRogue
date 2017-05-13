@@ -28,7 +28,7 @@ public class CollisionSystem extends IteratingSystem {
      * improve performance however since the absolute minimum run time is O(n)
      * there isn't much of a benefit from changing this value.
      */
-    public static float COLLISION_MAX_RANGE = 15.0f;
+    private static final float COLLISION_MAX_RANGE = 15.0f;
 
     /**
      * Creates a new collision system that tracks all entities with a position

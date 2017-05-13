@@ -38,23 +38,25 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
      */
     @Override
     public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-        if(actor.getClass() == Touchpad.class) {
+        if( actor.getClass() == Touchpad.class) {
             mov.set(((Touchpad) actor).getKnobPercentX(), ((Touchpad) actor).getKnobPercentY());
         }
-        if(actor.getClass() == TextButton.class){
-            if(actor.getName().equals("D")){
+        if (actor.getClass() == TextButton.class){
+            if (actor.getName().equals("D")){
                 //TODO: DODGING
                 return;
             }
-            if(actor.getName().equals("A")){
+            if (actor.getName().equals("A")){
                 //TODO: ATTACKING
+                return;
             }
         }
     }
 
     /**
      * The {@link Vector2} that stores the movement updating vector. This gets
-     * normalized then scaled by a movement factor in order to
+     * normalized then scaled by a movement factor in order to calculate the
+     * player's velocity.
      */
     private Vector2 mov = new Vector2(0, 0);
 

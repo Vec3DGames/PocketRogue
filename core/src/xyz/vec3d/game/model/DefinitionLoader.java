@@ -20,6 +20,8 @@ public class DefinitionLoader {
     private static Map<Integer, Definition> itemDefinitions;
     private static Map<Integer, Definition> entityDefinitions;
 
+    public static int NUMBER_OF_ENTITIES;
+
     public DefinitionLoader() {
         itemDefinitions = new HashMap<>();
         entityDefinitions = new HashMap<>();
@@ -56,13 +58,27 @@ public class DefinitionLoader {
             entityDefinitions.put((int)definition.getProperty(DefinitionProperty.ID), definition);
             System.out.println("Loaded definition: " + definition);
         }
+        NUMBER_OF_ENTITIES = entityDefinitions.size();
     }
 
+    /**
+     * Returns the definition associated with a specific item ID.
+     *
+     * @param itemId The ID of the item to get definitions for.
+     *
+     * @return A Definition object attached to the item.
+     */
     public static Definition getItemDefinition(int itemId) {
+        if (!itemDefinitions.containsKey(itemId)) {
+            return itemDefinitions.get(0);
+        }
         return itemDefinitions.get(itemId);
     }
 
     public static Definition getEntityDefinition(int entityId) {
+        if (!entityDefinitions.containsKey(entityId)) {
+            return entityDefinitions.get(0);
+        }
         return entityDefinitions.get(entityId);
     }
 

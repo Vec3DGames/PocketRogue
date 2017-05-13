@@ -266,7 +266,7 @@ public class PocketRogueEntity extends Entity {
         return 1.0f;
     }
 
-    public boolean isDead() {
+    boolean isDead() {
         return isDead;
     }
 }

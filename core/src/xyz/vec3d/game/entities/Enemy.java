@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.components.HealthComponent;
+import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.model.DefinitionLoader;
@@ -28,6 +29,8 @@ public class Enemy extends PocketRogueEntity {
         //Load up properties
         this.health = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.HEALTH));
         add(new HealthComponent(this.health));
+        float moveSpeed = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.MOVE_SPEED));
+        add(new MovementSpeedComponent(moveSpeed));
         //Set up animations here.
         Texture animationSheet = PocketRogue.getAsset("animation_sheets/player_animation.png");
         TextureRegion[][] tmpRegions = TextureRegion.split(animationSheet, 32, 32);
