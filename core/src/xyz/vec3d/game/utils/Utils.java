@@ -38,7 +38,7 @@ public class Utils {
     /**
      * The singleton random generator to use for all random number generations.
      */
-    public static final Random random = new Random();
+    private static final Random random = new Random();
 
     /**
      * Gets the x coordinate to draw an object at when being centered in a container
@@ -197,9 +197,16 @@ public class Utils {
      * @param stage The stage to center the actor in.
      */
     public static void centerActor(Actor actor, Stage stage) {
-        float newX = getPosCenterX(actor.getWidth(), stage.getWidth());
-        float newY = getPosCenterY(actor.getHeight(), stage.getHeight());
-        actor.setPosition(newX, newY);
+        centerActorX(actor, stage);
+        centerActorY(actor, stage);
+    }
+
+    public static void centerActorX(Actor actor, Stage stage) {
+        actor.setX(getPosCenterX(actor.getWidth(), stage.getWidth()));
+    }
+
+    private static void centerActorY(Actor actor, Stage stage) {
+        actor.setY(getPosCenterY(actor.getHeight(), stage.getHeight()));
     }
 
     /**

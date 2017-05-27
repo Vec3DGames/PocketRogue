@@ -154,5 +154,15 @@
     "stackable": true,
     "slot": "GENERAL",
     "bonuses": []
+  },
+  {
+    "name": "Fireball Scroll",
+    "icon": [
+      16,
+      4
+    ],
+    "stackable": false,
+    "slot": "GENERAL",
+    "bonuses": []
   }
 ]

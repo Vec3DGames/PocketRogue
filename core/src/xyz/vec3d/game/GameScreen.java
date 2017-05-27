@@ -22,6 +22,7 @@ import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.WorldItem;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.GuiDebug;
+import xyz.vec3d.game.gui.HotBarDisplay;
 import xyz.vec3d.game.gui.OSTouchpad;
 import xyz.vec3d.game.gui.PlayerInfoDisplay;
 import xyz.vec3d.game.gui.console.Console;
@@ -132,6 +133,8 @@ public class GameScreen extends PocketRogueScreen {
 
     private WaveManager waveManager;
 
+    private HotBarDisplay hotBarDisplay;
+
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
@@ -172,6 +175,12 @@ public class GameScreen extends PocketRogueScreen {
         this.registerMessageReceiver(infoDisplay);
         rogueInputProcessor.registerMessageReceiver(infoDisplay);
         uiStage.addActor(infoDisplay);
+
+        //Set up the hot bar.
+        hotBarDisplay = new HotBarDisplay(uiStage);
+        Utils.centerActorX(hotBarDisplay, uiStage);
+        hotBarDisplay.setY(30);
+        uiStage.addActor(hotBarDisplay);
 
         //Set up console.
         console = new Console("Pocket Rogue Console", skin);
@@ -236,6 +245,7 @@ public class GameScreen extends PocketRogueScreen {
         engine.addSystem(renderingSystem);
         engine.addEntityListener(new EntityTextureListener());
         player = new Player(10, 10);
+        hotBarDisplay.setPlayer(player);
         engine.addEntity(player);
         notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
         setUpCore(engine);

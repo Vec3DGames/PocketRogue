@@ -32,6 +32,7 @@ public class DefinitionLoader {
      */
     public void loadDefinitions() {
         JsonReader jsonReader = new JsonReader();
+        //Load item definitions
         JsonValue values = jsonReader.parse(Gdx.files.internal("managed_assets/item_definitions.json"));
         for (int i = 0; i < values.size; i++) {
             JsonValue child = values.get(i);
@@ -45,7 +46,7 @@ public class DefinitionLoader {
             itemDefinitions.put((int)definition.getProperty(DefinitionProperty.ID), definition);
             System.out.println("Loaded definition: " + definition);
         }
-
+        //Load entity definitions
         values = jsonReader.parse(Gdx.files.internal("managed_assets/entity_definitions.json"));
         for (int i = 0; i < values.size; i++) {
             JsonValue child = values.get(i);

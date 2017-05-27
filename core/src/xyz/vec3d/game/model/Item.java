@@ -94,7 +94,7 @@ public class Item {
     public int[] getBonuses() {
         int[] bonusesFromDefinitions = (int[]) DefinitionLoader.getItemDefinition(getId())
                 .getProperty(DefinitionProperty.BONUSES);
-        if (bonusesFromDefinitions == null) {
+        if (bonusesFromDefinitions == null || bonusesFromDefinitions.length == 0) {
             return new int[] {0, 0, 0, 0, 0, 0, 0};
         } else {
             bonuses = bonusesFromDefinitions;
