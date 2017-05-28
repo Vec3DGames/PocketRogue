@@ -2,19 +2,17 @@ package xyz.vec3d.game.gui;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import xyz.vec3d.game.GameScreen;
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.Player;
-import xyz.vec3d.game.model.Inventory;
-import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.utils.Utils;
 
@@ -35,6 +33,8 @@ public class HotBarDisplay extends Actor {
     private GameScreen gameScreen;
     private Skin skin;
 
+    private BitmapFont font;
+
     public HotBarDisplay(Stage stage, GameScreen gameScreen) {
         hotBarTexture = PocketRogue.getAsset("hotbar.png");
         setSize(hotBarTexture.getWidth(), hotBarTexture.getHeight());
@@ -51,6 +51,8 @@ public class HotBarDisplay extends Actor {
         this.stage = stage;
         this.gameScreen = gameScreen;
         this.skin = PocketRogue.getAsset("uiskin.json");
+        font = PocketRogue.getAsset("default.fnt", false);
+
         setName("hot_bar_display");
     }
 
@@ -58,18 +60,20 @@ public class HotBarDisplay extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         batch.draw(hotBarTexture, getX(), getY());
 
-        int slot = 0;
-        for (HotBarItem hotBarItem : hotBarItems) {
+        for (int slot = 0; slot < hotBarItems.length; slot++) {
+            HotBarItem hotBarItem = hotBarItems[slot];
+
             if (hotBarItem == null || hotBarItem.itemStack == null)
-                return;
+                continue;
 
             TextureRegion textureRegion = Utils.getItemTexture(hotBarItem.itemStack);
             if (textureRegion == null)
-                return;
+                continue;
 
-            batch.draw(textureRegion, getX() + (15 * (slot + 1)), getY() + (15 + (slot + 1)), 32, 32);
+            String amount = hotBarItem.itemStack.getQuantityAsString();
 
-            slot++;
+            batch.draw(textureRegion, getX() + 14 + (54 * (slot)), getY() + 14, 32, 32);
+            font.draw(batch, amount, getX() + 15 + (54 * (slot)), getY() + 15);
         }
     }
 
@@ -98,7 +102,6 @@ public class HotBarDisplay extends Actor {
             hotBarItems[slot] = new HotBarItem(itemStack);
         }
         setName("hot_bar_display");
-        Utils.printArray(hotBarItems);
     }
 
     public void setPlayer(Player player) {

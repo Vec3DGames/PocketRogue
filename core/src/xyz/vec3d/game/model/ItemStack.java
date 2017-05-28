@@ -49,7 +49,7 @@ public class ItemStack {
      *
      * @return The number of items in the stack.
      */
-    int getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
@@ -117,5 +117,9 @@ public class ItemStack {
 
     public boolean isEquipped() {
         return isEquipped;
+    }
+
+    public String getQuantityAsString() {
+        return Utils.shortenQuantityString(quantity);
     }
 }
