@@ -40,6 +40,7 @@ import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 import xyz.vec3d.game.systems.UpdateSystem;
+import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -177,7 +178,7 @@ public class GameScreen extends PocketRogueScreen {
         uiStage.addActor(infoDisplay);
 
         //Set up the hot bar.
-        hotBarDisplay = new HotBarDisplay(uiStage);
+        hotBarDisplay = new HotBarDisplay(uiStage, this);
         Utils.centerActorX(hotBarDisplay, uiStage);
         hotBarDisplay.setY(30);
         uiStage.addActor(hotBarDisplay);
@@ -245,7 +246,6 @@ public class GameScreen extends PocketRogueScreen {
         engine.addSystem(renderingSystem);
         engine.addEntityListener(new EntityTextureListener());
         player = new Player(10, 10);
-        hotBarDisplay.setPlayer(player);
         engine.addEntity(player);
         notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
         setUpCore(engine);
@@ -255,9 +255,10 @@ public class GameScreen extends PocketRogueScreen {
      * Set up core functionality not specifically related to the engine.
      */
     private void setUpCore(Engine engine) {
-        this.combatSystem = new CombatSystem(engine, player);
-        this.waveManager = new WaveManager(this, engine);
-        this.waveManager.startWave();
+        combatSystem = new CombatSystem(engine, player);
+        waveManager = new WaveManager(this, engine);
+        waveManager.startWave();
+        hotBarDisplay.setPlayer(player);
     }
 
     /**
@@ -407,6 +408,10 @@ public class GameScreen extends PocketRogueScreen {
             case ENTITY_SPAWNED:
                 PocketRogueEntity entitySpawned = (PocketRogueEntity) message.getPayload()[0];
                 engine.addEntity(entitySpawned);
+                break;
+            case PLAYER_INVENTORY_CHANGED:
+                Logger.log("test");
+                hotBarDisplay.refreshHotBarDisplay();
                 break;
             case COMMAND:
                 String[] tokens = (String[]) message.getPayload();

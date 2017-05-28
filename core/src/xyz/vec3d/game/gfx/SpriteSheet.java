@@ -18,7 +18,7 @@ public class SpriteSheet {
 
     private Texture internalTexture;
 
-    public static final int ICON_SIZE = 16;
+    private static final int ICON_SIZE = 16;
 
     public SpriteSheet(String name) {
         internalTexture = PocketRogue.getAsset(name);
@@ -28,9 +28,7 @@ public class SpriteSheet {
         return getTextureFromSheet(x - 1, y - 1, ICON_SIZE, ICON_SIZE);
     }
 
-    public TextureRegion getTextureFromSheet(int x, int y, int width, int height) {
-        Logger.log(String.format(Locale.US, "Getting icon from coordinates %d,%d",
-                x*ICON_SIZE, y*ICON_SIZE), SpriteSheet.class);
+    private TextureRegion getTextureFromSheet(int x, int y, int width, int height) {
         return new TextureRegion(internalTexture, x * ICON_SIZE,
                 y * ICON_SIZE, width, height);
     }

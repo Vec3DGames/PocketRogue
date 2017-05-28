@@ -2,6 +2,7 @@ package xyz.vec3d.game.gui;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -9,8 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import xyz.vec3d.game.GameScreen;
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.model.Inventory;
+import xyz.vec3d.game.model.Item;
+import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -27,8 +32,10 @@ public class HotBarDisplay extends Actor {
 
     private Stage stage;
     private Player player;
+    private GameScreen gameScreen;
+    private Skin skin;
 
-    public HotBarDisplay(Stage stage) {
+    public HotBarDisplay(Stage stage, GameScreen gameScreen) {
         hotBarTexture = PocketRogue.getAsset("hotbar.png");
         setSize(hotBarTexture.getWidth(), hotBarTexture.getHeight());
         addListener(new ClickListener() {
@@ -37,16 +44,33 @@ public class HotBarDisplay extends Actor {
                 int slot = getActionBoxForX(x);
                 HotBarItem hotBarItem = hotBarItems[slot];
                 if (hotBarItem == null) {
-                    hotBarItems[slot] = ShowHotBarItemSelectionPrompt();
+                    ShowHotBarItemSelectionPrompt(slot);
                 }
             }
         });
         this.stage = stage;
+        this.gameScreen = gameScreen;
+        this.skin = PocketRogue.getAsset("uiskin.json");
+        setName("hot_bar_display");
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.draw(hotBarTexture, getX(), getY());
+
+        int slot = 0;
+        for (HotBarItem hotBarItem : hotBarItems) {
+            if (hotBarItem == null || hotBarItem.itemStack == null)
+                return;
+
+            TextureRegion textureRegion = Utils.getItemTexture(hotBarItem.itemStack);
+            if (textureRegion == null)
+                return;
+
+            batch.draw(textureRegion, getX() + (15 * (slot + 1)), getY() + (15 + (slot + 1)), 32, 32);
+
+            slot++;
+        }
     }
 
     /**
@@ -60,19 +84,21 @@ public class HotBarDisplay extends Actor {
         return (int) (mouseX - 6) / 54;
     }
 
-    public HotBarItem ShowHotBarItemSelectionPrompt() {
-        Window window = GetItemSelectionWindow();
-        stage.addActor(window);
-
-        return null;
+    private void ShowHotBarItemSelectionPrompt(int slot) {
+        setName("hot_bar_display" + slot);
+        gameScreen.openGui("player_inventory", player.getInventory(), skin, gameScreen.getCombatSystem(), this);
     }
 
-    private Window GetItemSelectionWindow() {
-        Window window = new Window("Choose an Item", (Skin) PocketRogue.getAsset("uiskin.json"));
-        window.setSize(400, 300);
-        Utils.centerActor(window, stage);
+    public void refreshHotBarDisplay() {
+        for (int slot = 0; slot < player.getInventory().getHotBarItems().length; slot++) {
+            ItemStack itemStack = player.getInventory().getHotBarItems()[slot];
+            if (itemStack == null)
+                continue;
 
-        return window;
+            hotBarItems[slot] = new HotBarItem(itemStack);
+        }
+        setName("hot_bar_display");
+        Utils.printArray(hotBarItems);
     }
 
     public void setPlayer(Player player) {
@@ -81,13 +107,11 @@ public class HotBarDisplay extends Actor {
 
     private class HotBarItem {
 
-    }
+        private ItemStack itemStack;
 
-    private class SpellHotBarItem extends HotBarItem {
-
-    }
-
-    private class ItemHotBarItem extends HotBarItem {
+        HotBarItem(ItemStack itemStack) {
+            this.itemStack = itemStack;
+        }
 
     }
 }

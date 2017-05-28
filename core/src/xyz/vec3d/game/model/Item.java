@@ -113,7 +113,7 @@ public class Item {
         return getBonuses()[bonusType];
     }
 
-    ItemType getType() {
+    public ItemType getType() {
         return type;
     }
 

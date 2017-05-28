@@ -101,14 +101,11 @@ public class ItemStack {
      */
     @Override
     public String toString() {
-        String itemName = this.getItem().getName();
-        int quantity = this.getQuantity();
-        String quantityString = Utils.shortenQuantityString(quantity);
-        boolean isEquipped = isEquipped();
+        int quantity = getQuantity();
 
-        return String.format("%s%s%s", itemName,
-                quantity > 1 ? " (" + quantityString + ")" : "",
-                isEquipped ? " *" : "");
+        return String.format("%s%s%s", getItem().getName(),
+                quantity > 1 ? " (" + Utils.shortenQuantityString(quantity) + ")" : "",
+                isEquipped() ? " *" : "");
     }
 
     void equipItem() {

@@ -32,6 +32,8 @@ public class Inventory {
      */
     private int maxItems = 40;
 
+    private ItemStack[] hotBarItems;
+
     /**
      * Creates a new Inventory and pre-allocates the ArrayList to a size of
      * 40 ItemStacks.
@@ -39,6 +41,7 @@ public class Inventory {
     public Inventory() {
         items = new ArrayList<ItemStack>(maxItems);
         equipmentManager = new EquipmentManager(this);
+        hotBarItems = new ItemStack[9];
     }
 
     /**
@@ -220,5 +223,13 @@ public class Inventory {
 
     public EquipmentManager getEquipmentManager() {
         return equipmentManager;
+    }
+
+    public ItemStack[] getHotBarItems() {
+        return hotBarItems;
+    }
+
+    public void setHotBarItem(int hotBarSlot, ItemStack itemToEquip) {
+        hotBarItems[hotBarSlot] = itemToEquip;
     }
 }

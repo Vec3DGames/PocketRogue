@@ -1,5 +1,6 @@
 package xyz.vec3d.game.gui;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import sun.rmi.runtime.Log;
 import xyz.vec3d.game.messages.IMessageReceiver;
 import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
@@ -20,6 +22,7 @@ import xyz.vec3d.game.model.Inventory;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.model.combat.CombatSystem;
+import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -38,6 +41,8 @@ class GuiInventory extends Gui {
     private Label meleeDamage, magicDamage, rangeDamage, attackSpeed, meleeDef,
             magicDef, rangeDef;
 
+    private Actor parentActor;
+
     public GuiInventory() {
         super();
     }
@@ -48,6 +53,9 @@ class GuiInventory extends Gui {
         Skin skin = (Skin) getParameters()[1];
         CombatSystem combatSystem = (CombatSystem) getParameters()[2];
         this.messageReceivers.add(combatSystem);
+        if (getParameters().length == 4) {
+            parentActor = (Actor) getParameters()[3];
+        }
 
         //Create and set up the window.
         Window window = new Window("Inventory", skin);
@@ -89,6 +97,15 @@ class GuiInventory extends Gui {
                     Message itemEquippedMessage = new Message(Message.MessageType.ITEM_EQUIPPED);
                     notifyMessageReceivers(itemEquippedMessage);
                     refreshInventoryTable();
+                }
+                String parentName = parentActor != null ? parentActor.getName() : "";
+                if (parentName.contains("hot_bar")) {
+                    if (itemToEquip.getItem().getType() == Item.ItemType.GENERAL) {
+                        int hotBarSlot = Integer.parseInt(parentName.substring(parentName.length() - 1));
+                        inventory.setHotBarItem(hotBarSlot, itemToEquip);
+                        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INVENTORY_CHANGED));
+                        dispose();
+                    }
                 }
             }
         });
@@ -179,5 +196,10 @@ class GuiInventory extends Gui {
         for (IMessageReceiver messageReceiver : messageReceivers) {
             messageReceiver.onMessageReceived(message);
         }
+    }
+
+    @Override
+    public void registerMessageReceiver(IMessageReceiver messageReceiver) {
+        this.messageReceivers.add(messageReceiver);
     }
 }
