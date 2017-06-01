@@ -27,6 +27,16 @@ public class VelocityComponent implements Component {
         velocity = new Vector2(0, 0);
     }
 
+    /**
+     * Creates a new velocity component for an entity from an existing velocity
+     * vector.
+     *
+     * @param velocity The velocity vector that the entity will have.
+     */
+    public VelocityComponent(Vector2 velocity) {
+        this.velocity = velocity;
+    }
+
     public Vector2 getVelocity() {
         if (velocity == null) {
             return new Vector2(0, 0);

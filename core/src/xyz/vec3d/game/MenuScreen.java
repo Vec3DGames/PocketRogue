@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import xyz.vec3d.game.gfx.SpriteSheet;
+
 /**
  * Created by darakelian on 6/28/2016.
  * Copyright vec3d.xyz 2016
@@ -46,7 +48,7 @@ public class MenuScreen implements Screen {
         this.pocketRogue = pocketRogue;
         uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
         Gdx.input.setInputProcessor(uiStage);
-        skin = this.pocketRogue.getAssetManager().get("uiskin.json");
+        skin = PocketRogue.getAsset("uiskin.json");
 
         //Set up UI components here.
         Table uiTable = new Table(skin);
@@ -68,6 +70,11 @@ public class MenuScreen implements Screen {
 
         //Add UI components to stage.
         uiStage.addActor(uiTable);
+
+        //Load sprite sheets
+        SpriteSheet sheet1 = new SpriteSheet("spritesheet_1.png");
+        SpriteSheet[] sheets = new SpriteSheet[] {sheet1};
+        PocketRogue.getInstance().setSpriteSheets(sheets);
     }
     /**
      * Called when this screen becomes the current screen for a {@link com.badlogic.gdx.Game}.

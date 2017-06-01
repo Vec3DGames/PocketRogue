@@ -51,6 +51,16 @@ public class PositionComponent implements Component {
     }
 
     /**
+     * Creates a new position component representing a given x,y coordinate pair
+     * that is represented by a Vector2 object.
+     *
+     * @param position Vector2 object of the position coordinate pair.
+     */
+    public PositionComponent(Vector2 position) {
+        this.position = position;
+    }
+
+    /**
      * Gets the {@link Vector2} stored in this component. If the vector backing
      * this component is somehow null it will return a new vector created at the
      * position 0,0 to help avoid code breaking.

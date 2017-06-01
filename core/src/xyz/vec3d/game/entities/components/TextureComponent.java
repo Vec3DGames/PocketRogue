@@ -2,6 +2,7 @@ package xyz.vec3d.game.entities.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
  * Created by darakelian on 7/7/2016.
@@ -16,14 +17,14 @@ public class TextureComponent implements Component {
     /**
      * The {@link Texture} being stored in the component.
      */
-    private Texture texture;
+    private TextureRegion texture;
 
     /**
      * Creates a new {@link TextureComponent} from the specified Texture.
      *
      * @param texture The Texture to store in the component.
      */
-    public TextureComponent(Texture texture) {
+    public TextureComponent(TextureRegion texture) {
         this.texture = texture;
     }
 
@@ -32,7 +33,7 @@ public class TextureComponent implements Component {
      *
      * @return The Texture to be drawn.
      */
-    public Texture getTexture() {
+    public TextureRegion getTexture() {
         return texture;
     }
 }

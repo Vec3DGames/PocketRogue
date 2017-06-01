@@ -5,7 +5,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 
-import xyz.vec3d.game.entities.components.MovementSpeedComponent;
+import xyz.vec3d.game.Settings;
+import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 
@@ -21,10 +22,15 @@ public class MovementSystem extends IteratingSystem {
      */
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
 
+    /**
+     * A {@link ComponentMapper} for {@link VelocityComponent}s that entities have.
+     */
     private ComponentMapper<VelocityComponent> vm = ComponentMapper.getFor(VelocityComponent.class);
 
-    //private ComponentMapper<MovementSpeedComponent> mm = ComponentMapper.getFor(MovementSpeedComponent.class);
-
+    /**1
+     * Create a new MovementSystem composed of entities that have both a velocity
+     * component as well as a position component.
+     */
     public MovementSystem() {
         super(Family.all(VelocityComponent.class, PositionComponent.class).get());
     }
@@ -33,6 +39,27 @@ public class MovementSystem extends IteratingSystem {
         PositionComponent positionComponent = pm.get(entity);
         VelocityComponent velocityComponent = vm.get(entity);
         positionComponent.getPosition().add(velocityComponent.getVelocity());
+        if (entity instanceof PocketRogueEntity) {
+            //Update animation here.
+            ((PocketRogueEntity) entity).setAnimationFromVelocity(velocityComponent.getVelocity());
+        }
+        //Boundary checks here
+        if (positionComponent.getPosition().x <= 0) {
+            positionComponent.getPosition().x = 0;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
+        if (positionComponent.getPosition().y <= 0) {
+            positionComponent.getPosition().y = 0;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
+        if (positionComponent.getPosition().x + 1 >= Settings.MAX_WORLD_WIDTH) {
+            positionComponent.getPosition().x = Settings.MAX_WORLD_WIDTH - 1;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
+        if (positionComponent.getPosition().y + 1 >= Settings.MAX_WORLD_HEIGHT) {
+            positionComponent.getPosition().y = Settings.MAX_WORLD_HEIGHT - 1;
+            velocityComponent.getVelocity().set(0f, 0f);
+        }
     }
 
 }

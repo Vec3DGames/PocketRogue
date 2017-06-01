@@ -5,9 +5,18 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.PocketRogue;
+import xyz.vec3d.game.entities.PocketRogueEntity;
+import xyz.vec3d.game.entities.components.AnimationComponent;
+import xyz.vec3d.game.entities.components.HealthComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.entities.components.RotationComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
 
 /**
@@ -34,9 +43,22 @@ public class RenderingSystem extends IteratingSystem {
     private ComponentMapper<PositionComponent> pm = ComponentMapper.getFor(PositionComponent.class);
 
     /**
+     * A {@link ComponentMapper} for {@link AnimationComponent}s that entities have.
+     */
+    private ComponentMapper<AnimationComponent> am = ComponentMapper.getFor(AnimationComponent.class);
+
+    /**
+     * A {@link ComponentMapper} for {@link RotationComponent}s that entities have.
+     */
+    private ComponentMapper<RotationComponent> rm = ComponentMapper.getFor(RotationComponent.class);
+
+    private ComponentMapper<HealthComponent> hm = ComponentMapper.getFor(HealthComponent.class);
+
+    /**
      * The {@link SpriteBatch} being used to draw entities.
      */
     private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
 
     /**
      * Creates a new {@link RenderingSystem} for the game engine from a provided
@@ -44,9 +66,11 @@ public class RenderingSystem extends IteratingSystem {
      *
      * @param batch The SpriteBatch provided from the {@link xyz.vec3d.game.GameScreen}.
      */
-    public RenderingSystem(SpriteBatch batch) {
-        super(Family.all(TextureComponent.class, PositionComponent.class).get());
+    public RenderingSystem(SpriteBatch batch, ShapeRenderer shapeRenderer) {
+        super(Family.all(PositionComponent.class).one(TextureComponent.class,
+                AnimationComponent.class).get());
         this.batch = batch;
+        this.shapeRenderer = shapeRenderer;
     }
 
     /**
@@ -62,14 +86,54 @@ public class RenderingSystem extends IteratingSystem {
         //Get texture and position components from the component mappers.
         TextureComponent textureComponent = tm.get(entity);
         PositionComponent positionComponent = pm.get(entity);
+        AnimationComponent animationComponent = am.get(entity);
+        HealthComponent healthComponent = hm.get(entity);
 
-        //Get the actual texture object from the texture component.
-        Texture texture = textureComponent.getTexture();
+        float x = positionComponent.getPosition().x;
+        float y = positionComponent.getPosition().y;
+
+        //If in debug mode, draw a red square around hitbox
+        if (GameScreen.IS_DEBUG) {
+            shapeRenderer.rect(x, y, 1, 1);
+        }
+
+        //Try to draw a health bar for entities that have health.
+        if (healthComponent != null) {
+            float healthBarScale = healthComponent.getPercentHealthRemainingScale();
+            Texture healthBar = PocketRogue.getAsset("healthBar.png");
+            batch.draw(healthBar, x, y + 1.1f, 1 * healthBarScale, 0.125f);
+        }
+
+        //First see if the entity has an animation that needs to play.
+        if (animationComponent != null) {
+            boolean moving = ((PocketRogueEntity) entity).isMoving();
+            animationComponent.addAnimationTime(deltaTime);
+            /*float animationTime = animationComponent.getAnimationTime();
+            TextureRegion animationFrame = animationComponent.getAnimation()
+                    .getKeyFrame(moving ? animationTime : 0, true);
+            batch.draw(animationFrame, x, y, 1, 1);*/
+            float animationTime = animationComponent.getAnimationTime();
+            for (Animation animation : animationComponent.getAnimations()) {
+                TextureRegion animationFrame = animation.getKeyFrame(moving ?
+                        animationTime : 0, true);
+                batch.draw(animationFrame, x, y, ((PocketRogueEntity) entity).getSize(), ((PocketRogueEntity) entity).getSize());
+            }
+            return;
+        }
+
+        //Otherwise, get the actual texture object from the texture component.
+        TextureRegion texture = textureComponent.getTexture();
 
         //Draw the texture at the position specified. A width/height of 1 is used
         //to represent the fact that the texture should be 1 world unit (32px) in
         //size.
-        batch.draw(texture, positionComponent.getPosition().x, positionComponent.getPosition().y, 1, 1);
+        RotationComponent rotationComponent = rm.get(entity);
+        if (rotationComponent != null) {
+            batch.draw(texture, x, y, 0.5f, 0.5f, 1, 1, 1, 1,
+                    rotationComponent.getRotationAngle() - 90f, false);
+            return;
+        }
+        batch.draw(texture, x, y, ((PocketRogueEntity) entity).getSize(), ((PocketRogueEntity) entity).getSize());
     }
 
 }

@@ -2,10 +2,12 @@ package xyz.vec3d.game.entities.listeners;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import xyz.vec3d.game.GameScreen;
+import xyz.vec3d.game.entities.PocketRogueEntity;
+import xyz.vec3d.game.entities.WorldItem;
 import xyz.vec3d.game.entities.components.TextureComponent;
+import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 7/7/2016.
@@ -18,20 +20,25 @@ import xyz.vec3d.game.entities.components.TextureComponent;
 public class EntityTextureListener implements EntityListener {
 
     /**
-     * The {@link GameScreen} instance that contains an instance of the AssetManager
-     * so that textures can be loaded.
+     * Default constructor.
      */
-    private GameScreen gameScreen;
+    public EntityTextureListener() {
 
-    public EntityTextureListener(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
     }
 
     @Override
     public void entityAdded(Entity entity) {
-        String entityName = entity.getClass().getSimpleName().toLowerCase() + ".png";
-        Texture texture = gameScreen.getPocketRogue().getAssetManager().get(entityName, Texture.class);
-        entity.add(new TextureComponent(texture));
+        if (entity instanceof PocketRogueEntity) {
+            if (entity instanceof WorldItem) {
+                return;
+            }
+            String name = ((PocketRogueEntity) entity).getName();
+            if (name == null) {
+                name = entity.getClass().getSimpleName().toLowerCase();
+            }
+            TextureRegion region = Utils.getEntityTexture(name);
+            entity.add(new TextureComponent(region));
+        }
     }
 
     @Override
