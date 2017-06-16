@@ -151,7 +151,7 @@ public class LoadingScreen implements Screen {
             else
             {
                 handles.add(f);
-                Logger.log("Found asset: " + f.name() + " path: " + f.path(), LoadingScreen.class);
+                Logger.log(LoadingScreen.class, "Found asset: " + f.name() + " path: " + f.path());
             }
         }
     }

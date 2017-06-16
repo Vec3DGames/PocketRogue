@@ -180,8 +180,8 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     @Override
     public void registerMessageReceiver(IMessageReceiver messageReceiver) {
         messageReceivers.add(messageReceiver);
-        Logger.log("Registered receiver: " + messageReceiver + " id: " +
-                messageReceivers.size(), this.getClass());
+        Logger.log(this.getClass(), "Registered receiver: " + messageReceiver + " id: " +
+                messageReceivers.size());
     }
 
     @Override
@@ -193,8 +193,8 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     public void notifyMessageReceivers(Message message) {
        for (int i = 0; i < messageReceivers.size(); i++) {
            messageReceivers.get(i).onMessageReceived(message);
-           Logger.log(String.format(Locale.US, "Sent message %s to receiver %d",
-                   message.getMessageType(), i), this.getClass());
+           Logger.log(this.getClass(), String.format(Locale.US, "Sent message %s to receiver %d",
+                   message.getMessageType(), i));
        }
     }
 }

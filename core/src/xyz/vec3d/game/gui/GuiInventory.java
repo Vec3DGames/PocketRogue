@@ -14,9 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.rmi.runtime.Log;
 import xyz.vec3d.game.messages.IMessageReceiver;
-import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.model.Inventory;
 import xyz.vec3d.game.model.Item;
@@ -89,6 +87,7 @@ class GuiInventory extends Gui {
             public void clicked(InputEvent event, float x, float y) {
                 ItemStackDisplay itemStackDisplay = getSelectedDisplay();
                 if (itemStackDisplay == null) {
+                    Logger.log(getClass(), Logger.LogLevel.WARNING, "Attempted to select a non-existent item display.");
                     return;
                 }
 
@@ -119,8 +118,6 @@ class GuiInventory extends Gui {
         itemInfoTable.add(rangeDef).pad(4).fillX().expandX().height(20).row();
         itemInfoTable.add(equipButton).pad(4).fillX().expandX().height(40);
         itemInfoTable.add().fill().expand();
-        //itemInfoTable.add().expand().fill();
-
 
         //Add item display and stat display tables to root table.
         componentTable.add(itemScrollPane).expandY().fillY().width(250);
@@ -148,19 +145,7 @@ class GuiInventory extends Gui {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         //Update bonuses.
-                        ItemStackDisplay displayFired = (ItemStackDisplay) event.getListenerActor();
-                        int[] bonuses = displayFired.getItemStack().getItem().getBonuses();
-                        meleeDamage.setText(Utils.modifyDisplayValue(meleeDamage, bonuses[Item.ATTACK]));
-                        magicDamage.setText(Utils.modifyDisplayValue(magicDamage, bonuses[Item.MAGIC]));
-                        rangeDamage.setText(Utils.modifyDisplayValue(rangeDamage, bonuses[Item.RANGE]));
-                        attackSpeed.setText(Utils.modifyDisplayValue(attackSpeed, bonuses[Item.ATTACK_SPEED]));
-                        meleeDef.setText(Utils.modifyDisplayValue(meleeDef, bonuses[Item.MELEE_DEFENSE]));
-                        magicDef.setText(Utils.modifyDisplayValue(magicDef, bonuses[Item.MAGIC_DEFENSE]));
-                        rangeDef.setText(Utils.modifyDisplayValue(rangeDef, bonuses[Item.RANGE_DEFENSE]));
-                        for (ItemStackDisplay stackDisplay : itemStackDisplays) {
-                            stackDisplay.deselect();
-                        }
-                        displayFired.select();
+                        itemStackDisplayClicked(event, x, y);
                     }
                 });
                 itemStackDisplays.add(display);
@@ -169,6 +154,22 @@ class GuiInventory extends Gui {
         }
         itemTable.add().expand().fill();
         itemScrollPane.validate();
+    }
+
+    private void itemStackDisplayClicked(InputEvent event, float x, float y) {
+        Logger.log(getClass(), "Item Display clicked at: (" + x + "," + y + ").");
+
+        ItemStackDisplay displayFired = (ItemStackDisplay) event.getListenerActor();
+        int[] bonuses = displayFired.getItemStack().getItem().getBonuses();
+        meleeDamage.setText(Utils.modifyDisplayValue(meleeDamage, bonuses[Item.ATTACK]));
+        magicDamage.setText(Utils.modifyDisplayValue(magicDamage, bonuses[Item.MAGIC]));
+        rangeDamage.setText(Utils.modifyDisplayValue(rangeDamage, bonuses[Item.RANGE]));
+        attackSpeed.setText(Utils.modifyDisplayValue(attackSpeed, bonuses[Item.ATTACK_SPEED]));
+        meleeDef.setText(Utils.modifyDisplayValue(meleeDef, bonuses[Item.MELEE_DEFENSE]));
+        magicDef.setText(Utils.modifyDisplayValue(magicDef, bonuses[Item.MAGIC_DEFENSE]));
+        rangeDef.setText(Utils.modifyDisplayValue(rangeDef, bonuses[Item.RANGE_DEFENSE]));
+        itemStackDisplays.forEach(ItemStackDisplay::deselect);
+        displayFired.select();
     }
 
     private ItemStackDisplay getSelectedDisplay() {

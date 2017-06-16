@@ -7,34 +7,36 @@ package xyz.vec3d.game.utils;
  */
 public class Logger {
 
+    /**
+     * Logs a message defaulting the class to Logger.
+     *
+     * @param message The message being logged.
+     */
     public static void log(String message) {
-        log(message, Logger.class);
-    }
-    public static void log(String message, Class c) {
-        log(message, c, LogLevel.NORMAL);
+        log(Logger.class, message);
     }
 
-    public static void log(String message, Class c, LogLevel level) {
+    /**
+     * Logs a message coming from the specified class.
+     *
+     * @param c The class that the message is coming from.
+     * @param message The message being logged.
+     */
+    public static void log(Class c, String message) {
+        log(c, LogLevel.NORMAL, message);
+    }
+
+    /**
+     * Logs a message coming from the specified class with the specified log level.
+     *  @param c The class that the message is coming from.
+     * @param level The level the message is being logged at.
+     * @param message The message being logged.
+     */
+    public static void log(Class c, LogLevel level, String message) {
         String className = c.getSimpleName();
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[%s]", className));
-        switch (level) {
-            case NORMAL:
-                sb.append(String.format("[%s] ", "Message"));
-                sb.append(message);
-                System.out.println(sb.toString());
-                break;
-            case WARNING:
-                sb.append(String.format("[%s] ", "Warning"));
-                sb.append(message);
-                System.out.println(sb.toString());
-                break;
-            case ERROR:
-                sb.append(String.format("[%s] ", "Error"));
-                sb.append(message);
-                System.err.println(sb.toString());
-                break;
-        }
+        String logMessage = String.format("[%s][%s] %s", className, level.toString(), message);
+
+        System.out.println(logMessage);
     }
 
     public enum LogLevel {
