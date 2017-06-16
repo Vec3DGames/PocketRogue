@@ -232,7 +232,7 @@ public class Utils {
         TextureRegion itemIcon = PocketRogue.getInstance().getSpriteSheet(itemId).
                 getTextureFromSheet(iconCoords[0], iconCoords[1]);
         if (itemIcon == null) {
-            Logger.log("Unable to find icon for item.", Utils.class);
+            Logger.log(Utils.class, "Unable to find icon for item.");
             return null;
         }
         return itemIcon;
@@ -353,7 +353,7 @@ public class Utils {
                 intArray[i] = Integer.parseInt(tokens[i]);
             } catch (NumberFormatException e) {
                 //Log that we found invalid string but return what has been parsed so far.
-                Logger.log("Invalid string!", Utils.class, Logger.LogLevel.ERROR);
+                Logger.log(Utils.class, Logger.LogLevel.ERROR, "Invalid string!");
                 return intArray;
             }
         }

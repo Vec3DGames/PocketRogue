@@ -147,7 +147,7 @@ public class PocketRogueEntity extends Entity {
      * Called whenever an entity should be removed from the engine.
      */
     public void kill() {
-        Logger.log("Killed", PocketRogueEntity.class);
+        Logger.log(PocketRogueEntity.class, "Killed");
         isDead = true;
     }
 

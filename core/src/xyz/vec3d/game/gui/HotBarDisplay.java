@@ -63,18 +63,18 @@ public class HotBarDisplay extends Actor {
         for (int slot = 0; slot < hotBarItems.length; slot++) {
             HotBarItem hotBarItem = hotBarItems[slot];
 
-            if (hotBarItem == null || hotBarItem.itemStack == null)
-                continue;
+        if (hotBarItem == null || hotBarItem.itemStack == null)
+            continue;
 
-            TextureRegion textureRegion = Utils.getItemTexture(hotBarItem.itemStack);
-            if (textureRegion == null)
-                continue;
+        TextureRegion textureRegion = Utils.getItemTexture(hotBarItem.itemStack);
+        if (textureRegion == null)
+            continue;
 
-            String amount = hotBarItem.itemStack.getQuantityAsString();
+        String amount = hotBarItem.itemStack.getQuantityAsString();
 
-            batch.draw(textureRegion, getX() + 14 + (54 * (slot)), getY() + 14, 32, 32);
-            font.draw(batch, amount, getX() + 15 + (54 * (slot)), getY() + 15);
-        }
+        batch.draw(textureRegion, getX() + 14 + (54 * (slot)), getY() + 14, 32, 32);
+        font.draw(batch, amount, getX() + 15 + (54 * (slot)), getY() + 15);
+    }
     }
 
     /**

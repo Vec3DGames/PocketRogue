@@ -114,15 +114,15 @@ public class Inventory {
     public void addItem(ItemStack itemStackToAdd) {
         if (hasItem(itemStackToAdd) && itemStackToAdd.getItem().isStackable()) {
             getItemStackForItem(itemStackToAdd.getItem()).merge(itemStackToAdd);
-            Logger.log("Merged ItemStack with existing ItemStack.", Inventory.class);
+            Logger.log(Inventory.class, "Merged ItemStack with existing ItemStack.");
             return;
         }
         if (items.size() + 1 > getMaxItems()) {
-            Logger.log("Tried adding an ItemStack to a full inventory.", Inventory.class);
+            Logger.log(Inventory.class, "Tried adding an ItemStack to a full inventory.");
             return;
         }
         items.add(itemStackToAdd);
-        Logger.log("Added new ItemStack to Inventory.", Inventory.class);
+        Logger.log(Inventory.class, "Added new ItemStack to Inventory.");
     }
 
     /**

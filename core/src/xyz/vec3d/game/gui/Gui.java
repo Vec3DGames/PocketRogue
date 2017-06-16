@@ -65,7 +65,7 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
     public static Gui openGui(String guiName) {
         Class<Gui> classD = handledGuis.get(guiName);
         if (classD == null) {
-            Logger.log("Unable to find GUI.", Gui.class);
+            Logger.log(Gui.class, "Unable to find GUI.");
             return null;
         }
         try {
