@@ -501,6 +501,7 @@ public class GameScreen extends PocketRogueScreen {
                         IS_DEBUG = !IS_DEBUG;
                         break;
                     case "startwave":
+                        //Gregs first comment
                         if (args.length == 1) {
                             int waveNumber = Integer.valueOf(args[0]);
                             waveManager.startWave(waveNumber);
