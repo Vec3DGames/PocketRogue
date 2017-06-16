@@ -6,3 +6,17 @@ Key features of the code base include:
 -Message system for communicating between objects.  
 -Loading of item definitions from JSON files.  
 -Custom GUI system leveraging existing LibGDX GUI classes.
+
+# How To Get Started With Development
+1. Download the latest Java 8 SDK
+2. Download and install Android Studio
+3. Execute the following: 
+
+   ```
+   cd <directory_to_install_in>
+   git clone https://github.com/darakelian/PocketRogue.git
+   ```
+   
+4. Open up the directory as a Gradle project in Android Studio
+5. `git checkout develop`
+6. Begin coding!
