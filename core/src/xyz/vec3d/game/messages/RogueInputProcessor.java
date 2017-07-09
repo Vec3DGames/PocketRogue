@@ -154,6 +154,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
             gameScreen.getCombatSystem().doPlayerAttack();
             return true;
         }
+
         return false;
     }
 

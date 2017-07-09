@@ -395,4 +395,8 @@ public class Utils {
     private static int generateRandomNumber(int min, int max) {
         return random.nextInt((max - min) + 1) + min;
     }
+
+    public static boolean isInHitbox(float mouseX, float mouseY, float x, float y, float width, float height) {
+        return (mouseX >= x && mouseX <= x + width) && (mouseY >= y && mouseY <= y + height);
+    }
 }

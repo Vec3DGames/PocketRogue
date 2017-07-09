@@ -40,7 +40,6 @@ import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 import xyz.vec3d.game.systems.UpdateSystem;
-import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -409,10 +408,6 @@ public class GameScreen extends PocketRogueScreen {
                 PocketRogueEntity entitySpawned = (PocketRogueEntity) message.getPayload()[0];
                 engine.addEntity(entitySpawned);
                 break;
-            case PLAYER_INVENTORY_CHANGED:
-                Logger.log("test");
-                hotBarDisplay.refreshHotBarDisplay();
-                break;
             case COMMAND:
                 String[] tokens = (String[]) message.getPayload();
                 String command = tokens[0];
@@ -486,9 +481,7 @@ public class GameScreen extends PocketRogueScreen {
                                 quantity = Integer.valueOf(args[1]);
                             }
                             ItemStack stack = new ItemStack(new Item(itemId, ItemType.valueOf(slot)), quantity);
-                            WorldItem worldItem = new WorldItem(stack,
-                                    player.getPosition().x + 1, player.getPosition().y + 1);
-                            engine.addEntity(worldItem);
+                            dropItem(stack);
                         }
                         break;
                     case "debug":
@@ -519,11 +512,26 @@ public class GameScreen extends PocketRogueScreen {
         }
     }
 
+    public void dropItem(ItemStack itemStack) {
+        WorldItem worldItem = new WorldItem(itemStack,
+                player.getPosition().x + 1, player.getPosition().y + 1);
+        engine.addEntity(worldItem);
+    }
+
     int getMapWidth() {
         return mapWidth;
     }
 
     int getMapHeight() {
         return mapHeight;
+    }
+
+    public void useHotBarItem(ItemStack hotBarItem) {
+        player.getInventory().useItem(hotBarItem);
+        switch (hotBarItem.getItem().getId()) {
+            case 6:
+
+                break;
+        }
     }
 }

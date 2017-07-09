@@ -2,18 +2,23 @@ package xyz.vec3d.game.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import xyz.vec3d.game.PocketRogueScreen;
 import xyz.vec3d.game.Settings;
 import xyz.vec3d.game.messages.IMessageReceiver;
 import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.utils.Logger;
+import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 8/16/2016.
@@ -27,10 +32,13 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
 
     private ArrayList<IMessageReceiver> messageReceivers;
 
+    private float x, y, width, height;
+
     /**
      * List of all the GUI's registerd
      */
     private static final HashMap<Object, Class<Gui>> handledGuis = new HashMap<>();
+    PocketRogueScreen parentScreen;
 
     public Gui() {
         stage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
@@ -38,6 +46,12 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
         InputMultiplexer im = (InputMultiplexer) Gdx.input.getInputProcessor();
         im.addProcessor(0, stage);
         Gdx.input.setInputProcessor(im);
+        stage.addCaptureListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                guiClicked(x, y);
+            }
+        });
     }
 
     public abstract void setup();
@@ -115,4 +129,21 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
         }
     }
 
+    public void setParentScreen(PocketRogueScreen parentScreen) {
+        this.parentScreen = parentScreen;
+    }
+
+    void setHitbox(float x, float y, float width, float height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    public void guiClicked(float x, float y) {
+        Vector3 unprojectedCoords = this.stage.getCamera().unproject(new Vector3(x, y, 0));
+        if (!Utils.isInHitbox(unprojectedCoords.x, unprojectedCoords.y, this.x, this.y, width, height)) {
+            this.dispose();
+        }
+    }
 }

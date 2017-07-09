@@ -64,6 +64,7 @@ public class PocketRogueScreen implements Screen, IMessageReceiver, IMessageSend
             return;
         }
         gui.setParameters(parameters);
+        gui.setParentScreen(this);
         gui.setup();
         //Set up message receiver/sender relationship between the GUI.
         gui.registerMessageReceiver(this);

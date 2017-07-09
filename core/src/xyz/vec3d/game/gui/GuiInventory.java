@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.vec3d.game.GameScreen;
 import xyz.vec3d.game.messages.IMessageReceiver;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.model.Inventory;
@@ -82,7 +83,14 @@ class GuiInventory extends Gui {
         magicDef = new Label("Magic Defense: ", skin);
         rangeDef = new Label("Range Defense: ", skin);
         Button equipButton = new TextButton("Equip", skin);
+        Button dropButton = new TextButton("Drop", skin);
         equipButton.addCaptureListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                equipButtonClicked(getSelectedDisplay());
+            }
+        });
+        dropButton.addCaptureListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ItemStackDisplay itemStackDisplay = getSelectedDisplay();
@@ -91,21 +99,9 @@ class GuiInventory extends Gui {
                     return;
                 }
 
-                ItemStack itemToEquip = itemStackDisplay.getItemStack();
-                if (inventory.equipItem(itemToEquip)) {
-                    Message itemEquippedMessage = new Message(Message.MessageType.ITEM_EQUIPPED);
-                    notifyMessageReceivers(itemEquippedMessage);
-                    refreshInventoryTable();
-                }
-                String parentName = parentActor != null ? parentActor.getName() : "";
-                if (parentName.contains("hot_bar")) {
-                    if (itemToEquip.getItem().getType() == Item.ItemType.GENERAL) {
-                        int hotBarSlot = Integer.parseInt(parentName.substring(parentName.length() - 1));
-                        inventory.setHotBarItem(hotBarSlot, itemToEquip);
-                        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INVENTORY_CHANGED));
-                        dispose();
-                    }
-                }
+                ItemStack itemToDrop = inventory.dropItem(itemStackDisplay.getItemStack().getItem());
+                ((GameScreen) parentScreen).dropItem(itemToDrop);
+                refreshInventoryTable();
             }
         });
 
@@ -116,12 +112,13 @@ class GuiInventory extends Gui {
         itemInfoTable.add(meleeDef).pad(4).fillX().expandX().height(20).row();
         itemInfoTable.add(magicDef).pad(4).fillX().expandX().height(20).row();
         itemInfoTable.add(rangeDef).pad(4).fillX().expandX().height(20).row();
-        itemInfoTable.add(equipButton).pad(4).fillX().expandX().height(40);
+        itemInfoTable.add(equipButton).pad(4).fillX().expandX().height(30).row();
+        itemInfoTable.add(dropButton).pad(4).fillX().expandX().height(30);
         itemInfoTable.add().fill().expand();
 
         //Add item display and stat display tables to root table.
         componentTable.add(itemScrollPane).expandY().fillY().width(250);
-        componentTable.add(itemInfoTable).expandX().fill();
+        componentTable.add(itemInfoTable).expandY().fillY().width(150);
 
         //Add root table to window and add the item displays.
         window.addActor(componentTable);
@@ -130,6 +127,36 @@ class GuiInventory extends Gui {
         //Add stuff to the stage and set scroll focus to item scroll pane.
         getStage().addActor(window);
         getStage().setScrollFocus(itemScrollPane);
+
+        this.setHitbox(window.getX(), window.getY(), window.getWidth(), window.getHeight());
+    }
+
+    private void equipButtonClicked(ItemStackDisplay itemStackDisplay) {
+        if (itemStackDisplay == null) {
+            Logger.log(getClass(), Logger.LogLevel.WARNING, "Attempted to select a non-existent item display.");
+            return;
+        }
+
+        ItemStack itemToEquip = itemStackDisplay.getItemStack();
+        if (inventory.equipItem(itemToEquip)) {
+            Message itemEquippedMessage = new Message(Message.MessageType.ITEM_EQUIPPED);
+            notifyMessageReceivers(itemEquippedMessage);
+            refreshInventoryTable();
+            return;
+        }
+        String parentName = parentActor != null ? parentActor.getName() : "";
+        if (parentName.contains("hot_bar")) {
+            if (itemToEquip.getItem().getType() == Item.ItemType.GENERAL) {
+                int hotBarSlot = Integer.parseInt(parentName.substring(parentName.length() - 1));
+                inventory.setHotBarItem(hotBarSlot, itemToEquip);
+                notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INVENTORY_CHANGED));
+                dispose();
+                return;
+            }
+        }
+
+        ((GameScreen) parentScreen).useHotBarItem(itemToEquip);
+        refreshInventoryTable();
     }
 
     private void refreshInventoryTable() {
