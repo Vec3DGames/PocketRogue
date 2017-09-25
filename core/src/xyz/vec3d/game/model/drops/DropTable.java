@@ -11,9 +11,37 @@ import java.util.List;
 
 public class DropTable {
 
+    private List<Drop> guaranteedDrops;
     private List<Drop> drops;
 
+    private int leastCommonMultiple;
+
     public DropTable() {
+        guaranteedDrops = new ArrayList<>();
         drops = new ArrayList<>();
+    }
+
+    void addAlwaysDrop(Drop drop) {
+        guaranteedDrops.add(drop);
+    }
+
+    void addDrop(Drop drop) {
+        drops.add(drop);
+    }
+
+    public List<Drop> getGuaranteedDrops(){
+        return guaranteedDrops;
+    }
+
+    public List<Drop> getDrops() {
+        return drops;
+    }
+
+    public int getLeastCommonMultiple() {
+        return leastCommonMultiple;
+    }
+
+    public void setLeastCommonMultiple(int leastCommonMultiple) {
+        this.leastCommonMultiple = leastCommonMultiple;
     }
 }

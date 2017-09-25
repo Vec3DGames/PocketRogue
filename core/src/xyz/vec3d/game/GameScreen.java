@@ -20,6 +20,7 @@ import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.WorldItem;
+import xyz.vec3d.game.entities.listeners.EntityDeathListener;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.GuiDebug;
 import xyz.vec3d.game.gui.HotBarDisplay;
@@ -36,10 +37,12 @@ import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.Item.ItemType;
 import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.model.combat.CombatSystem;
+import xyz.vec3d.game.model.drops.DropSystem;
 import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 import xyz.vec3d.game.systems.UpdateSystem;
+import xyz.vec3d.game.test.TestManager;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -236,14 +239,18 @@ public class GameScreen extends PocketRogueScreen {
 
         //Create engine instance, attach listeners and systems.
         engine = new Engine();
+
         UpdateSystem updateSystem = new UpdateSystem();
         RenderingSystem renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
         MovementSystem movementSystem = new MovementSystem();
+
         engine.addSystem(updateSystem);
         engine.addSystem(new CollisionSystem());
         engine.addSystem(movementSystem);
         engine.addSystem(renderingSystem);
         engine.addEntityListener(new EntityTextureListener());
+        engine.addEntityListener(new EntityDeathListener(engine));
+
         player = new Player(10, 10);
         engine.addEntity(player);
         notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
@@ -258,6 +265,7 @@ public class GameScreen extends PocketRogueScreen {
         waveManager = new WaveManager(this, engine);
         waveManager.startWave();
         hotBarDisplay.setPlayer(player);
+        DropSystem.loadDrops();
     }
 
     /**
@@ -425,18 +433,12 @@ public class GameScreen extends PocketRogueScreen {
                         if (console.checkNumArgs(args, 1)) {
                             int itemId = Integer.valueOf(args[0]);
                             int amount = args.length > 1 ? Integer.valueOf(args[1]) : 1;
-                            Definition def = DefinitionLoader.getItemDefinition(itemId);
-                            if (def == null) {
-                                break;
-                            }
-                            String slot = (String) def.getProperty(DefinitionProperty.SLOT);
-                            String name = (String) def.getProperty(DefinitionProperty.NAME);
-                            ItemType type = ItemType.valueOf(slot);
-                            Item item = new Item(itemId, type);
+                            Item item = new Item(itemId);
+
                             if (args.length >= 3) {
                                 String bonuses = args[2];
                                 int[] intBonuses = Utils.stringToIntArray(bonuses);
-                                item = new Item(itemId, intBonuses, type);
+                                item = new Item(itemId, intBonuses, item.getType());
                             }
                             ItemStack stack = new ItemStack(item, amount);
                             player.getInventory().addItem(stack);
@@ -444,7 +446,7 @@ public class GameScreen extends PocketRogueScreen {
                                     MessageType.PLAYER_INVENTORY_CHANGED,
                                     player.getInventory());
                             notifyMessageReceivers(inventoryChangedMessage);
-                            console.log("Added item: " + name);
+                            console.log("Added item: " + item.getName());
                         }
                         break;
                     case "entity":
@@ -503,6 +505,9 @@ public class GameScreen extends PocketRogueScreen {
                         break;
                     case "endwave":
                         waveManager.endWave();
+                        break;
+                    case "test":
+                        new TestManager().executeTest(args[0]);
                         break;
                     default:
                         console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);

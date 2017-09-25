@@ -7,4 +7,33 @@ package xyz.vec3d.game.model.drops;
  */
 
 public class Drop {
+
+    private int itemId;
+
+    private int amount;
+
+    private int dropRate;
+
+    public Drop(int itemId, int amount, int dropRate) {
+        this.itemId = itemId;
+        this.amount = amount;
+        this.dropRate = dropRate;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public int getDropRate() {
+        return dropRate;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + itemId + " Amount: " + amount + " Drop Rate: " + dropRate;
+    }
 }

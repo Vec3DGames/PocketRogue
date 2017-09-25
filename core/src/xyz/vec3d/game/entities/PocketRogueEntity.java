@@ -147,7 +147,7 @@ public class PocketRogueEntity extends Entity {
      * Called whenever an entity should be removed from the engine.
      */
     public void kill() {
-        Logger.log(PocketRogueEntity.class, "Killed");
+        Logger.log(PocketRogueEntity.class, "Killed entity: " + getName());
         isDead = true;
     }
 
@@ -257,7 +257,7 @@ public class PocketRogueEntity extends Entity {
         if (healthComponent != null) {
             healthComponent.removeHealth(damage);
         }
-        if (this.health <= 0) {
+        if (this.health <= 0 && !isDead) {
             this.kill();
         }
     }

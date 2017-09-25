@@ -78,6 +78,23 @@ public class Item {
     }
 
     /**
+     *
+     * @param id
+     * @return
+     */
+    public Item(int id) {
+        DefinitionLoader.Definition def = DefinitionLoader.getItemDefinition(id);
+        if (def == null) {
+            return;
+        }
+        String slot = (String) def.getProperty(DefinitionProperty.SLOT);
+        ItemType type = ItemType.valueOf(slot);
+
+        this.id = id;
+        this.type = type;
+    }
+
+    /**
      * Returns the Item ID to be used for looking up definitions.
      *
      * @return Item ID.

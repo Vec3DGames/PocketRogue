@@ -18,6 +18,19 @@
         "Amount": 1,
         "DropRate": 100
       }
-    ]
+    ],
+    "LeastCommonMultiple": 100
+  },
+  {
+    "Id": 2,
+    "Name": "Tim",
+    "Drops": [
+      {
+        "Id": 1,
+        "Amount": 1,
+        "DropRate": 5
+      }
+    ],
+    "LeastCommonMultiple": 5
   }
 ]

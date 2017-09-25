@@ -10,6 +10,7 @@ import java.util.List;
 import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
+import xyz.vec3d.game.entities.components.AiComponent;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -63,9 +64,7 @@ class WaveManager implements EntityListener {
         this.waveNumber++;
         this.entitiesLeft = this.waveNumber;
         if (waveEnemies.size() > 0) {
-            for (PocketRogueEntity entity : waveEnemies) {
-                entity.kill();
-            }
+            waveEnemies.clear();
         }
         startWave();
     }
@@ -74,7 +73,9 @@ class WaveManager implements EntityListener {
         int entityIdToSpawn = Utils.generateEntityId();
         int x = Utils.generateRandomNumber(gameScreen.getMapWidth());
         int y = Utils.generateRandomNumber(gameScreen.getMapHeight());
-        return new Enemy(entityIdToSpawn, x, y);
+        Enemy enemy = new Enemy(entityIdToSpawn, x, y);
+        enemy.add(new AiComponent(gameScreen.getPlayer()));
+        return enemy;
     }
 
     @Override
@@ -94,9 +95,12 @@ class WaveManager implements EntityListener {
         if (!isEntityValid(pocketRogueEntity)) {
             return;
         }
-        entitiesLeft--;
-        if (entitiesLeft <= 0) {
-            endWave();
+        if (waveEnemies.stream().anyMatch(enemy -> enemy.equals(entity))) {
+            entitiesLeft--;
+            waveEnemies.remove(entity);
+            if (entitiesLeft <= 0) {
+                endWave();
+            }
         }
     }
 
