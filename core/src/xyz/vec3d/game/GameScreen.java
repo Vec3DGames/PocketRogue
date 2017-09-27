@@ -38,6 +38,7 @@ import xyz.vec3d.game.model.Item.ItemType;
 import xyz.vec3d.game.model.ItemStack;
 import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.model.drops.DropSystem;
+import xyz.vec3d.game.systems.AiSystem;
 import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
@@ -248,6 +249,7 @@ public class GameScreen extends PocketRogueScreen {
         engine.addSystem(new CollisionSystem());
         engine.addSystem(movementSystem);
         engine.addSystem(renderingSystem);
+        engine.addSystem(new AiSystem());
         engine.addEntityListener(new EntityTextureListener());
         engine.addEntityListener(new EntityDeathListener(engine));
 

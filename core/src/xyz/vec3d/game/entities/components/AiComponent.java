@@ -13,12 +13,22 @@ import xyz.vec3d.game.entities.PocketRogueEntity;
 public class AiComponent implements Component {
 
     private PocketRogueEntity target;
+    private AiBehavior behavior;
 
     public AiComponent(PocketRogueEntity target) {
         this.target = target;
+        behavior = AiBehavior.HOSTILE;
     }
 
     public PocketRogueEntity getTarget() {
         return target;
+    }
+
+    public AiBehavior getBehavior() {
+        return behavior;
+    }
+
+    public enum AiBehavior {
+        HOSTILE
     }
 }
