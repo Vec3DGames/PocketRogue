@@ -54,4 +54,7 @@ public class ManaComponent implements Component {
         return currentMana / maxMana;
     }
 
+    public void removeMana(float manaCost) {
+        currentMana -= manaCost;
+    }
 }

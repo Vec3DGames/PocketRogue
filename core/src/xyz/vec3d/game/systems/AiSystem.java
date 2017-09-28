@@ -7,6 +7,8 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.AiComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.utils.Utils;
 
 /**
  * Created by Daron on 9/25/2017.
@@ -25,12 +27,17 @@ public class AiSystem extends IteratingSystem {
         AiComponent aiComponent = entity.getComponent(AiComponent.class);
         PocketRogueEntity target = aiComponent.getTarget();
         PositionComponent currentPosition = entity.getComponent(PositionComponent.class);
+        VelocityComponent currentVelocity = entity.getComponent(VelocityComponent.class);
         AiComponent.AiBehavior behavior = aiComponent.getBehavior();
 
         if (behavior == AiComponent.AiBehavior.HOSTILE) {
-            if (target.getPosition().x < currentPosition.getPosition().x) {
+            float x = currentPosition.getPosition().x;
+            float y = currentPosition.getPosition().y;
+            float x2 = target.getPosition().x;
+            float y2 = target.getPosition().y;
 
-            }
+            currentVelocity.getVelocity().x = Utils.isLessThanWithRange(x, x2 - 1) ? 0.1f : Utils.isMoreThanWithRange(x, x2 + 1) ? -0.1f : 0;
+            currentVelocity.getVelocity().y = Utils.isLessThanWithRange(y, y2 - 1) ? 0.1f : Utils.isMoreThanWithRange(y, y2 + 1) ? -0.1f : 0;
         }
     }
 

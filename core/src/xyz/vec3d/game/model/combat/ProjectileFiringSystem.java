@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector2;
 
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.Projectile;
+import xyz.vec3d.game.entities.components.ManaComponent;
+import xyz.vec3d.game.model.Spell;
 
 /**
  * Created by Daron on 3/16/2017.
@@ -31,8 +33,9 @@ public class ProjectileFiringSystem extends EntitySystem {
     }
 
     /**
+     * Updates the timer tracking how long it has been since the last shot.
      *
-     * @param delta
+     * @param delta Time since last frame
      */
     @Override
     public void update(float delta) {
@@ -40,12 +43,15 @@ public class ProjectileFiringSystem extends EntitySystem {
     }
 
     public Projectile fireProjectile() {
-        if (timeSinceLastShot >= delayBetweenShots) {
+        ManaComponent manaComponent = owner.getComponent(ManaComponent.class);
+        Spell currentSpell = owner.getSpellManager().getCurrentSpell();
+
+        if (timeSinceLastShot >= delayBetweenShots && manaComponent.getCurrentMana() >= currentSpell.getManaCost()) {
             timeSinceLastShot = 0;
             //Get player's direction to use as base velocity.
             Vector2 velocity = owner.getDirection().cpy();
             //Scale to desired speed
-            velocity.scl(0.4f);
+            velocity.scl(owner.getSpellManager().getCurrentSpell().getSpeed());
             //Get player's position to use as base position.
             Vector2 position = owner.getPosition().cpy();
             //Get angle of range -180<=theta<=180
@@ -56,8 +62,9 @@ public class ProjectileFiringSystem extends EntitySystem {
                     (angle == 225 || angle == 315 || angle == 270) ? -1 : 1;
             position.add(1.1f * xMod, 1.1f * yMod);
             //Spawn projectile.
-            Projectile projectile = new Projectile(owner, position, velocity, "Bolt");
-            projectile.putProperty("dmg", 10.0f);
+            Projectile projectile = new Projectile(owner, position, velocity, currentSpell.getSpellId());
+            projectile.putProperty("dmg", (float)currentSpell.getDamage());
+            manaComponent.removeMana(currentSpell.getManaCost());
             return projectile;
         }
         return null;

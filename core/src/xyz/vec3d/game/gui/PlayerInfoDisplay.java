@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import java.util.ArrayList;
 
 import xyz.vec3d.game.PocketRogue;
+import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.entities.components.HealthComponent;
+import xyz.vec3d.game.entities.components.ManaComponent;
 import xyz.vec3d.game.messages.IMessageReceiver;
 import xyz.vec3d.game.messages.IMessageSender;
 import xyz.vec3d.game.messages.Message;
@@ -35,14 +38,15 @@ public class PlayerInfoDisplay extends Actor implements IMessageReceiver, IMessa
 
     private BitmapFont font;
 
-    private float maxHealth, maxMana;
-    private float health, mana;
+    //private float maxHealth, maxMana;
+    //private float health, mana;
+    private Player player;
 
     private GlyphLayout layout;
 
     private ArrayList<IMessageReceiver> messageReceivers = new ArrayList<>();
 
-    public PlayerInfoDisplay() {
+    public PlayerInfoDisplay(Player player) {
         playerIcon = PocketRogue.getAsset("playerIcon.png");
         frameBorder = PocketRogue.getAsset("frameBorder.png");
         barBackground = PocketRogue.getAsset("barBackground.png");
@@ -62,10 +66,20 @@ public class PlayerInfoDisplay extends Actor implements IMessageReceiver, IMessa
             }
 
         });
+
+        this.player = player;
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        HealthComponent healthComponent = player.getComponent(HealthComponent.class);
+        ManaComponent manaComponent = player.getComponent(ManaComponent.class);
+
+        float health = healthComponent.getCurrentHealth();
+        float maxHealth = healthComponent.getMaxHealth();
+        float mana = manaComponent.getCurrentMana();
+        float maxMana = manaComponent.getMaxMana();
+
         //Draw the frames of everything.
         batch.draw(frameBorder, this.getX(), this.getY());
         batch.draw(playerIcon, this.getX() + 4, this.getY() + 4);
@@ -106,21 +120,7 @@ public class PlayerInfoDisplay extends Actor implements IMessageReceiver, IMessa
 
     @Override
     public void onMessageReceived(Message message) {
-        switch (message.getMessageType()) {
-            case PLAYER_INFO_MAX_CHANGED:
-                //Update the info of max values for health/mana.
-                maxHealth = health = (Integer) message.getPayload()[0];
-                maxMana = mana = (Integer) message.getPayload()[1];
-                break;
-            case PLAYER_INFO_HEALTH_CHANGED:
-                //Update health bar value.
-                health += (Integer) message.getPayload()[0];
-                break;
-            case PLAYER_INFO_MANA_CHANGED:
-                //Update mana bar value.
-                mana += (Integer) message.getPayload()[0];
-                break;
-        }
+
     }
 
     @Override

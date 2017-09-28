@@ -30,8 +30,8 @@ import xyz.vec3d.game.gui.console.Console;
 import xyz.vec3d.game.gui.console.LogMessage;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.RogueInputProcessor;
+import xyz.vec3d.game.model.Definition;
 import xyz.vec3d.game.model.DefinitionLoader;
-import xyz.vec3d.game.model.DefinitionLoader.Definition;
 import xyz.vec3d.game.model.DefinitionProperty;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.Item.ItemType;
@@ -152,7 +152,6 @@ public class GameScreen extends PocketRogueScreen {
         this.spriteBatch = new SpriteBatch();
         this.shapeRenderer = new ShapeRenderer();
         this.shapeRenderer.setAutoShapeType(true);
-        setUpGui();
         setUpEngine();
     }
 
@@ -173,7 +172,7 @@ public class GameScreen extends PocketRogueScreen {
         rogueInputProcessor.registerMessageReceiver(this);
 
         //Set up the player info display.
-        PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay();
+        PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay(player);
         infoDisplay.setPosition(20, uiStage.getHeight() - 80);
         infoDisplay.registerMessageReceiver(this);
         this.registerMessageReceiver(infoDisplay);
@@ -263,6 +262,7 @@ public class GameScreen extends PocketRogueScreen {
      * Set up core functionality not specifically related to the engine.
      */
     private void setUpCore(Engine engine) {
+        setUpGui();
         combatSystem = new CombatSystem(engine, player);
         waveManager = new WaveManager(this, engine);
         waveManager.startWave();
@@ -511,6 +511,10 @@ public class GameScreen extends PocketRogueScreen {
                     case "test":
                         new TestManager().executeTest(args[0]);
                         break;
+                    case "setspell":
+                        int spellId = Integer.valueOf(args[0]);
+                        player.getSpellManager().setCurrentSpell(spellId);
+                        break;
                     default:
                         console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);
                         break;
@@ -536,8 +540,13 @@ public class GameScreen extends PocketRogueScreen {
     public void useHotBarItem(ItemStack hotBarItem) {
         player.getInventory().useItem(hotBarItem);
         switch (hotBarItem.getItem().getId()) {
+            //Health potion
             case 6:
-
+                break;
+            //Spell scrolls
+            case 10:
+            case 11:
+                player.getSpellManager().unlockSpell(hotBarItem.getItem().getId());
                 break;
         }
     }

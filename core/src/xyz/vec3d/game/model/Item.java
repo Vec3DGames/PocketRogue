@@ -78,12 +78,13 @@ public class Item {
     }
 
     /**
+     * Creates an Item from a specified ID and uses stored definitions to populate
+     * properties of the item.
      *
-     * @param id
-     * @return
+     * @param id ID of item to create
      */
     public Item(int id) {
-        DefinitionLoader.Definition def = DefinitionLoader.getItemDefinition(id);
+        Definition def = DefinitionLoader.getItemDefinition(id);
         if (def == null) {
             return;
         }

@@ -2,6 +2,7 @@ package xyz.vec3d.game.utils;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,18 +12,20 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import xyz.vec3d.game.PocketRogue;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.PositionComponent;
+import xyz.vec3d.game.model.Definition;
 import xyz.vec3d.game.model.DefinitionLoader;
-import xyz.vec3d.game.model.DefinitionLoader.Definition;
-import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.DefinitionProperty;
+import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.ItemStack;
 
 /**
@@ -398,5 +401,44 @@ public class Utils {
 
     public static boolean isInHitbox(float mouseX, float mouseY, float x, float y, float width, float height) {
         return (mouseX >= x && mouseX <= x + width) && (mouseY >= y && mouseY <= y + height);
+    }
+
+    public static boolean isLessThanWithRange(float coord, float referenceCoord) {
+        return isLessThanWithRange(coord, referenceCoord, 0.02f);
+    }
+
+    private static boolean isLessThanWithRange(float coord, float referenceCoord, float buffer) {
+        //float difference = Math.abs(coord - referenceCoord);
+        return coord <= referenceCoord * (1 + buffer);
+    }
+
+    public static boolean isMoreThanWithRange(float coord, float referenceCoord) {
+        return isMoreThanWithRange(coord, referenceCoord, 0.02f);
+    }
+
+    private static boolean isMoreThanWithRange(float coord, float referenceCoord, float buffer) {
+        //float difference = Math.abs(coord - referenceCoord);
+        return coord >= referenceCoord * (1 + buffer);
+    }
+
+    public static List<Definition> getDefinitionsFromFile(String fileName) {
+        List<Definition> loadedDefinitions = new ArrayList<>();
+        JsonReader jsonReader = new JsonReader();
+        JsonValue values = jsonReader.parse(Gdx.files.internal(fileName));
+        for (int i = 0; i < values.size; i++) {
+            JsonValue child = values.get(i);
+            Definition definition = new Definition();
+            for (int childIndex = 0; childIndex < child.size; childIndex++) {
+                JsonValue value = child.get(childIndex);
+                String key = value.name;
+                definition.putProperty(key, Utils.getJsonTypeValue(value));
+            }
+            definition.putProperty("id", i);
+            loadedDefinitions.add(definition);
+            //itemDefinitions.put((int)definition.getProperty(DefinitionProperty.ID), definition);
+            System.out.println("Loaded definition: " + definition);
+        }
+
+        return loadedDefinitions;
     }
 }

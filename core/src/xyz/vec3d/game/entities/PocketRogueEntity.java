@@ -11,6 +11,7 @@ import xyz.vec3d.game.entities.components.HealthComponent;
 import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.model.SpellManager;
 import xyz.vec3d.game.model.combat.ProjectileFiringSystem;
 import xyz.vec3d.game.utils.Logger;
 
@@ -50,6 +51,7 @@ public class PocketRogueEntity extends Entity {
     float health;
 
     ProjectileFiringSystem projectileFiringSystem;
+    SpellManager spellManager;
 
     public PocketRogueEntity() {
         add(new CollideComponent());
@@ -249,6 +251,10 @@ public class PocketRogueEntity extends Entity {
 
     public ProjectileFiringSystem getFiringSystem() {
         return projectileFiringSystem;
+    }
+
+    public SpellManager getSpellManager() {
+        return spellManager;
     }
 
     void applyDamage(float damage) {
