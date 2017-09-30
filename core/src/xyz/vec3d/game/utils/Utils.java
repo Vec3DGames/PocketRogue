@@ -243,6 +243,7 @@ public class Utils {
 
     public static TextureRegion getEntityTexture(String entityName) {
         String name = entityName.toLowerCase() + ".png";
+        name = name.replaceAll(" ", "_");
         Texture texture = PocketRogue.getAsset(name);
         if (texture == null) {
             return null;
@@ -433,7 +434,7 @@ public class Utils {
                 String key = value.name;
                 definition.putProperty(key, Utils.getJsonTypeValue(value));
             }
-            definition.putProperty("id", i);
+            definition.putProperty("id", definition.getProperty(DefinitionProperty.ID) != null ? (int)definition.getProperty(DefinitionProperty.ID) : i);
             loadedDefinitions.add(definition);
             //itemDefinitions.put((int)definition.getProperty(DefinitionProperty.ID), definition);
             System.out.println("Loaded definition: " + definition);

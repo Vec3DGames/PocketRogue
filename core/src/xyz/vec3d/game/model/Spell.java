@@ -21,12 +21,12 @@ public class Spell {
     private String spellName;
 
     Spell(Definition spellDefinition) {
-        id = (int)spellDefinition.getProperty(DefinitionProperty.ID);
-        damage = (int)spellDefinition.getProperty(DefinitionProperty.DAMAGE);
-        cooldown = (int)spellDefinition.getProperty(DefinitionProperty.COOLDOWN);
+        id = (int) spellDefinition.getProperty(DefinitionProperty.ID);
+        damage = (int) spellDefinition.getProperty(DefinitionProperty.DAMAGE);
+        cooldown = (int) spellDefinition.getProperty(DefinitionProperty.COOLDOWN);
 
-        manaCost = (float)spellDefinition.getProperty(DefinitionProperty.MANA_COST);
-        speed = (float)spellDefinition.getProperty(DefinitionProperty.MOVE_SPEED);
+        manaCost = Float.valueOf(spellDefinition.getProperty(DefinitionProperty.MANA_COST).toString());
+        speed = Float.valueOf(spellDefinition.getProperty(DefinitionProperty.MOVE_SPEED).toString());
 
         spellId = (String)spellDefinition.getProperty(DefinitionProperty.SPELL_ID);
         spellName = (String)spellDefinition.getProperty(DefinitionProperty.NAME);

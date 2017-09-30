@@ -45,6 +45,8 @@ public class ProjectileFiringSystem extends EntitySystem {
     public Projectile fireProjectile() {
         ManaComponent manaComponent = owner.getComponent(ManaComponent.class);
         Spell currentSpell = owner.getSpellManager().getCurrentSpell();
+        if (currentSpell == null || manaComponent == null)
+            return null;
 
         if (timeSinceLastShot >= delayBetweenShots && manaComponent.getCurrentMana() >= currentSpell.getManaCost()) {
             timeSinceLastShot = 0;
@@ -62,7 +64,7 @@ public class ProjectileFiringSystem extends EntitySystem {
                     (angle == 225 || angle == 315 || angle == 270) ? -1 : 1;
             position.add(1.1f * xMod, 1.1f * yMod);
             //Spawn projectile.
-            Projectile projectile = new Projectile(owner, position, velocity, currentSpell.getSpellId());
+            Projectile projectile = new Projectile(owner, position, velocity, currentSpell.getSpellName());
             projectile.putProperty("dmg", (float)currentSpell.getDamage());
             manaComponent.removeMana(currentSpell.getManaCost());
             return projectile;
@@ -70,7 +72,4 @@ public class ProjectileFiringSystem extends EntitySystem {
         return null;
     }
 
-    public void setDelayBetweenShots(float delayBetweenShots) {
-        this.delayBetweenShots = delayBetweenShots;
-    }
 }
