@@ -97,7 +97,7 @@ public class HotBarDisplay extends Actor {
 
     private void ShowHotBarItemSelectionPrompt(int slot) {
         setName("hot_bar_display" + slot);
-        gameScreen.openGui("player_inventory", player.getInventory(), skin, gameScreen.getCombatSystem(), this);
+        gameScreen.openGui("player_inventory", player.getInventory(), skin, gameScreen.getPlayer().getCombatSystem(), this);
     }
 
     public void setPlayer(Player player) {

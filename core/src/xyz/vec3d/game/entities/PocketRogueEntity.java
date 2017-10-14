@@ -12,6 +12,7 @@ import xyz.vec3d.game.entities.components.MovementSpeedComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.model.SpellManager;
+import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.model.combat.ProjectileFiringSystem;
 import xyz.vec3d.game.utils.Logger;
 
@@ -52,6 +53,7 @@ public class PocketRogueEntity extends Entity {
 
     ProjectileFiringSystem projectileFiringSystem;
     SpellManager spellManager;
+    CombatSystem combatSystem;
 
     public PocketRogueEntity() {
         add(new CollideComponent());
@@ -246,7 +248,7 @@ public class PocketRogueEntity extends Entity {
      *                      the player.
      */
     public void doHit(PocketRogueEntity entityHitting, float damage) {
-
+        applyDamage(damage);
     }
 
     public ProjectileFiringSystem getFiringSystem() {
@@ -257,14 +259,28 @@ public class PocketRogueEntity extends Entity {
         return spellManager;
     }
 
+    public CombatSystem getCombatSystem() {
+        return combatSystem;
+    }
+
+    public void createCombatSystem(Engine engine) {
+        this.combatSystem = new CombatSystem(engine, this);
+    }
+
     void applyDamage(float damage) {
-        this.health -= damage;
         HealthComponent healthComponent = getComponent(HealthComponent.class);
         if (healthComponent != null) {
             healthComponent.removeHealth(damage);
+        } else {
+            this.health -= damage;
         }
-        if (this.health <= 0 && !isDead) {
-            this.kill();
+        if (!isDead) {
+            if (healthComponent != null && healthComponent.getCurrentHealth() <= 0) {
+                this.kill();
+            }
+            if (healthComponent == null && this.health <= 0) {
+                this.kill();
+            }
         }
     }
 

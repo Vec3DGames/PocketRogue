@@ -8,6 +8,7 @@ import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.components.AiComponent;
 import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
+import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -38,6 +39,11 @@ public class AiSystem extends IteratingSystem {
 
             currentVelocity.getVelocity().x = Utils.isLessThanWithRange(x, x2 - 1) ? 0.1f : Utils.isMoreThanWithRange(x, x2 + 1) ? -0.1f : 0;
             currentVelocity.getVelocity().y = Utils.isLessThanWithRange(y, y2 - 1) ? 0.1f : Utils.isMoreThanWithRange(y, y2 + 1) ? -0.1f : 0;
+
+            //Attack player if in range
+            CombatSystem combatSystem = ((PocketRogueEntity)entity).getCombatSystem();
+            combatSystem.update(deltaTime);
+            combatSystem.doPlayerAttack();
         }
     }
 

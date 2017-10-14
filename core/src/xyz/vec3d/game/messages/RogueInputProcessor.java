@@ -151,7 +151,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (gameScreen.getGuiOverlay() == null) {
             //Do combat action here
-            gameScreen.getCombatSystem().doPlayerAttack();
+            gameScreen.getPlayer().getCombatSystem().doPlayerAttack();
             return true;
         }
 

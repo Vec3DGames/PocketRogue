@@ -1,11 +1,13 @@
 package xyz.vec3d.game.entities.listeners;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.WorldItem;
+import xyz.vec3d.game.entities.components.AiComponent;
 import xyz.vec3d.game.entities.components.TextureComponent;
 import xyz.vec3d.game.utils.Utils;
 
@@ -19,11 +21,13 @@ import xyz.vec3d.game.utils.Utils;
  */
 public class EntityTextureListener implements EntityListener {
 
+    private Engine engine;
+
     /**
      * Default constructor.
      */
-    public EntityTextureListener() {
-
+    public EntityTextureListener(Engine engine) {
+        this.engine = engine;
     }
 
     @Override
@@ -38,6 +42,11 @@ public class EntityTextureListener implements EntityListener {
             }
             TextureRegion region = Utils.getEntityTexture(name);
             entity.add(new TextureComponent(region));
+            AiComponent aiComponent = entity.getComponent(AiComponent.class);
+            if (aiComponent != null) {
+                aiComponent.setEngine(engine);
+            }
+            ((PocketRogueEntity)entity).createCombatSystem(engine);
         }
     }
 

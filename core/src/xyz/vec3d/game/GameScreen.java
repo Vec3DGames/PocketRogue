@@ -20,6 +20,8 @@ import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.WorldItem;
+import xyz.vec3d.game.entities.components.HealthComponent;
+import xyz.vec3d.game.entities.components.ManaComponent;
 import xyz.vec3d.game.entities.listeners.EntityDeathListener;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.GuiDebug;
@@ -36,7 +38,6 @@ import xyz.vec3d.game.model.DefinitionProperty;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.Item.ItemType;
 import xyz.vec3d.game.model.ItemStack;
-import xyz.vec3d.game.model.combat.CombatSystem;
 import xyz.vec3d.game.model.drops.DropSystem;
 import xyz.vec3d.game.systems.AiSystem;
 import xyz.vec3d.game.systems.CollisionSystem;
@@ -129,11 +130,6 @@ public class GameScreen extends PocketRogueScreen {
     private GuiDebug debugOverlay;
     private boolean renderDebugOverlay = false;
     public static boolean IS_DEBUG = false;
-
-    /**
-     * The {@link CombatSystem combat system} used for the game screen.
-     */
-    private CombatSystem combatSystem;
 
     private WaveManager waveManager;
 
@@ -249,7 +245,7 @@ public class GameScreen extends PocketRogueScreen {
         engine.addSystem(movementSystem);
         engine.addSystem(renderingSystem);
         engine.addSystem(new AiSystem());
-        engine.addEntityListener(new EntityTextureListener());
+        engine.addEntityListener(new EntityTextureListener(engine));
         engine.addEntityListener(new EntityDeathListener(engine));
 
         player = new Player(10, 10);
@@ -263,7 +259,6 @@ public class GameScreen extends PocketRogueScreen {
      */
     private void setUpCore(Engine engine) {
         setUpGui();
-        combatSystem = new CombatSystem(engine, player);
         waveManager = new WaveManager(this, engine);
         waveManager.startWave();
         hotBarDisplay.setPlayer(player);
@@ -289,10 +284,6 @@ public class GameScreen extends PocketRogueScreen {
      */
     public Player getPlayer() {
         return player;
-    }
-
-    public CombatSystem getCombatSystem() {
-        return combatSystem;
     }
 
     /**
@@ -325,9 +316,9 @@ public class GameScreen extends PocketRogueScreen {
         shapeRenderer.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
         shapeRenderer.begin();
+        player.getCombatSystem().update(delta);
         rogueInputProcessor.update();
         engine.update(delta);
-        combatSystem.update(delta);
         spriteBatch.end();
         shapeRenderer.end();
 
@@ -400,7 +391,7 @@ public class GameScreen extends PocketRogueScreen {
                 System.out.println(uiName);
                 switch (uiName.toLowerCase()) {
                     case "player_info_display":
-                        openGui("player_inventory", player.getInventory(), skin, combatSystem);
+                        openGui("player_inventory", player.getInventory(), skin, player.getCombatSystem());
                         break;
                 }
                 break;
@@ -542,6 +533,11 @@ public class GameScreen extends PocketRogueScreen {
         switch (hotBarItem.getItem().getId()) {
             //Health potion
             case 6:
+                player.getComponent(HealthComponent.class).addHealth(25.0f);
+                break;
+            //Mana potion
+            case 8:
+                player.getComponent(ManaComponent.class).addMana(25.0f);
                 break;
             //Spell scrolls
             case 10:

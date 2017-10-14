@@ -3,10 +3,12 @@ package xyz.vec3d.game.entities.listeners;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
+import com.badlogic.gdx.Gdx;
 
 import java.util.List;
 
 import xyz.vec3d.game.entities.Enemy;
+import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.WorldItem;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.ItemStack;
@@ -45,6 +47,9 @@ public class EntityDeathListener implements EntityListener {
 
                 engine.addEntity(worldItem);
             }
+        }
+        if (entity instanceof Player) {
+            Gdx.app.exit();
         }
     }
 }
