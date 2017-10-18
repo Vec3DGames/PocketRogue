@@ -3,10 +3,10 @@ package xyz.vec3d.game.entities.listeners;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
-import com.badlogic.gdx.Gdx;
 
 import java.util.List;
 
+import xyz.vec3d.game.GameScreen;
 import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.WorldItem;
@@ -24,9 +24,11 @@ import xyz.vec3d.game.model.drops.DropSystem;
 public class EntityDeathListener implements EntityListener {
 
     private Engine engine;
+    private GameScreen gameScreen;
 
-    public EntityDeathListener(Engine engine) {
+    public EntityDeathListener(Engine engine, GameScreen gameScreen) {
         this.engine = engine;
+        this.gameScreen = gameScreen;
     }
 
     @Override
@@ -48,8 +50,9 @@ public class EntityDeathListener implements EntityListener {
                 engine.addEntity(worldItem);
             }
         }
+        //Restart the game here
         if (entity instanceof Player) {
-            Gdx.app.exit();
+            gameScreen.resetGameState();
         }
     }
 }

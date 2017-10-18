@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -246,7 +248,7 @@ public class GameScreen extends PocketRogueScreen {
         engine.addSystem(renderingSystem);
         engine.addSystem(new AiSystem());
         engine.addEntityListener(new EntityTextureListener(engine));
-        engine.addEntityListener(new EntityDeathListener(engine));
+        engine.addEntityListener(new EntityDeathListener(engine, this));
 
         player = new Player(10, 10);
         engine.addEntity(player);
@@ -323,6 +325,7 @@ public class GameScreen extends PocketRogueScreen {
         shapeRenderer.end();
 
         uiStage.act(delta);
+        uiStage.getBatch().setColor(Color.WHITE);
         uiStage.draw();
 
         if (getGuiOverlay() != null) {
@@ -379,7 +382,9 @@ public class GameScreen extends PocketRogueScreen {
      */
     @Override
     public void dispose() {
-
+        uiStage.dispose();
+        spriteBatch.dispose();
+        shapeRenderer.dispose();
     }
 
     @Override
@@ -545,5 +550,30 @@ public class GameScreen extends PocketRogueScreen {
                 player.getSpellManager().unlockSpell(hotBarItem.getItem().getId());
                 break;
         }
+    }
+
+    /**
+     * Resets the game so that a new run can occur. This must accomplish the following objectives:
+     * 1. Display prompt waiting for the user to hit continue.
+     * 2. Close the prompt
+     * 3. Remove all entities from the engine
+     * 4. Reinitialize a new player object and add it to the engine
+     * 5. Reset the wave manager
+     */
+    public void resetGameState() {
+        Dialog resetGameDialog = new Dialog("Restart Game", skin)
+        {
+            protected void result(Object object) {
+                switch ((String)object) {
+                    case "restart":
+                        break;
+                    case "exit":
+                        break;
+                }
+            }
+        };
+        resetGameDialog.button("Restart", "restart");
+        resetGameDialog.button("Exit", "exit");
+        resetGameDialog.show(uiStage);
     }
 }
