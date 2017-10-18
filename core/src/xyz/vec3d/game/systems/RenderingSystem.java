@@ -6,8 +6,6 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -61,8 +59,6 @@ public class RenderingSystem extends IteratingSystem {
      */
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
-    private GlyphLayout layout;
-    private BitmapFont font;
 
     /**
      * Creates a new {@link RenderingSystem} for the game engine from a provided
@@ -75,9 +71,6 @@ public class RenderingSystem extends IteratingSystem {
                 AnimationComponent.class).get());
         this.batch = batch;
         this.shapeRenderer = shapeRenderer;
-        layout = new GlyphLayout();
-        font = PocketRogue.getAsset("default.fnt", false);
-        //font.getData().setScale(0.05f);
     }
 
     /**
@@ -109,9 +102,6 @@ public class RenderingSystem extends IteratingSystem {
             float healthBarScale = healthComponent.getPercentHealthRemainingScale();
             Texture healthBar = PocketRogue.getAsset("healthBar.png");
             batch.draw(healthBar, x, y + 1.1f, 1 * healthBarScale, 0.125f);
-            String drawnString = "Health: " + healthComponent.getCurrentHealth();
-            layout.setText(font, drawnString);
-            font.draw(batch, drawnString, x, y + 1.2f);
         }
 
         //First see if the entity has an animation that needs to play.
@@ -141,5 +131,7 @@ public class RenderingSystem extends IteratingSystem {
         }
         batch.draw(texture, x, y, ((PocketRogueEntity) entity).getSize(), ((PocketRogueEntity) entity).getSize());
     }
+
+
 
 }

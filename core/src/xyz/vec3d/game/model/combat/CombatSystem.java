@@ -14,7 +14,6 @@ import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.model.DefinitionLoader;
 import xyz.vec3d.game.model.DefinitionProperty;
 import xyz.vec3d.game.model.Inventory;
-import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -74,7 +73,7 @@ public class CombatSystem implements IMessageReceiver {
             //Computer distance between sweep position and enemy
             float distance = attackSweepPosition.dst(enemyPos);
             if (distance <= 2) {
-                Logger.log("Sweep pos: " + attackSweepPosition + ", Enemy pos: " + enemyPos);
+                //Logger.log("Sweep pos: " + attackSweepPosition + ", Enemy pos: " + enemyPos);
                 otherEntity.doHit(owner, calculateOwnerDamage(otherEntity));
             }
         }

@@ -33,7 +33,7 @@ public class Settings {
      * Represents the world scale the map and camera operate on. The scale is
      * defined as X world units per Y pixels ex. 1/32f = 1 world unit -> 32 pixels.
      */
-    public static final float WORLD_SCALE = 1/32f;
+    public static final float WORLD_SCALE = 1f;
 
     public static int MAX_WORLD_WIDTH;
 

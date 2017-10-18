@@ -48,7 +48,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
             }
             if (actor.getName().equals("A")){
                 //TODO: ATTACKING
-                return;
+                gameScreen.getPlayer().getCombatSystem().doPlayerAttack();
             }
         }
     }
@@ -81,7 +81,6 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
 
     public void update() {
         Vector2 velocity = getMov();
-        //gameScreen.getPlayer().setAnimationFromVelocity(velocity);
         gameScreen.getPlayer().setVelocity(velocity);
     }
 

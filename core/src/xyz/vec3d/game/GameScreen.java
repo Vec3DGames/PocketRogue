@@ -137,6 +137,8 @@ public class GameScreen extends PocketRogueScreen {
 
     private HotBarDisplay hotBarDisplay;
 
+    private RenderingSystem renderingSystem;
+
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
@@ -239,7 +241,7 @@ public class GameScreen extends PocketRogueScreen {
         engine = new Engine();
 
         UpdateSystem updateSystem = new UpdateSystem();
-        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
+        renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
         MovementSystem movementSystem = new MovementSystem();
 
         engine.addSystem(updateSystem);
@@ -307,9 +309,9 @@ public class GameScreen extends PocketRogueScreen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        worldCamera.update();
 
         Utils.centerCamera(worldCamera, player, mapWidth, mapHeight);
+        worldCamera.update();
 
         tiledMapRenderer.setView(worldCamera);
         tiledMapRenderer.render();

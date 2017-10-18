@@ -2,7 +2,6 @@ package xyz.vec3d.game.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -40,7 +39,7 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
     private static final HashMap<Object, Class<Gui>> handledGuis = new HashMap<>();
     PocketRogueScreen parentScreen;
 
-    public Gui() {
+    Gui() {
         stage = new Stage(new StretchViewport(Settings.UI_WIDTH, Settings.UI_HEIGHT));
         messageReceivers = new ArrayList<>();
         InputMultiplexer im = (InputMultiplexer) Gdx.input.getInputProcessor();
@@ -68,7 +67,7 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
         return stage;
     }
 
-    public Object[] getParameters() {
+    Object[] getParameters() {
         return parameters;
     }
 
@@ -99,6 +98,7 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
     }
 
     public void resize(int width, int height) {
+        Logger.log("Resizing GUI to new dimensions: " + width + ", " + height);
         getStage().getViewport().update(width, height);
     }
 
@@ -140,9 +140,8 @@ public abstract class Gui implements Disposable, IMessageSender, IMessageReceive
         this.height = height;
     }
 
-    public void guiClicked(float x, float y) {
-        Vector3 unprojectedCoords = this.stage.getCamera().unproject(new Vector3(x, y, 0));
-        if (!Utils.isInHitbox(unprojectedCoords.x, unprojectedCoords.y, this.x, this.y, width, height)) {
+    private void guiClicked(float x, float y) {
+        if (!Utils.isInHitbox(x, y, this.x, this.y, width, height)) {
             this.dispose();
         }
     }

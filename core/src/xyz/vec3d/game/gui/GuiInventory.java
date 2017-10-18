@@ -177,6 +177,10 @@ class GuiInventory extends Gui {
                 });
                 itemStackDisplays.add(display);
             }
+            if (display.getItemStack().getQuantity() <= 0) {
+                itemStackDisplays.remove(i);
+                continue;
+            }
             itemTable.add(display).expandX().fillX().left().pad(4).row();
         }
         itemTable.add().expand().fill();
