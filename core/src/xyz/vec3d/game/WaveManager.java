@@ -66,7 +66,6 @@ class WaveManager implements EntityListener {
         if (waveEnemies.size() > 0) {
             waveEnemies.clear();
         }
-        startWave();
     }
 
     private Enemy generateEnemy() {
@@ -100,11 +99,28 @@ class WaveManager implements EntityListener {
             waveEnemies.remove(entity);
             if (entitiesLeft <= 0) {
                 endWave();
+                startWave();
             }
         }
     }
 
     private boolean isEntityValid(PocketRogueEntity pocketRogueEntity) {
         return pocketRogueEntity instanceof Enemy || pocketRogueEntity instanceof Player;
+    }
+
+    int getScore() {
+        return this.waveNumber;
+    }
+
+    /**
+     * Resets the wave to wave 1; clears any existing enemies so they don't
+     * stick around for the new wave.
+     */
+    void reset() {
+        for (PocketRogueEntity entity : waveEnemies) {
+            entity.kill();
+        }
+        waveEnemies.clear();
+        startWave(1);
     }
 }

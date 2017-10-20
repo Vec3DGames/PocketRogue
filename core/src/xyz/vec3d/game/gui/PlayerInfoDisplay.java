@@ -120,7 +120,11 @@ public class PlayerInfoDisplay extends Actor implements IMessageReceiver, IMessa
 
     @Override
     public void onMessageReceived(Message message) {
-
+        switch (message.getMessageType()) {
+            case PLAYER_CHANGED:
+                this.player = (Player)message.getPayload()[0];
+                break;
+        }
     }
 
     @Override

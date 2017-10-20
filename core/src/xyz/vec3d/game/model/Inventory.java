@@ -246,4 +246,9 @@ public class Inventory {
     public void useItem(ItemStack itemStack) {
         removeItem(itemStack, 1);
     }
+
+    public void empty() {
+        items.clear();
+        hotBarItems = new ItemStack[9];
+    }
 }

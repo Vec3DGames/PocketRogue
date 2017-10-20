@@ -31,7 +31,7 @@ public class Message {
      */
     public Message(MessageType type, Object... payload) {
         this.messageType = type;
-        this.payload = payload;
+        setPayload(payload);
     }
 
     /**
@@ -52,7 +52,7 @@ public class Message {
         return payload;
     }
 
-    public void setPayload(Object[] payload) {
+    private void setPayload(Object[] payload) {
         this.payload = payload;
     }
 
@@ -64,6 +64,6 @@ public class Message {
     public enum MessageType {
         PLAYER_INFO_HEALTH_CHANGED, PLAYER_INFO_MANA_CHANGED,
         PLAYER_INFO_MAX_CHANGED, UI_ELEMENT_CLICKED, KEY_TYPED, COMMAND,
-        PLAYER_INVENTORY_CHANGED, ENTITY_SPAWNED, ENTITY_KILLED, ITEM_EQUIPPED
+        PLAYER_INVENTORY_CHANGED, ENTITY_SPAWNED, PLAYER_CHANGED, ITEM_EQUIPPED
     }
 }

@@ -47,6 +47,7 @@ import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 import xyz.vec3d.game.systems.UpdateSystem;
 import xyz.vec3d.game.test.TestManager;
+import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
 /**
@@ -156,6 +157,68 @@ public class GameScreen extends PocketRogueScreen {
     }
 
     /**
+     * Initializes the engine and registers systems for the engine as well as
+     * loads the map and camera.
+     */
+    private void setUpEngine() {
+        //Create camera and load map and bind them together.
+        TiledMap map = PocketRogue.getAsset("map.tmx");
+        Settings.MAX_WORLD_WIDTH = map.getProperties().get("width", Integer.class);
+        Settings.MAX_WORLD_HEIGHT = map.getProperties().get("height", Integer.class);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
+        worldCamera = new OrthographicCamera();
+        worldCamera.setToOrtho(false, 25, 14);
+        worldCamera.update();
+
+        //Set up map and camera viewport properties.
+        mapWidth = map.getProperties().get("width", Integer.class);
+        mapHeight = map.getProperties().get("height", Integer.class);
+
+        //Create engine instance, attach listeners and systems.
+        engine = new Engine();
+
+        UpdateSystem updateSystem = new UpdateSystem();
+        renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
+        MovementSystem movementSystem = new MovementSystem();
+
+        engine.addSystem(updateSystem);
+        engine.addSystem(new CollisionSystem());
+        engine.addSystem(movementSystem);
+        engine.addSystem(renderingSystem);
+        engine.addSystem(new AiSystem());
+        engine.addEntityListener(new EntityTextureListener(engine));
+        engine.addEntityListener(new EntityDeathListener(engine, this));
+
+        setUpPlayer(false);
+        setUpCore(engine);
+    }
+
+    /**
+     * Set up core functionality not specifically related to the engine.
+     */
+    private void setUpCore(Engine engine) {
+        setUpGui();
+        waveManager = new WaveManager(this, engine);
+        waveManager.startWave();
+        hotBarDisplay.setPlayer(player);
+        DropSystem.loadDrops();
+    }
+
+    private void setUpPlayer(boolean isReset) {
+        if (isReset) {
+            player.getInventory().empty();
+            player.getPosition().set(10, 10);
+            player.getDirection().set(0, -1);
+        } else {
+            player = new Player(10, 10);
+        }
+        if (!isReset) {
+            engine.addEntity(player);
+        }
+        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
+    }
+
+    /**
      * Initializes all the UI components and registers listeners or handlers
      * for the components. Sets up UI components common to both desktop and
      * android then handles setting up the UI specific to each version.
@@ -220,62 +283,12 @@ public class GameScreen extends PocketRogueScreen {
     }
 
     /**
-     * Initializes the engine and registers systems for the engine as well as
-     * loads the map and camera.
-     */
-    private void setUpEngine() {
-        //Create camera and load map and bind them together.
-        TiledMap map = PocketRogue.getAsset("map.tmx");
-        Settings.MAX_WORLD_WIDTH = map.getProperties().get("width", Integer.class);
-        Settings.MAX_WORLD_HEIGHT = map.getProperties().get("height", Integer.class);
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
-        worldCamera = new OrthographicCamera();
-        worldCamera.setToOrtho(false, 25, 14);
-        worldCamera.update();
-
-        //Set up map and camera viewport properties.
-        mapWidth = map.getProperties().get("width", Integer.class);
-        mapHeight = map.getProperties().get("height", Integer.class);
-
-        //Create engine instance, attach listeners and systems.
-        engine = new Engine();
-
-        UpdateSystem updateSystem = new UpdateSystem();
-        renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
-        MovementSystem movementSystem = new MovementSystem();
-
-        engine.addSystem(updateSystem);
-        engine.addSystem(new CollisionSystem());
-        engine.addSystem(movementSystem);
-        engine.addSystem(renderingSystem);
-        engine.addSystem(new AiSystem());
-        engine.addEntityListener(new EntityTextureListener(engine));
-        engine.addEntityListener(new EntityDeathListener(engine, this));
-
-        player = new Player(10, 10);
-        engine.addEntity(player);
-        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
-        setUpCore(engine);
-    }
-
-    /**
-     * Set up core functionality not specifically related to the engine.
-     */
-    private void setUpCore(Engine engine) {
-        setUpGui();
-        waveManager = new WaveManager(this, engine);
-        waveManager.startWave();
-        hotBarDisplay.setPlayer(player);
-        DropSystem.loadDrops();
-    }
-
-    /**
      * Returns the instance of the {@link PocketRogue} that was passed to this
      * screen when it was created.
      *
      * @return The PocketRogue class.
      */
-    public PocketRogue getPocketRogue() {
+    private PocketRogue getPocketRogue() {
         return pocketRogue;
     }
 
@@ -320,9 +333,11 @@ public class GameScreen extends PocketRogueScreen {
         shapeRenderer.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
         shapeRenderer.begin();
+
         player.getCombatSystem().update(delta);
         rogueInputProcessor.update();
         engine.update(delta);
+
         spriteBatch.end();
         shapeRenderer.end();
 
@@ -568,12 +583,17 @@ public class GameScreen extends PocketRogueScreen {
             protected void result(Object object) {
                 switch ((String)object) {
                     case "restart":
+                        int score = waveManager.getScore();
+                        waveManager.reset();
+                        setUpPlayer(true);
                         break;
                     case "exit":
+                        getPocketRogue().setScreen(new MenuScreen(getPocketRogue()));
                         break;
                 }
             }
         };
+        Logger.log("Reseting game state.");
         resetGameDialog.button("Restart", "restart");
         resetGameDialog.button("Exit", "exit");
         resetGameDialog.show(uiStage);
