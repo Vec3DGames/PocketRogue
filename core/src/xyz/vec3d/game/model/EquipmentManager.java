@@ -23,12 +23,12 @@ public class EquipmentManager {
      */
     private Inventory inventory;
 
-    public EquipmentManager(Inventory inventory) {
+    EquipmentManager(Inventory inventory) {
         this.inventory = inventory;
         equipment = new HashMap<>();
     }
 
-    public boolean equipItem(ItemStack itemStack) {
+    boolean equipItem(ItemStack itemStack) {
         ItemType slot = itemStack.getItem().getType();
         if (!itemStack.getItem().isEquipable()) {
             return false;

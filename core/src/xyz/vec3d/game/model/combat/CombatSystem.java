@@ -82,13 +82,15 @@ public class CombatSystem implements IMessageReceiver {
     }
 
     private float calculateOwnerDamage(PocketRogueEntity entityBeingHit) {
+        float baseDamage = 0f;
         if (owner instanceof Player) {
-            return ((Player)owner).getInventory().getEquipmentManager().getTotalDamageBonuses();
+            baseDamage = ((Player)owner).getInventory().getEquipmentManager().getTotalDamageBonuses();
         }
         if (owner instanceof Enemy) {
-            return (float)((double)DefinitionLoader.getEntityDefinition(((Enemy) owner).getId()).getProperty(DefinitionProperty.DAMAGE));
+            baseDamage = (float)(DefinitionLoader.getEntityDefinition(((Enemy) owner).getId()).getProperty(DefinitionProperty.DAMAGE));
         }
-        return -1f;
+
+        return baseDamage;
     }
 
     @Override
