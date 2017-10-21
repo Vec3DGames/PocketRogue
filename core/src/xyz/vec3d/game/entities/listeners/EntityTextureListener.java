@@ -5,6 +5,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntityListener;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import xyz.vec3d.game.entities.Enemy;
+import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.WorldItem;
 import xyz.vec3d.game.entities.components.AiComponent;
@@ -37,7 +39,7 @@ public class EntityTextureListener implements EntityListener {
                 return;
             }
             String name = ((PocketRogueEntity) entity).getName();
-            if (name == null) {
+            if (name == null || name.equals("")) {
                 name = entity.getClass().getSimpleName().toLowerCase();
             }
             TextureRegion region = Utils.getEntityTexture(name);
@@ -46,7 +48,9 @@ public class EntityTextureListener implements EntityListener {
             if (aiComponent != null) {
                 aiComponent.setEngine(engine);
             }
-            ((PocketRogueEntity)entity).createCombatSystem(engine);
+            if (entity instanceof Player || entity instanceof Enemy) {
+                ((PocketRogueEntity) entity).createCombatSystem(engine);
+            }
         }
     }
 

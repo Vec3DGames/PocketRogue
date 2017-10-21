@@ -27,9 +27,9 @@ public class Enemy extends PocketRogueEntity {
         add(new PositionComponent(x, y));
         add(new VelocityComponent());
         //Load up properties
-        this.health = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.HEALTH));
+        this.health = (float)(DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.HEALTH));
         add(new HealthComponent(this.health));
-        float moveSpeed = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.MOVE_SPEED));
+        float moveSpeed = (float)(DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.MOVE_SPEED));
         add(new MovementSpeedComponent(moveSpeed));
         //Set up animations here.
         Texture animationSheet = PocketRogue.getAsset("animation_sheets/player_animation.png");
@@ -48,10 +48,6 @@ public class Enemy extends PocketRogueEntity {
 
     public int getId() {
         return id;
-    }
-
-    public enum EntityType {
-        OVERWORLD_GRASS, OVERWORLD_SAND, DUNGEON
     }
 
     @Override

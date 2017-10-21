@@ -4,6 +4,7 @@
     "name": "Bob",
     "health": 25.0,
     "move_speed": 0.5,
-    "damage": 10.0
+    "damage": 10.0,
+    "bonuses": [10, 10, 10]
   }
 ]
