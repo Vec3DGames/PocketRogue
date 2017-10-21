@@ -53,7 +53,7 @@ public class PocketRogueEntity extends Entity {
 
     ProjectileFiringSystem projectileFiringSystem;
     SpellManager spellManager;
-    CombatSystem combatSystem;
+    private CombatSystem combatSystem;
 
     public PocketRogueEntity() {
         add(new CollideComponent());

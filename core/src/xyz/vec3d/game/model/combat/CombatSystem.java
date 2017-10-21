@@ -64,8 +64,6 @@ public class CombatSystem implements IMessageReceiver {
         //First, get all entities in a 3 tile radius.
         ArrayList<PocketRogueEntity> entitiesInRange = Utils.getEntitiesWithinRange(
                 engine.getEntities(), owner, 3f);
-        //Next, check each entity and see if they meet the criteria for being hit.
-        Vector2 playerDirection = owner.getDirection();
         //Do some maths to get the corner being used for sweep.
         Vector2 attackSweepPosition = owner.getPosition().cpy().add(0.5f, 0.5f);
         for (PocketRogueEntity otherEntity : entitiesInRange) {
@@ -74,21 +72,45 @@ public class CombatSystem implements IMessageReceiver {
             float distance = attackSweepPosition.dst(enemyPos);
             if (distance <= 2) {
                 //Logger.log("Sweep pos: " + attackSweepPosition + ", Enemy pos: " + enemyPos);
-                otherEntity.doHit(owner, calculateOwnerDamage(otherEntity));
+                otherEntity.doHit(owner, calculateOwnerDamage(otherEntity, AttackType.MELEE));
             }
         }
         //Reset attack timer.
         timeSinceLastAttack = 0;
     }
 
-    private float calculateOwnerDamage(PocketRogueEntity entityBeingHit) {
+    private float calculateOwnerDamage(PocketRogueEntity entityBeingHit, AttackType type) {
+        float baseDamage = 0f;
+        float[] targetBaseDefenseBonuses = new float[3];
+
+        //Retrieve the base damage of the Player
         if (owner instanceof Player) {
-            return ((Player)owner).getInventory().getEquipmentManager().getTotalDamageBonuses();
+            baseDamage = ((Player)owner).getInventory().getEquipmentManager().getBaseDamage();
         }
+        //Retrieve the base damage of the entity
         if (owner instanceof Enemy) {
-            return (float)((double)DefinitionLoader.getEntityDefinition(((Enemy) owner).getId()).getProperty(DefinitionProperty.DAMAGE));
+            baseDamage = (float)(DefinitionLoader.getEntityDefinition(((Enemy) owner).getId()).getProperty(DefinitionProperty.DAMAGE));
         }
-        return -1f;
+
+        //If the Player is being hit, get their bonuses
+        if (entityBeingHit instanceof Player) {
+            targetBaseDefenseBonuses = ((Player)entityBeingHit).getInventory().getEquipmentManager().getDefenseBonuses();
+        }
+        //If an entity is being hit, get its bonuses
+        if (entityBeingHit instanceof Enemy) {
+            targetBaseDefenseBonuses = (float[]) DefinitionLoader.getEntityDefinition(((Enemy) entityBeingHit).getId()).getProperty(DefinitionProperty.BONUSES);
+        }
+
+        switch (type) {
+            case MELEE:
+                return baseDamage * baseDamage / targetBaseDefenseBonuses[0];
+            case MAGIC:
+                return baseDamage * baseDamage / targetBaseDefenseBonuses[1];
+            case RANGE:
+                return baseDamage * baseDamage / targetBaseDefenseBonuses[2];
+            default:
+                return baseDamage;
+        }
     }
 
     @Override

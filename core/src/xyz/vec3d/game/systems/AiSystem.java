@@ -36,6 +36,8 @@ public class AiSystem extends IteratingSystem {
             float y = currentPosition.getPosition().y;
             float x2 = target.getPosition().x;
             float y2 = target.getPosition().y;
+            //Logger.log(AiSystem.class, entity.toString() + " is targeting: " + target.toString());
+            //Logger.log(AiSystem.class, "Target coords: (" + x2 + "," + y2 + ")");
 
             currentVelocity.getVelocity().x = Utils.isLessThanWithRange(x, x2 - 1) ? 0.1f : Utils.isMoreThanWithRange(x, x2 + 1) ? -0.1f : 0;
             currentVelocity.getVelocity().y = Utils.isLessThanWithRange(y, y2 - 1) ? 0.1f : Utils.isMoreThanWithRange(y, y2 + 1) ? -0.1f : 0;

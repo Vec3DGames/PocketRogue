@@ -23,12 +23,12 @@ public class EquipmentManager {
      */
     private Inventory inventory;
 
-    public EquipmentManager(Inventory inventory) {
+    EquipmentManager(Inventory inventory) {
         this.inventory = inventory;
         equipment = new HashMap<>();
     }
 
-    public boolean equipItem(ItemStack itemStack) {
+    boolean equipItem(ItemStack itemStack) {
         ItemType slot = itemStack.getItem().getType();
         if (!itemStack.getItem().isEquipable()) {
             return false;
@@ -66,19 +66,41 @@ public class EquipmentManager {
     /*public ArrayList<ItemStack> getEquipment() {
         return (ArrayList<ItemStack>) equipment.values();
     }*/
-    public float getTotalDamageBonuses() {
+    public float getBaseDamage() {
         float damage = 0f;
+
         for (ItemStack item : equipment.values()) {
             damage += item.getItem().getBonus(Item.ATTACK);
         }
+
         return damage;
     }
 
     public float getAttackSpeed() {
         float attackSpeed = 0f;
+
         for (ItemStack item : equipment.values()) {
             attackSpeed += item.getItem().getBonus(Item.ATTACK_SPEED);
         }
+
         return attackSpeed;
+    }
+
+    /**
+     * Returns the defense bonuses for melee, magic and range attacks.
+     *
+     * @return An array of the bonuses index such that 0 is melee defense, 1 is
+     * magic defense and 2 is range defense.
+     */
+    public float[] getDefenseBonuses() {
+        int meleeDefense = 1, magicDefense = 1, rangeDefense = 1;
+
+        for (ItemStack item : equipment.values()) {
+            meleeDefense += item.getItem().getBonus(Item.MELEE_DEFENSE);
+            magicDefense += item.getItem().getBonus(Item.MAGIC_DEFENSE);
+            rangeDefense += item.getItem().getBonus(Item.RANGE_DEFENSE);
+        }
+
+        return new float[] {meleeDefense, magicDefense, rangeDefense};
     }
 }

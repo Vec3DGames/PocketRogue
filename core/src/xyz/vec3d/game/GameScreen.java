@@ -138,8 +138,6 @@ public class GameScreen extends PocketRogueScreen {
 
     private HotBarDisplay hotBarDisplay;
 
-    private RenderingSystem renderingSystem;
-
     /**
      * Creates a new {@link GameScreen} object and sets up the stage, engine and
      * any other initialization needed.
@@ -178,7 +176,7 @@ public class GameScreen extends PocketRogueScreen {
         engine = new Engine();
 
         UpdateSystem updateSystem = new UpdateSystem();
-        renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
+        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
         MovementSystem movementSystem = new MovementSystem();
 
         engine.addSystem(updateSystem);
@@ -189,7 +187,7 @@ public class GameScreen extends PocketRogueScreen {
         engine.addEntityListener(new EntityTextureListener(engine));
         engine.addEntityListener(new EntityDeathListener(engine, this));
 
-        setUpPlayer(false);
+        setUpPlayer();
         setUpCore(engine);
     }
 
@@ -204,18 +202,10 @@ public class GameScreen extends PocketRogueScreen {
         DropSystem.loadDrops();
     }
 
-    private void setUpPlayer(boolean isReset) {
-        if (isReset) {
-            player.getInventory().empty();
-            player.getPosition().set(10, 10);
-            player.getDirection().set(0, -1);
-        } else {
-            player = new Player(10, 10);
-        }
-        if (!isReset) {
-            engine.addEntity(player);
-        }
-        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
+    private void setUpPlayer() {
+        this.player = new Player(10, 10);
+        engine.addEntity(player);
+        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_CHANGED, player));
     }
 
     /**
@@ -300,7 +290,7 @@ public class GameScreen extends PocketRogueScreen {
      * @return The player.
      */
     public Player getPlayer() {
-        return player;
+        return this.player;
     }
 
     /**
@@ -583,9 +573,11 @@ public class GameScreen extends PocketRogueScreen {
             protected void result(Object object) {
                 switch ((String)object) {
                     case "restart":
-                        int score = waveManager.getScore();
+                        //int score = waveManager.getScore();
+                        engine.removeAllEntities();
                         waveManager.reset();
-                        setUpPlayer(true);
+                        setUpPlayer();
+                        waveManager.startWave(1);
                         break;
                     case "exit":
                         getPocketRogue().setScreen(new MenuScreen(getPocketRogue()));

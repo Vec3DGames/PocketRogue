@@ -121,6 +121,5 @@ class WaveManager implements EntityListener {
             entity.kill();
         }
         waveEnemies.clear();
-        startWave(1);
     }
 }

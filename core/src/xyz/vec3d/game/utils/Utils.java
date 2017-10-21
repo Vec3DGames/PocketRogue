@@ -175,12 +175,12 @@ public class Utils {
      *
      * @return Returns the value as its intended type.
      */
-    public static Object getJsonTypeValue(JsonValue value) {
+    private static Object getJsonTypeValue(JsonValue value) {
         switch (value.type()) {
             case longValue:
                 return value.asInt();
             case doubleValue:
-                return value.asDouble();
+                return value.asFloat();
             case booleanValue:
                 return value.asBoolean();
             case object:
