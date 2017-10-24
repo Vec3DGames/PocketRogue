@@ -76,7 +76,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
      * @return nvm am idiot
      */
     private Vector2 getMov() {
-        return mov.cpy().nor();
+        return mov.cpy();
     }
 
     public void update() {

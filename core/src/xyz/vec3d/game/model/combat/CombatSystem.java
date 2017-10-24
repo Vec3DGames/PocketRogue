@@ -98,7 +98,7 @@ public class CombatSystem implements IMessageReceiver {
         }
         //If an entity is being hit, get its bonuses
         if (entityBeingHit instanceof Enemy) {
-            targetBaseDefenseBonuses = (float[]) DefinitionLoader.getEntityDefinition(((Enemy) entityBeingHit).getId()).getProperty(DefinitionProperty.BONUSES);
+            targetBaseDefenseBonuses = (int[]) DefinitionLoader.getEntityDefinition(((Enemy) entityBeingHit).getId()).getProperty(DefinitionProperty.BONUSES);
         }
 
         switch (type) {
