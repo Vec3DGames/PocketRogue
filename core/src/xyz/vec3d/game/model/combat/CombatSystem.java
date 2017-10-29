@@ -81,7 +81,7 @@ public class CombatSystem implements IMessageReceiver {
 
     private float calculateOwnerDamage(PocketRogueEntity entityBeingHit, AttackType type) {
         float baseDamage = 0f;
-        float[] targetBaseDefenseBonuses = new float[3];
+        int[] targetBaseDefenseBonuses = new int[3];
 
         //Retrieve the base damage of the Player
         if (owner instanceof Player) {

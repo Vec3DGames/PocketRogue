@@ -92,7 +92,7 @@ public class EquipmentManager {
      * @return An array of the bonuses index such that 0 is melee defense, 1 is
      * magic defense and 2 is range defense.
      */
-    public float[] getDefenseBonuses() {
+    public int[] getDefenseBonuses() {
         int meleeDefense = 1, magicDefense = 1, rangeDefense = 1;
 
         for (ItemStack item : equipment.values()) {
@@ -101,6 +101,6 @@ public class EquipmentManager {
             rangeDefense += item.getItem().getBonus(Item.RANGE_DEFENSE);
         }
 
-        return new float[] {meleeDefense, magicDefense, rangeDefense};
+        return new int[] {meleeDefense, magicDefense, rangeDefense};
     }
 }

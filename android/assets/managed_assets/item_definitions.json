@@ -1,6 +1,5 @@
 [
   {
-    "id": 0,
     "name": "Bronze Sword",
     "icon": [
       1,
@@ -19,7 +18,6 @@
     ]
   },
   {
-    "id": 1,
     "name": "Iron Sword",
     "icon": [
       2,
@@ -38,7 +36,6 @@
     ]
   },
   {
-    "id": 2,
     "name": "Steel Sword",
     "icon": [
       3,
@@ -57,7 +54,6 @@
     ]
   },
   {
-    "id": 3,
     "name": "Mithril Sword",
     "icon": [
       4,
@@ -76,7 +72,6 @@
     ]
   },
   {
-    "id": 4,
     "name": "Enigmite Sword",
     "icon": [
       5,
@@ -95,7 +90,6 @@
     ]
   },
   {
-    "id": 5,
     "name": "Bloodsteel Sword",
     "icon": [
       6,
@@ -114,7 +108,6 @@
     ]
   },
   {
-    "id": 6,
     "name": "Health Potion",
     "icon": [
       16,
@@ -125,7 +118,6 @@
     "bonuses": []
   },
   {
-    "id": 7,
     "name": "Bronze Chestplate",
     "icon": [
       1,
@@ -144,7 +136,6 @@
     ]
   },
   {
-    "id": 8,
     "name": "Mana Potion",
     "icon": [
       16,
@@ -155,7 +146,6 @@
     "bonuses": []
   },
   {
-    "id": 9,
     "name": "Coin",
     "icon": [
       16,
@@ -166,7 +156,6 @@
     "bonuses": []
   },
   {
-    "id": 10,
     "name": "Fireball Scroll",
     "icon": [
       16,
@@ -177,13 +166,95 @@
     "bonuses": []
   },
   {
-    "id": 11,
     "name": "Lightning Bolt Scroll",
     "icon": [
-      16, 4
+      16,
+      4
     ],
     "stackable": false,
     "slot": "GENERAL",
     "bonuses": []
+  },
+  {
+    "name": "Iron Chestplate",
+    "icon": [
+      2,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": []
+  },
+  {
+    "name": "Steel Chestplate",
+    "icon": [
+      3,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "Mithril Chestplate",
+    "icon": [
+      4,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "Enigmite Chestplate",
+    "icon": [
+      5,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "Bloodsteel Chestplate",
+    "icon": [
+      6,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   }
 ]
