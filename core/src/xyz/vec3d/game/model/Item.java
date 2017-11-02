@@ -78,6 +78,24 @@ public class Item {
     }
 
     /**
+     * Creates an Item from a specified ID and uses stored definitions to populate
+     * properties of the item.
+     *
+     * @param id ID of item to create
+     */
+    public Item(int id) {
+        Definition def = DefinitionLoader.getItemDefinition(id);
+        if (def == null) {
+            return;
+        }
+        String slot = (String) def.getProperty(DefinitionProperty.SLOT);
+        ItemType type = ItemType.valueOf(slot);
+
+        this.id = id;
+        this.type = type;
+    }
+
+    /**
      * Returns the Item ID to be used for looking up definitions.
      *
      * @return Item ID.

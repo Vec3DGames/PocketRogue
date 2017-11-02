@@ -72,4 +72,8 @@ public class HealthComponent implements Component {
     public void removeHealth(float health) {
         this.currentHealth -= health;
     }
+
+    public void addHealth(float health) {
+        currentHealth = Math.min(currentHealth + health, maxHealth);
+    }
 }

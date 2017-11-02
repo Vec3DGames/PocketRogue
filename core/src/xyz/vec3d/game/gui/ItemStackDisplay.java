@@ -46,7 +46,7 @@ class ItemStackDisplay extends Actor implements Disposable {
         this.itemStack = itemStack;
         //Get the texture.
         itemIcon = Utils.getItemTexture(itemStack);
-        font = PocketRogue.getAssetManager().get("default.fnt", BitmapFont.class);
+        font = PocketRogue.getAsset("default.fnt", false);
         this.setSize(200, 64);
     }
 

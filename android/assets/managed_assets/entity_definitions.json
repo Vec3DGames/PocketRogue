@@ -1,8 +1,26 @@
 [
   {
     "id": 1,
-    "name": "Bob",
+    "name": "Foot Soldier",
     "health": 25.0,
-    "move_speed": 0.2
+    "move_speed": 0.18,
+    "damage": 10.0,
+    "bonuses": [
+      10,
+      10,
+      10
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Hardened Foot Soldier",
+    "health": 35.0,
+    "move_speed": 0.18,
+    "damage": 9.0,
+    "bonuses": [
+      10,
+      10,
+      10
+    ]
   }
 ]

@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -20,6 +22,9 @@ import xyz.vec3d.game.entities.Enemy;
 import xyz.vec3d.game.entities.Player;
 import xyz.vec3d.game.entities.PocketRogueEntity;
 import xyz.vec3d.game.entities.WorldItem;
+import xyz.vec3d.game.entities.components.HealthComponent;
+import xyz.vec3d.game.entities.components.ManaComponent;
+import xyz.vec3d.game.entities.listeners.EntityDeathListener;
 import xyz.vec3d.game.entities.listeners.EntityTextureListener;
 import xyz.vec3d.game.gui.GuiDebug;
 import xyz.vec3d.game.gui.HotBarDisplay;
@@ -29,17 +34,19 @@ import xyz.vec3d.game.gui.console.Console;
 import xyz.vec3d.game.gui.console.LogMessage;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.messages.RogueInputProcessor;
+import xyz.vec3d.game.model.Definition;
 import xyz.vec3d.game.model.DefinitionLoader;
-import xyz.vec3d.game.model.DefinitionLoader.Definition;
 import xyz.vec3d.game.model.DefinitionProperty;
 import xyz.vec3d.game.model.Item;
 import xyz.vec3d.game.model.Item.ItemType;
 import xyz.vec3d.game.model.ItemStack;
-import xyz.vec3d.game.model.combat.CombatSystem;
+import xyz.vec3d.game.model.drops.DropSystem;
+import xyz.vec3d.game.systems.AiSystem;
 import xyz.vec3d.game.systems.CollisionSystem;
 import xyz.vec3d.game.systems.MovementSystem;
 import xyz.vec3d.game.systems.RenderingSystem;
 import xyz.vec3d.game.systems.UpdateSystem;
+import xyz.vec3d.game.test.TestManager;
 import xyz.vec3d.game.utils.Logger;
 import xyz.vec3d.game.utils.Utils;
 
@@ -127,11 +134,6 @@ public class GameScreen extends PocketRogueScreen {
     private boolean renderDebugOverlay = false;
     public static boolean IS_DEBUG = false;
 
-    /**
-     * The {@link CombatSystem combat system} used for the game screen.
-     */
-    private CombatSystem combatSystem;
-
     private WaveManager waveManager;
 
     private HotBarDisplay hotBarDisplay;
@@ -149,8 +151,61 @@ public class GameScreen extends PocketRogueScreen {
         this.spriteBatch = new SpriteBatch();
         this.shapeRenderer = new ShapeRenderer();
         this.shapeRenderer.setAutoShapeType(true);
-        setUpGui();
         setUpEngine();
+    }
+
+    /**
+     * Initializes the engine and registers systems for the engine as well as
+     * loads the map and camera.
+     */
+    private void setUpEngine() {
+        //Create camera and load map and bind them together.
+        TiledMap map = PocketRogue.getAsset("map.tmx");
+        Settings.MAX_WORLD_WIDTH = map.getProperties().get("width", Integer.class);
+        Settings.MAX_WORLD_HEIGHT = map.getProperties().get("height", Integer.class);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
+        worldCamera = new OrthographicCamera();
+        worldCamera.setToOrtho(false, 25, 14);
+        worldCamera.update();
+
+        //Set up map and camera viewport properties.
+        mapWidth = map.getProperties().get("width", Integer.class);
+        mapHeight = map.getProperties().get("height", Integer.class);
+
+        //Create engine instance, attach listeners and systems.
+        engine = new Engine();
+
+        UpdateSystem updateSystem = new UpdateSystem();
+        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
+        MovementSystem movementSystem = new MovementSystem();
+
+        engine.addSystem(updateSystem);
+        engine.addSystem(new CollisionSystem());
+        engine.addSystem(movementSystem);
+        engine.addSystem(renderingSystem);
+        engine.addSystem(new AiSystem());
+        engine.addEntityListener(new EntityTextureListener(engine));
+        engine.addEntityListener(new EntityDeathListener(engine, this));
+
+        setUpPlayer();
+        setUpCore(engine);
+    }
+
+    /**
+     * Set up core functionality not specifically related to the engine.
+     */
+    private void setUpCore(Engine engine) {
+        setUpGui();
+        waveManager = new WaveManager(this, engine);
+        waveManager.startWave();
+        hotBarDisplay.setPlayer(player);
+        DropSystem.loadDrops();
+    }
+
+    private void setUpPlayer() {
+        this.player = new Player(10, 10);
+        engine.addEntity(player);
+        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_CHANGED, player));
     }
 
     /**
@@ -170,7 +225,7 @@ public class GameScreen extends PocketRogueScreen {
         rogueInputProcessor.registerMessageReceiver(this);
 
         //Set up the player info display.
-        PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay();
+        PlayerInfoDisplay infoDisplay = new PlayerInfoDisplay(player);
         infoDisplay.setPosition(20, uiStage.getHeight() - 80);
         infoDisplay.registerMessageReceiver(this);
         this.registerMessageReceiver(infoDisplay);
@@ -218,56 +273,12 @@ public class GameScreen extends PocketRogueScreen {
     }
 
     /**
-     * Initializes the engine and registers systems for the engine as well as
-     * loads the map and camera.
-     */
-    private void setUpEngine() {
-        //Create camera and load map and bind them together.
-        TiledMap map = PocketRogue.getAsset("map.tmx");
-        Settings.MAX_WORLD_WIDTH = map.getProperties().get("width", Integer.class);
-        Settings.MAX_WORLD_HEIGHT = map.getProperties().get("height", Integer.class);
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(map, Settings.WORLD_SCALE);
-        worldCamera = new OrthographicCamera();
-        worldCamera.setToOrtho(false, 25, 14);
-        worldCamera.update();
-
-        //Set up map and camera viewport properties.
-        mapWidth = map.getProperties().get("width", Integer.class);
-        mapHeight = map.getProperties().get("height", Integer.class);
-
-        //Create engine instance, attach listeners and systems.
-        engine = new Engine();
-        UpdateSystem updateSystem = new UpdateSystem();
-        RenderingSystem renderingSystem = new RenderingSystem(spriteBatch, shapeRenderer);
-        MovementSystem movementSystem = new MovementSystem();
-        engine.addSystem(updateSystem);
-        engine.addSystem(new CollisionSystem());
-        engine.addSystem(movementSystem);
-        engine.addSystem(renderingSystem);
-        engine.addEntityListener(new EntityTextureListener());
-        player = new Player(10, 10);
-        engine.addEntity(player);
-        notifyMessageReceivers(new Message(Message.MessageType.PLAYER_INFO_MAX_CHANGED, 100, 100));
-        setUpCore(engine);
-    }
-
-    /**
-     * Set up core functionality not specifically related to the engine.
-     */
-    private void setUpCore(Engine engine) {
-        combatSystem = new CombatSystem(engine, player);
-        waveManager = new WaveManager(this, engine);
-        waveManager.startWave();
-        hotBarDisplay.setPlayer(player);
-    }
-
-    /**
      * Returns the instance of the {@link PocketRogue} that was passed to this
      * screen when it was created.
      *
      * @return The PocketRogue class.
      */
-    public PocketRogue getPocketRogue() {
+    private PocketRogue getPocketRogue() {
         return pocketRogue;
     }
 
@@ -279,11 +290,7 @@ public class GameScreen extends PocketRogueScreen {
      * @return The player.
      */
     public Player getPlayer() {
-        return player;
-    }
-
-    public CombatSystem getCombatSystem() {
-        return combatSystem;
+        return this.player;
     }
 
     /**
@@ -305,9 +312,9 @@ public class GameScreen extends PocketRogueScreen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        worldCamera.update();
 
         Utils.centerCamera(worldCamera, player, mapWidth, mapHeight);
+        worldCamera.update();
 
         tiledMapRenderer.setView(worldCamera);
         tiledMapRenderer.render();
@@ -316,13 +323,16 @@ public class GameScreen extends PocketRogueScreen {
         shapeRenderer.setProjectionMatrix(worldCamera.combined);
         spriteBatch.begin();
         shapeRenderer.begin();
+
+        player.getCombatSystem().update(delta);
         rogueInputProcessor.update();
         engine.update(delta);
-        combatSystem.update(delta);
+
         spriteBatch.end();
         shapeRenderer.end();
 
         uiStage.act(delta);
+        uiStage.getBatch().setColor(Color.WHITE);
         uiStage.draw();
 
         if (getGuiOverlay() != null) {
@@ -379,7 +389,9 @@ public class GameScreen extends PocketRogueScreen {
      */
     @Override
     public void dispose() {
-
+        uiStage.dispose();
+        spriteBatch.dispose();
+        shapeRenderer.dispose();
     }
 
     @Override
@@ -391,7 +403,7 @@ public class GameScreen extends PocketRogueScreen {
                 System.out.println(uiName);
                 switch (uiName.toLowerCase()) {
                     case "player_info_display":
-                        openGui("player_inventory", player.getInventory(), skin, combatSystem);
+                        openGui("player_inventory", player.getInventory(), skin, player.getCombatSystem());
                         break;
                 }
                 break;
@@ -408,10 +420,6 @@ public class GameScreen extends PocketRogueScreen {
             case ENTITY_SPAWNED:
                 PocketRogueEntity entitySpawned = (PocketRogueEntity) message.getPayload()[0];
                 engine.addEntity(entitySpawned);
-                break;
-            case PLAYER_INVENTORY_CHANGED:
-                Logger.log("test");
-                hotBarDisplay.refreshHotBarDisplay();
                 break;
             case COMMAND:
                 String[] tokens = (String[]) message.getPayload();
@@ -430,18 +438,12 @@ public class GameScreen extends PocketRogueScreen {
                         if (console.checkNumArgs(args, 1)) {
                             int itemId = Integer.valueOf(args[0]);
                             int amount = args.length > 1 ? Integer.valueOf(args[1]) : 1;
-                            Definition def = DefinitionLoader.getItemDefinition(itemId);
-                            if (def == null) {
-                                break;
-                            }
-                            String slot = (String) def.getProperty(DefinitionProperty.SLOT);
-                            String name = (String) def.getProperty(DefinitionProperty.NAME);
-                            ItemType type = ItemType.valueOf(slot);
-                            Item item = new Item(itemId, type);
+                            Item item = new Item(itemId);
+
                             if (args.length >= 3) {
                                 String bonuses = args[2];
                                 int[] intBonuses = Utils.stringToIntArray(bonuses);
-                                item = new Item(itemId, intBonuses, type);
+                                item = new Item(itemId, intBonuses, item.getType());
                             }
                             ItemStack stack = new ItemStack(item, amount);
                             player.getInventory().addItem(stack);
@@ -449,7 +451,7 @@ public class GameScreen extends PocketRogueScreen {
                                     MessageType.PLAYER_INVENTORY_CHANGED,
                                     player.getInventory());
                             notifyMessageReceivers(inventoryChangedMessage);
-                            console.log("Added item: " + name);
+                            console.log("Added item: " + item.getName());
                         }
                         break;
                     case "entity":
@@ -486,9 +488,7 @@ public class GameScreen extends PocketRogueScreen {
                                 quantity = Integer.valueOf(args[1]);
                             }
                             ItemStack stack = new ItemStack(new Item(itemId, ItemType.valueOf(slot)), quantity);
-                            WorldItem worldItem = new WorldItem(stack,
-                                    player.getPosition().x + 1, player.getPosition().y + 1);
-                            engine.addEntity(worldItem);
+                            dropItem(stack);
                         }
                         break;
                     case "debug":
@@ -511,6 +511,13 @@ public class GameScreen extends PocketRogueScreen {
                     case "endwave":
                         waveManager.endWave();
                         break;
+                    case "test":
+                        new TestManager().executeTest(args[0]);
+                        break;
+                    case "setspell":
+                        int spellId = Integer.valueOf(args[0]);
+                        player.getSpellManager().setCurrentSpell(spellId);
+                        break;
                     default:
                         console.log("Command: " + command + " not implemented yet.", LogMessage.LogLevel.WARNING);
                         break;
@@ -519,11 +526,68 @@ public class GameScreen extends PocketRogueScreen {
         }
     }
 
+    public void dropItem(ItemStack itemStack) {
+        WorldItem worldItem = new WorldItem(itemStack,
+                player.getPosition().x + 1, player.getPosition().y + 1);
+        engine.addEntity(worldItem);
+    }
+
     int getMapWidth() {
         return mapWidth;
     }
 
     int getMapHeight() {
         return mapHeight;
+    }
+
+    public void useHotBarItem(ItemStack hotBarItem) {
+        player.getInventory().useItem(hotBarItem);
+        switch (hotBarItem.getItem().getId()) {
+            //Health potion
+            case 6:
+                player.getComponent(HealthComponent.class).addHealth(25.0f);
+                break;
+            //Mana potion
+            case 8:
+                player.getComponent(ManaComponent.class).addMana(25.0f);
+                break;
+            //Spell scrolls
+            case 10:
+            case 11:
+                player.getSpellManager().unlockSpell(hotBarItem.getItem().getId());
+                break;
+        }
+    }
+
+    /**
+     * Resets the game so that a new run can occur. This must accomplish the following objectives:
+     * 1. Display prompt waiting for the user to hit continue.
+     * 2. Close the prompt
+     * 3. Remove all entities from the engine
+     * 4. Reinitialize a new player object and add it to the engine
+     * 5. Reset the wave manager
+     */
+    public void resetGameState() {
+        Dialog resetGameDialog = new Dialog("Restart Game", skin)
+        {
+            protected void result(Object object) {
+                switch ((String)object) {
+                    case "restart":
+                        //int score = waveManager.getScore();
+                        engine.removeAllEntities();
+                        waveManager.reset();
+                        setUpPlayer();
+                        waveManager.startWave(1);
+                        break;
+                    case "exit":
+                        getPocketRogue().setScreen(new MenuScreen(getPocketRogue()));
+                        break;
+                }
+            }
+        };
+        Logger.log("Reseting game state.");
+        resetGameDialog.button("Restart", "restart");
+        resetGameDialog.button("Exit", "exit");
+        resetGameDialog.show(uiStage);
     }
 }

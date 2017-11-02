@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import xyz.vec3d.game.entities.Player;
+import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.messages.Message;
 import xyz.vec3d.game.utils.Utils;
 
@@ -25,6 +26,7 @@ public class GuiDebug extends Gui {
     private Label playerPosLabel;
     private Label playerDirectionLabel;
     private Label playerDirectionAngleLabel;
+    private Label playerVelocityLabel;
 
     public GuiDebug(Engine engine, Player player) {
         this.engine = engine;
@@ -42,11 +44,13 @@ public class GuiDebug extends Gui {
         playerPosLabel = new Label("Player Position: ", skin);
         playerDirectionLabel = new Label("Player Direction: ", skin);
         playerDirectionAngleLabel = new Label("Player Direction (Angle): ", skin);
+        playerVelocityLabel = new Label("Player Velocity: ", skin);
 
         //Add labels
         table.add(playerPosLabel).row();
         table.add(playerDirectionLabel).row();
         table.add(playerDirectionAngleLabel).row();
+        table.add(playerVelocityLabel).row();
         table.setDebug(true);
         table.bottom().left();
         getStage().addActor(table);
@@ -60,6 +64,8 @@ public class GuiDebug extends Gui {
         super.draw();
         Vector2 position = player.getPosition();
         Vector2 direction = player.getDirection();
+        Vector2 velocity = player.getComponent(VelocityComponent.class).getVelocity();
+
         playerPosLabel.setText(Utils.modifyDisplayValue(playerPosLabel,
                 position));
         playerDirectionLabel.setText(Utils.modifyDisplayValue(playerDirectionLabel,
@@ -67,6 +73,8 @@ public class GuiDebug extends Gui {
         playerDirectionAngleLabel.setText(Utils.modifyDisplayValue(playerDirectionAngleLabel,
                 direction.angle() + " cos: " + Math.cos(direction.angleRad()) + " sin: "
                         + Math.sin(direction.angleRad())));
+        playerVelocityLabel.setText(Utils.modifyDisplayValue(playerVelocityLabel,
+                velocity));
     }
 
     @Override

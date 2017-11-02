@@ -39,7 +39,7 @@ public class Inventory {
      * 40 ItemStacks.
      */
     public Inventory() {
-        items = new ArrayList<ItemStack>(maxItems);
+        items = new ArrayList<>(maxItems);
         equipmentManager = new EquipmentManager(this);
         hotBarItems = new ItemStack[9];
     }
@@ -99,7 +99,7 @@ public class Inventory {
      * @param itemToAdd The Item being added.
      * @param quantity The amount of the Item to add.
      */
-    public void addItem(Item itemToAdd, int quantity) {
+    private void addItem(Item itemToAdd, int quantity) {
         addItem(new ItemStack(itemToAdd, quantity));
     }
 
@@ -143,15 +143,20 @@ public class Inventory {
      * @param itemToRemove The Item being removed from the inventory.
      * @param amount The number of the item to remove.
      */
-    public void removeItem(Item itemToRemove, int amount) {
+    private void removeItem(Item itemToRemove, int amount) {
         ItemStack stack = getItemStackForItem(itemToRemove);
-        if (amount >= stack.getQuantity()) {
-            items.remove(stack);
+
+        removeItem(stack, amount);
+    }
+
+    private void removeItem(ItemStack itemStack, int amount) {
+        if (amount >= itemStack.getQuantity()) {
+            items.remove(itemStack);
         }
-        stack.removeQuantity(amount);
+        itemStack.removeQuantity(amount);
         //Fail-safe to ensure the ItemStack never has a negative size.
-        if (stack.getQuantity() <= 0) {
-            items.remove(stack);
+        if (itemStack.getQuantity() <= 0) {
+            items.remove(itemStack);
         }
     }
 
@@ -162,8 +167,11 @@ public class Inventory {
      *
      * @param itemToDrop The Item being dropped.
      */
-    public void dropItem(Item itemToDrop) {
-        items.remove(getItemStackForItem(itemToDrop));
+    public ItemStack dropItem(Item itemToDrop) {
+        ItemStack itemStackDropping = getItemStackForItem(itemToDrop);
+        items.remove(itemStackDropping);
+
+        return itemStackDropping;
     }
 
     /**
@@ -215,9 +223,6 @@ public class Inventory {
      * @param itemStack The item trying to be equipped.
      */
     public boolean equipItem(ItemStack itemStack) {
-        /*if (itemStack.getItem().isEquipable()) {
-            equipmentManager.equipItem(itemStack);
-        }*/
         return equipmentManager.equipItem(itemStack);
     }
 
@@ -230,6 +235,20 @@ public class Inventory {
     }
 
     public void setHotBarItem(int hotBarSlot, ItemStack itemToEquip) {
+        for (int slot = 0; slot < hotBarItems.length; slot++) {
+            if (hotBarItems[slot] != null && hotBarItems[slot].equals(itemToEquip)) {
+                hotBarItems[slot] = null;
+            }
+        }
         hotBarItems[hotBarSlot] = itemToEquip;
+    }
+
+    public void useItem(ItemStack itemStack) {
+        removeItem(itemStack, 1);
+    }
+
+    public void empty() {
+        items.clear();
+        hotBarItems = new ItemStack[9];
     }
 }

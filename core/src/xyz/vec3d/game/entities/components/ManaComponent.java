@@ -54,4 +54,11 @@ public class ManaComponent implements Component {
         return currentMana / maxMana;
     }
 
+    public void removeMana(float manaCost) {
+        currentMana -= manaCost;
+    }
+
+    public void addMana(float mana) {
+        currentMana = Math.min(currentMana + mana, maxMana);
+    }
 }

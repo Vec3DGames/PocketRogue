@@ -13,6 +13,7 @@ import xyz.vec3d.game.entities.components.PositionComponent;
 import xyz.vec3d.game.entities.components.VelocityComponent;
 import xyz.vec3d.game.model.Inventory;
 import xyz.vec3d.game.model.ItemStack;
+import xyz.vec3d.game.model.SpellManager;
 import xyz.vec3d.game.model.combat.ProjectileFiringSystem;
 
 /**
@@ -50,6 +51,7 @@ public class Player extends PocketRogueEntity {
                 new Animation(1/10f, tmpRegions[0]) //Idle
         });
         this.projectileFiringSystem = new ProjectileFiringSystem(this);
+        this.spellManager = new SpellManager();
     }
 
     /**

@@ -108,10 +108,6 @@ public class RenderingSystem extends IteratingSystem {
         if (animationComponent != null) {
             boolean moving = ((PocketRogueEntity) entity).isMoving();
             animationComponent.addAnimationTime(deltaTime);
-            /*float animationTime = animationComponent.getAnimationTime();
-            TextureRegion animationFrame = animationComponent.getAnimation()
-                    .getKeyFrame(moving ? animationTime : 0, true);
-            batch.draw(animationFrame, x, y, 1, 1);*/
             float animationTime = animationComponent.getAnimationTime();
             for (Animation animation : animationComponent.getAnimations()) {
                 TextureRegion animationFrame = animation.getKeyFrame(moving ?
@@ -135,5 +131,7 @@ public class RenderingSystem extends IteratingSystem {
         }
         batch.draw(texture, x, y, ((PocketRogueEntity) entity).getSize(), ((PocketRogueEntity) entity).getSize());
     }
+
+
 
 }

@@ -48,7 +48,7 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
             }
             if (actor.getName().equals("A")){
                 //TODO: ATTACKING
-                return;
+                gameScreen.getPlayer().getCombatSystem().doPlayerAttack();
             }
         }
     }
@@ -76,12 +76,11 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
      * @return nvm am idiot
      */
     private Vector2 getMov() {
-        return mov.cpy().nor();
+        return mov.cpy();
     }
 
     public void update() {
         Vector2 velocity = getMov();
-        //gameScreen.getPlayer().setAnimationFromVelocity(velocity);
         gameScreen.getPlayer().setVelocity(velocity);
     }
 
@@ -151,9 +150,10 @@ public class RogueInputProcessor extends ChangeListener implements InputProcesso
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (gameScreen.getGuiOverlay() == null) {
             //Do combat action here
-            gameScreen.getCombatSystem().doPlayerAttack();
+            gameScreen.getPlayer().getCombatSystem().doPlayerAttack();
             return true;
         }
+
         return false;
     }
 

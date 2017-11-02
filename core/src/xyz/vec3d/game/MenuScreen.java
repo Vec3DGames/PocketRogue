@@ -21,14 +21,12 @@ import xyz.vec3d.game.gfx.SpriteSheet;
  *
  * Menu state representation. Manages a Stage for UI components.
  */
-public class MenuScreen implements Screen {
+class MenuScreen implements Screen {
 
     /**
      * The {@link Stage} for UI components.
      */
     private Stage uiStage;
-
-    private Skin skin;
 
     /**
      * The {@link PocketRogue} game instance.
@@ -44,15 +42,16 @@ public class MenuScreen implements Screen {
     /**
      * Creates a new {@link MenuScreen} instance and sets up the UI components.
      */
-    public MenuScreen(final PocketRogue pocketRogue) {
+    MenuScreen(final PocketRogue pocketRogue) {
         this.pocketRogue = pocketRogue;
         uiStage = new Stage(new StretchViewport(Settings.WIDTH, Settings.HEIGHT));
         Gdx.input.setInputProcessor(uiStage);
-        skin = PocketRogue.getAsset("uiskin.json");
+        Skin skin = PocketRogue.getAsset("uiskin.json");
 
         //Set up UI components here.
         Table uiTable = new Table(skin);
         Label label = new Label("Menu", skin, "default");
+        //Play button
         TextButton playButton = new TextButton("Play", skin);
         playButton.addListener(new ClickListener() {
             @Override
@@ -60,12 +59,24 @@ public class MenuScreen implements Screen {
                 pocketRogue.setScreen(new GameScreen(pocketRogue));
             }
         });
+        //Stats button
         TextButton statsButton = new TextButton("Stats", skin);
+        //Options button
         TextButton optionsButton = new TextButton("Options", skin);
+        //Exit button
+        TextButton exitButton = new TextButton("Exit", skin);
+        exitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
+            }
+        });
+
         uiTable.add(label).padBottom(40).row();
         uiTable.add(playButton).width(200).padBottom(40).row();
         uiTable.add(statsButton).width(200).padBottom(40).row();
-        uiTable.add(optionsButton).width(200);
+        uiTable.add(optionsButton).width(200).padBottom(40).row();
+        uiTable.add(exitButton).width(200);
         uiTable.setFillParent(true);
 
         //Add UI components to stage.

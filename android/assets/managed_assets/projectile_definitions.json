@@ -1,18 +1,20 @@
 [
   {
-    "id": "spell_fire_bolt",
+    "id": 10,
+    "spell_id": "spell_fire_bolt",
     "name": "Fire Bolt",
     "mana_cost": 20,
     "damage": 20,
     "cooldown": 2,
-    "speed": 0.4
+    "move_speed": 0.4
   },
   {
-    "id": "spell_lightning_bolt",
+    "id": 11,
+    "spell_id": "spell_lightning_bolt",
     "name": "Lightning Bolt",
     "mana_cost": 15,
     "damage": 15,
     "cooldown": 1,
-    "speed": 0.5
+    "move_speed": 0.5
   }
 ]

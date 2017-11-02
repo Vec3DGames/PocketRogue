@@ -27,31 +27,27 @@ public class Enemy extends PocketRogueEntity {
         add(new PositionComponent(x, y));
         add(new VelocityComponent());
         //Load up properties
-        this.health = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.HEALTH));
+        this.health = (float)(DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.HEALTH));
         add(new HealthComponent(this.health));
-        float moveSpeed = (float)((double)DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.MOVE_SPEED));
+        float moveSpeed = (float)(DefinitionLoader.getEntityDefinition(id).getProperty(DefinitionProperty.MOVE_SPEED));
         add(new MovementSpeedComponent(moveSpeed));
         //Set up animations here.
-        Texture animationSheet = PocketRogue.getAsset("animation_sheets/player_animation.png");
+        Texture animationSheet = PocketRogue.getAsset("animation_sheets/enemy_animation" + id + ".png");
         TextureRegion[][] tmpRegions = TextureRegion.split(animationSheet, 32, 32);
         TextureRegion[] idle = new TextureRegion[3];
         System.arraycopy(tmpRegions[0], 0, idle, 0, idle.length);
         //Set the animations available
         setAnimations(new Animation[] {
-                new Animation(1/60f, tmpRegions[3]), //Left
-                new Animation(1/60f, tmpRegions[2]), //Right
-                new Animation(1/60f, tmpRegions[1]), //Up
-                new Animation(1/60f, tmpRegions[0]), //Down
+                new Animation(1/10f, tmpRegions[3]), //Left
+                new Animation(1/10f, tmpRegions[2]), //Right
+                new Animation(1/10f, tmpRegions[1]), //Up
+                new Animation(1/10f, tmpRegions[0]), //Down
                 new Animation(1/10f, idle) //Idle
         });
     }
 
     public int getId() {
         return id;
-    }
-
-    public enum EntityType {
-        OVERWORLD_GRASS, OVERWORLD_SAND, DUNGEON
     }
 
     @Override

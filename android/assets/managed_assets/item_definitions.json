@@ -164,5 +164,97 @@
     "stackable": false,
     "slot": "GENERAL",
     "bonuses": []
+  },
+  {
+    "name": "Lightning Bolt Scroll",
+    "icon": [
+      16,
+      4
+    ],
+    "stackable": false,
+    "slot": "GENERAL",
+    "bonuses": []
+  },
+  {
+    "name": "Iron Chestplate",
+    "icon": [
+      2,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": []
+  },
+  {
+    "name": "Steel Chestplate",
+    "icon": [
+      3,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "Mithril Chestplate",
+    "icon": [
+      4,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "Enigmite Chestplate",
+    "icon": [
+      5,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "Bloodsteel Chestplate",
+    "icon": [
+      6,
+      2
+    ],
+    "stackable": false,
+    "slot": "CHEST",
+    "bonuses": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   }
 ]

@@ -26,8 +26,6 @@ public class HotBarDisplay extends Actor {
 
     private Texture hotBarTexture;
 
-    private HotBarItem[] hotBarItems = new HotBarItem[9];
-
     private Stage stage;
     private Player player;
     private GameScreen gameScreen;
@@ -42,10 +40,12 @@ public class HotBarDisplay extends Actor {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 int slot = getActionBoxForX(x);
-                HotBarItem hotBarItem = hotBarItems[slot];
+                ItemStack hotBarItem = player.getInventory().getHotBarItems()[slot];
                 if (hotBarItem == null) {
                     ShowHotBarItemSelectionPrompt(slot);
+                    return;
                 }
+                gameScreen.useHotBarItem(hotBarItem);
             }
         });
         this.stage = stage;
@@ -60,21 +60,28 @@ public class HotBarDisplay extends Actor {
     public void draw(Batch batch, float parentAlpha) {
         batch.draw(hotBarTexture, getX(), getY());
 
+        ItemStack[] hotBarItems = player.getInventory().getHotBarItems();
+
         for (int slot = 0; slot < hotBarItems.length; slot++) {
-            HotBarItem hotBarItem = hotBarItems[slot];
+            ItemStack hotBarItem = hotBarItems[slot];
 
-        if (hotBarItem == null || hotBarItem.itemStack == null)
-            continue;
+            if (hotBarItem == null)
+                continue;
 
-        TextureRegion textureRegion = Utils.getItemTexture(hotBarItem.itemStack);
-        if (textureRegion == null)
-            continue;
+            if (hotBarItem.getQuantity() <= 0) {
+                player.getInventory().setHotBarItem(slot, null);
+                continue;
+            }
 
-        String amount = hotBarItem.itemStack.getQuantityAsString();
+            TextureRegion textureRegion = Utils.getItemTexture(hotBarItem);
+            if (textureRegion == null)
+                continue;
 
-        batch.draw(textureRegion, getX() + 14 + (54 * (slot)), getY() + 14, 32, 32);
-        font.draw(batch, amount, getX() + 15 + (54 * (slot)), getY() + 15);
-    }
+            String amount = hotBarItem.getQuantityAsString();
+
+            batch.draw(textureRegion, getX() + 14 + (54 * (slot)), getY() + 14, 32, 32);
+            font.draw(batch, amount, getX() + 15 + (54 * (slot)), getY() + 15);
+        }
     }
 
     /**
@@ -90,31 +97,11 @@ public class HotBarDisplay extends Actor {
 
     private void ShowHotBarItemSelectionPrompt(int slot) {
         setName("hot_bar_display" + slot);
-        gameScreen.openGui("player_inventory", player.getInventory(), skin, gameScreen.getCombatSystem(), this);
-    }
-
-    public void refreshHotBarDisplay() {
-        for (int slot = 0; slot < player.getInventory().getHotBarItems().length; slot++) {
-            ItemStack itemStack = player.getInventory().getHotBarItems()[slot];
-            if (itemStack == null)
-                continue;
-
-            hotBarItems[slot] = new HotBarItem(itemStack);
-        }
-        setName("hot_bar_display");
+        gameScreen.openGui("player_inventory", player.getInventory(), skin, gameScreen.getPlayer().getCombatSystem(), this);
     }
 
     public void setPlayer(Player player) {
         this.player = player;
     }
 
-    private class HotBarItem {
-
-        private ItemStack itemStack;
-
-        HotBarItem(ItemStack itemStack) {
-            this.itemStack = itemStack;
-        }
-
-    }
 }
